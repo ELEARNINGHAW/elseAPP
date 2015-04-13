@@ -1,0 +1,826 @@
+body
+{
+  min-width:600px;
+  max-width:800px;
+  font-size:0.85em;
+  font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+fieldset
+{
+  width:auto;
+}
+
+.colList
+{
+  color: #FFF; 
+  font-size: 10px; 
+  padding:1px
+}
+._head, .admin_head, .edit_head,  .staff_head  ,  .view_head  
+{
+  padding:4px;
+  position: relative;
+  left:0px;
+  top:0px;
+  margin:0px; 
+  background-color: #FFFFFF; 
+
+}
+
+  .admin_head 
+{
+  color: #C60C30; 
+}
+
+  .edit_head 
+{
+  color: #000; 
+}
+
+   .staff_head  
+{
+  color: #00F; 
+}
+
+
+#nav, #nav ul{
+margin:0;
+padding:0;
+list-style-type:none;
+list-style-position:outside;
+position:relative;
+line-height:1.5em; 
+}
+
+#nav a{
+display:block;
+padding:0px 5px;
+border:1px solid #333;
+color:#fff;
+text-decoration:none;
+background-color:#333;
+}
+
+#nav a.en{
+display:block;
+padding:0px 5px;
+border:1px solid #333;
+color:#fff;
+text-decoration:none;
+background-color:#333;
+}
+
+#nav a.dis{
+display:block;
+padding:0px 5px;
+border:1px solid #333;
+color:#fff;
+text-decoration:none;
+background-color:#FFF;
+}
+
+#nav a:hover{
+background-color:#fff;
+color:#333;
+}
+
+#nav li{
+float:left;
+position:relative;
+}
+
+#nav ul {
+position:absolute;
+display:none;
+width:12em;
+top:1.5em;
+}
+
+#nav li ul a{
+width:12em;
+height:auto;
+float:left;
+}
+
+#nav ul ul{
+top:auto;
+}	
+
+#nav li ul ul {
+left:12em;
+margin:0px 0 0 10px;
+}
+
+#nav li:hover ul ul, #nav li:hover ul ul ul, #nav li:hover ul ul ul ul{
+display:none;
+}
+#nav li:hover ul, #nav li li:hover ul, #nav li li li:hover ul, #nav li li li li:hover ul{
+display:block;
+}
+
+.bgWuS, .bg60, .bg61, .bg62, .bg63, .bg64
+{
+background-color: #C60C30;
+}
+
+.bgLS, .bg30, .bg31, .bg32, .bg33, .bg34, .bg35, .bg36, .bg37  
+{
+background-color:  #E98300;
+}
+
+.bgTI, .bg50, .bg51, .bg52, .bg53, .bg54, .bg55
+{
+  background-color:  #0E905A;
+}
+
+.bgDMI, .bg20, .bg21, .bg22, .bg23  
+{
+  background-color:  #008B95;
+}
+
+.bgHAW1x, .bg1
+{
+  background-color:  #234A89;
+}
+
+.bgHAW2x, .bgALLE, bg
+{
+  background-color: #002664;
+}
+
+
+
+.lbWuS, .lb60, .lb61, .lb62, .lb63, .lb64, .lb3
+{
+    border-left:3px solid #C60C30 !important;
+}
+
+.lbLS, .lb30, .lb31, .lb32, .lb33, .lb34, .lb35, .lb36, .lb37 , .lb2
+{
+  border-left:3px solid #E98300 !important;
+}
+
+.lbTI, .lb50, .lb51, .lb52, .lb53, .lb54, .lb55, .lb4
+{
+  border-left:3px solid #0E905A !important;
+}
+
+.lbDMI, .lb20, .lb21, .lb22, .lb23  , .lb6
+{
+  border-left:3px solid #008B95 !important;
+}
+
+.lb1
+{
+  border-left:3px solid #228B95 !important;
+}
+
+.lb5
+{
+  border-left:3px solid #C62C34 !important;
+}
+
+
+
+
+a.icon
+{
+  margin: 0px;
+  padding:1px;
+  width:32px;
+  height:32px;
+}
+
+
+
+a.name2, a.name 
+{
+  padding: 0px;
+  padding-top: 10px;
+  padding-left: 55px;
+  display:block;
+  color:#000;
+  text-decoration:none;
+}
+
+
+a.name 
+{ 
+  width: calc(100% - 154px);
+  border-right: 0px solid #FFF;
+}
+
+a.name2 
+{  
+  padding-top: 20px;
+  width: calc(100% - 75px);
+  font-size: 13px;
+}
+
+a.name:hover,  a.name2:hover  
+{
+  color:#000;
+  background-color:#DDD;
+  text-decoration:none;
+}
+
+
+
+
+.semapIconListe
+{
+  background-color: #FAFAFA;
+  margin: 0px;
+  margin-top:2px;
+ 
+  border: 1px solid #099;
+  border-left: 0px solid #FFF;
+
+  padding:0px;
+  padding-right:4px;
+  padding-top:5px;
+  padding-bottom:3px;
+
+  top:0px;
+  float:left; 
+  display: block;
+}
+
+.semapNameListe
+{
+  font-size:12px;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #FFF;
+  margin: 2px;
+  margin-left: 10px;
+  margin-right: 0px;
+  border-top: 1px solid #099;
+  border-right: 1px solid #099;
+  border-bottom: 1px solid #099;
+  border-left: 1px solid #099;
+
+  background-image:url(../img/svg/collection.svg);
+  background-size: 20px;
+  background-position: 1.5% 50%;
+  background-repeat:no-repeat;
+  height: 33px;
+  display: block;
+  float:left;
+}
+
+.depName
+{
+  font-size:15px;
+  font-family: Arial, Helvetica, sans-serif;
+ 
+  margin: 10px;
+  margin-top: 2px;
+  padding: 2px;
+  padding-left: 35px;
+  border: 1px solid #000;
+  color:#FFFFFF;
+  background-image:url(../img/svg/star.svg);
+  background-repeat:no-repeat;
+  font-weight:700;
+}
+
+.dozentName 
+{
+    font-family: Arial, Helvetica, sans-serif;
+    margin:10px;
+    margin-top: 12px;
+    margin-bottom: 2px;
+    padding: 4px;
+    padding-left: 35px;
+    font-size:14px;
+    font-weight:700;
+    text-decoration: none;
+    color: #FFF;
+    display: block;
+    width: calc(100% - 60px);
+    border:solid green 2px; 
+    display: block;
+    float:left;
+}
+
+.dozentLink 
+{
+    font-family: Arial, Helvetica, sans-serif;
+    text-decoration: none;
+    color: #FFF;
+
+}
+
+.studihint {
+	font-size:13px;
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: #F6F6F6;
+	margin: 0px;
+	margin-left: 10px;
+	margin-top: 0px;
+	margin-right: 10px;
+	padding: 5px;
+	padding-left: 68px;
+	border: 1px solid #999;
+	background-image:url(../img/svg/clip.svg);
+	background-repeat:no-repeat;
+  background-position: 25px 5px;
+   background-size: 32px;
+    /*   text-shadow:#AAA 1px 1px;
+     */
+}
+ 
+.SAMeta{
+	font-size:16px;
+	font-family: Arial, Helvetica, sans-serif;
+        margin: 0px;
+	margin-right: 10px;
+	margin-left: 10px;
+        padding: 2px;
+	padding-left: 20px;
+
+}
+
+.SAtitel{
+	font-size:20px;
+	font-weight:700;
+	font-family: Arial, Helvetica, sans-serif;
+	margin-left: 10px;
+	margin-top: 2px;
+	margin-bottom: 0px;
+	padding: 2px;
+	padding-left: 0px;
+  color:#FFF;
+  text-shadow:black 1px 1px;
+}
+
+
+.SAdozName{
+	font-size:14px;
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 3px;
+	margin-left: 10px;
+	padding: 2px;
+	padding-left: 0px;
+  color:#FFF;
+  font-weight:700;
+ 
+}
+
+
+
+.hinweise{
+	font-size:11px; 
+	background-color: #FFF;
+	padding: 10px;
+	border: 1px solid #999;
+
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 3px;
+	margin-left: 10px;
+	padding: 2px;
+	padding-left: 0px;
+
+}
+
+.medVerlag, .medBand, .medAuflage, .medSignatur ,.medJahrgang
+{
+	padding-right:3px;
+	font-size:10px;
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: #FEFEFE;
+ 	text-align:right;
+  /*display:  none;*/
+        
+
+}
+
+.medTitel{
+	font-size:13px;
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 1px;
+	margin-left: 0px;
+	padding: 5px;
+	padding-left: 0px;
+	font-weight:600;
+	background-color: #000;
+ 
+ 
+}
+
+.medAutor{
+	font-size:13px;
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 1px;
+	margin: 1px;
+	margin-top: 4px;
+	padding: 5px;
+	padding-left: 0px;
+       
+}
+
+
+
+.bibStandort, .prebib{
+	margin: 1px;
+	margin: 0px;
+	padding: 0px;
+  height: 40px;
+
+  width:1px;
+    display:inline-block
+}
+
+
+.bibStandort{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size:11px;
+  margin: 1px;
+	  margin-left: 0px;
+	padding: 5px;
+	padding-top: 0px;
+	padding-left: 32px;
+  width:auto;
+  left:30px;
+  float:left;
+}
+
+
+
+.state_1  /* new */
+{
+ /*  background-color: #9295C2; */
+}
+
+.state_2  /* open */ 
+{
+ /* background-color: #6666cc; */
+}
+
+.state_3  /* active */
+{
+  background-color: #FEFEFE;
+  border: solid black 1px;
+  color:#000;
+}
+
+.state_4  /* active */.obsolete
+{
+  /*background-color: #cc66cc;*/
+}
+
+.state_5  /* inactive */  
+{
+  /* background-color: #555; */
+}
+
+
+
+.headlineDozent
+{
+  left:5px;
+  margin:0px;   background-color: #FEFEFE; 
+  border-bottom:2px solid #666; 
+  margin-bottom: 10px;  
+  height:20px;
+}
+
+.status
+{ 
+  text-transform:uppercase;
+  text-align: center;
+  display:block;
+  float:right;
+  margin:0px;
+  margin-left:5px; 
+  top:0px; 
+  height:30px; 
+  padding-left:10px;  
+  padding-right: 10px;
+  padding-top:0px;  
+  font-size:12px; 
+  width: 70px;
+  border: solid black 1px;
+  background-color: #FFF;
+}
+
+
+.iconlist
+{ 
+  display:block;
+  top:0px; 
+  height:30px; 
+  float:right;
+  margin:0px;
+  margin-left:5px; 
+  padding-left:10px;  
+  padding-right: 10px;
+  padding-top:0px;  
+
+  background-color: #FFF;
+}
+
+.s_standard
+{
+  border-right: #FFF solid 10px;  
+  
+}
+
+.s_new, .s_open, .s_active, .s_obsolete, .s_inactive
+{
+  border-right: #FFF solid 10px;  
+}
+
+.s_new
+{
+  border-color: #00F ;  
+
+}
+
+.s_open /*wird bearbeitet */
+{
+  
+  border-color:  #0099ff;  
+}
+
+.s_active
+{
+  border-color:  #0F0;  
+}
+
+.s_obsolete /*WirdEntfernt*/
+{
+  border-color:  #E98300;  
+}
+
+.s_inactive
+{
+  border-color: #F00 ;  
+}
+ 
+
+
+.mediaInSA
+{
+  padding:10px;
+  padding-left: 50px; 
+  padding-top:0px; 
+  padding-bottom:0px;
+  margin:10px; 
+  margin-bottom: 0px; 
+ 
+  border-top: solid black 2px;
+  border-bottom:  solid #999 2px;
+  border-right: solid #666 1px;
+  
+  height: 100%;
+
+}
+
+.medium_1 /* Buch */
+{
+  background-image:url(../img/svg/txtBuch.svg);
+  background-repeat:repeat-y;
+  background-color: #FAFAFA; 
+}
+
+
+.medium_4 /* E-Book */
+{
+  background-image:url(../img/svg/txtE-Book.svg);
+  background-repeat:repeat-y;
+  background-color: #FFF; 
+}
+
+.addMedInSA
+{
+    padding:10px;
+	padding-left:50px; 
+	margin:10px; 
+	background-color: #E0E0E0; 
+	border-bottom:1px solid #666;  
+}
+
+
+
+
+.medimSA
+{
+	background-image:url(../img/svg/chevron-right.svg);
+	background-repeat:no-repeat;
+        padding:10px;
+	padding-left:50px; 
+	margin:10px; 
+	background-color: #EEE; 
+	border-bottom:3px solid #666;  
+}
+
+
+
+/*-- HELP WINDOW --*/
+.overlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  display: none;
+}
+
+.modal {
+  display: none;
+  background: #FFF;
+  padding: 0 20px 20px;
+  overflow: auto;
+  z-index: 1001;
+  position: absolute;
+  width: 500px;
+  min-height: 300px;
+}
+/*-- HELP WINDOW --*/
+
+.modal_e {
+  display: none;
+  background: #FFF;
+  padding: 0 20px 20px;
+  overflow: auto;
+  z-index: 1001;
+  position: absolute;
+  width: 500px;
+  min-height: 300px;
+}
+/*-- HELP WINDOW --*/
+
+.head1
+{
+  font-weight:700;
+  float:right;
+ 
+}
+
+.txtin{
+     height: 30px;
+     width:400px;
+}
+
+.txtin2{
+     height: 60px;
+     width:400px;
+}
+
+
+
+.staffnote{
+	font-size:12px;
+	font-family: Arial, Helvetica, sans-serif;
+        margin: 5px;
+        padding: 5px;
+padding-left: 30px;
+	border: 1px solid #EEE;
+  background-color: #A7B7D0;
+}
+
+
+.medhint
+{
+  font-size:13px;
+  text-decoration: none;
+  color: #000;
+  padding:8px;
+  padding-left:40px;
+  background-image:url(../img/svg/pushpin.svg);
+  background-repeat:no-repeat;
+  background-position:10px 5px;
+  background-size: 20px;
+  display:block;
+  border-top: solid black 1px;
+  border-bottom:  solid #999 1px;
+ 
+margin: 0px;
+margin-bottom: 8px;
+
+}
+
+
+.medLink{
+  font-size:13px;
+  font-weight:700;
+  text-decoration: none;
+  color: #000;
+  padding:8px;
+  padding-left:25px;
+  display:block;
+  margin:0px; 
+  margin-top:2px; 
+  margin-bottom:2px; 
+  margin-right: 0px; 
+  border:    #FFF solid 1px; 
+
+
+}
+
+.medLink:hover {
+  background-image:url(../img/svg/chevron-right.svg);
+  background-repeat:no-repeat;
+  background-position:2px 1px;
+  color: #000;
+  background-color: #FFF;
+  border :    #000 solid 1px; 
+ 
+
+}
+  
+.medLink:focus    {
+  background-image:url(../img/svg/chevron-right_w.svg);
+  background-repeat:no-repeat;
+  background-position:2px 1px;
+  background-color: #FFF;
+  text-decoration: none;
+  color: #000;
+}
+
+a.hitlink_print, a.hitlink_electronic {
+  background-color: #FFF;
+  color:#666;
+	text-decoration:none;
+	font-size:12px;
+	font-weight:700;
+  padding: 10px;
+  padding-left: 40px;
+  width: 640px;
+  border: 1px solid #000;
+  display: block;	
+}
+
+a.hitlink_print 
+{
+  background-image:url(../img/svg/book4.svg);
+  background-repeat:no-repeat;
+  background-position:2px 1px;
+}
+
+a.hitlink_electronic 
+{
+  background-image:url(../img/svg/note.svg);
+  background-repeat:no-repeat;
+  background-position:2px 1px;
+
+}
+
+a.hitlink_print:hover, a.hitlink_electronic:hover 
+{
+
+	background-color: #666;
+	color:#FFF;
+}
+
+.mediaListHeader
+{
+	color:#999;
+}
+
+
+
+.border2top
+{
+    border-top:solid white 20px; 
+    font-weight: 700;
+    padding-top:10px;  
+    margin:30px;
+}
+
+.checkBox
+{
+  float:right;
+  margin:10px;
+}
+
+
+li a, a {
+  text-decoration: none;
+  font-size: 16px;
+  color:#002664;
+  
+}
+
+ul {
+	list-style-image: url('img/right.jpg');
+}
+
+ul.circle {
+	list-style-type: circle;
+	list-style-image: none;
+}
+
+legend {
+	font-size: x-small;
+}
+
+fieldset {
+	margin-top: 20px;
+	padding-bottom: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
