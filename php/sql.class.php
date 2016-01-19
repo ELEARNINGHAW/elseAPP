@@ -1,77 +1,128 @@
 <?php
 
+require_once('../php/config.php');
+
 class SQL
 {
 var $DB;
+var $conf; 
 
 function SQL ()
 {
-  require_once('../php/config.php');
-    $db_host = "localhost";		
-  $db_name = "semapp";	
-  $db_user = "semapp";
-  $db_pass = "semapp";
- 
- # global $db_host , $db_user , $db_pass , $db_name ;
-  $this->DB = new mysqli( $db_host, $db_user,  $db_pass,  $db_name);            if (mysqli_connect_errno()) {   printf("Verbindung fehlgeschlagen: %s\n", mysqli_connect_error());   exit(); }
+  $this->conf = getConf();
+  $this->DB = new mysqli( $this->conf['db_host'], $this->conf['db_user'],  $this->conf['db_pass'],  $this->conf['db_name']);            if (mysqli_connect_errno()) {   printf("Verbindung fehlgeschlagen: %s\n", mysqli_connect_error());   exit(); }
 }
-
 
 function initMedia($book)
 {
- $SQL = "
+ $SQL = '
  INSERT INTO `document` 
  SET
- collection_id      = \"" .$book['collection_id'   ]. "\",
- title              = \"" .$book['title'           ]. "\", 
- author             = \"" .$book['author'          ]. "\", 
- edition            = \"" .$book['edition'         ]. "\", 
- year               = \"" .$book['year'            ]. "\", 
- journal            = \"" .$book['journal'         ]. "\", 
- volume             = \"" .$book['volume'          ]. "\",
- pages              = \"" .$book['pages'           ]. "\",
- publisher          = \"" .$book['publisher'       ]. "\",
- signature          = \"" .$book['signature'       ]. "\",
- ppn                = \"" .$book['ppn'             ]. "\", 
- doc_type_id        = \"" .$book['doc_type_id'     ]. "\", 
- url                = \"" .$book['url'             ]. "\", 
- state_id           = \"" .$book['state_id'        ]. "\", 
- relevance          = \"" .$book['relevance'       ]. "\",
- notes_to_staff     = \"" .$book['notes_to_staff'  ]. "\",
- shelf_remain       = \"" .$book['shelf_remain'    ]. "\",    
- notes_to_studies   = \"" .$book['notes_to_studies']. "\", 
- created            = NOW()                            ,
- last_modified      = NOW()                            ,
- last_state_change  = NOW()";             
+ collection_id      = "' .$book['collection_id'   ]. '",
+ title              = "' .$book['title'           ]. '", 
+ author             = "' .$book['author'          ]. '", 
+ edition            = "' .$book['edition'         ]. '", 
+ year               = "' .$book['year'            ]. '", 
+ journal            = "' .$book['journal'         ]. '", 
+ volume             = "' .$book['volume'          ]. '",
+ pages              = "' .$book['pages'           ]. '",
+ publisher          = "' .$book['publisher'       ]. '",
+ signature          = "' .$book['signature'       ]. '",
+ ppn                = "' .$book['ppn'             ]. '", 
+ doc_type_id        = "' .$book['doc_type_id'     ]. '", 
+ url                = "' .$book['url'             ]. '", 
+ physicaldesc       = "' .$book['physicaldesc'    ]. '", 
+ state_id           = "' .$book['state_id'        ]. '", 
+ relevance          = "' .$book['relevance'       ]. '",
+ notes_to_staff     = "' .$book['notes_to_staff'  ]. '",
+ shelf_remain       = "' .$book['shelf_remain'    ]. '",    
+ notes_to_studies   = "' .$book['notes_to_studies']. '", 
+ created            = NOW() ,
+ last_modified      = NOW() ,
+ last_state_change  = NOW()';     
 
+ 
  $res =  mysqli_query ( $this->DB, $SQL);
+ 
+ $res = $this->getDocumentID ( $book );
+ 
+ #deb($res,1);
  return $res;
 }
-
 
 function getDokumentList( $colID,$doc_type_id = null , $state_id = null  )
 {
   $SQL = " 
   SELECT * 
   FROM `document` 
-  WHERE `collection_id` = ". $colID;  
+  WHERE `collection_id` = \"" . $colID  . "\"";  
 
+  
   if ( isset($doc_type_id) ) { $SQL .= " AND `doc_type_id` = ". $doc_type_id;}
   if ( isset($state_id   ) ) { $SQL .= " AND `state_id`    = ". $state_id;   }
   
   $ret = NULL;
   
+  #deb( $SQL);
+  
   $res =  mysqli_query ( $this->DB, $SQL);
+
+
   if ($res)
   while ($row = mysqli_fetch_assoc($res)) 
   {
-    $row['url']  = 'https://kataloge.uni-hamburg.de/CHARSET=ISO-8859-1/DB=2/LNG=DU/CMD?ACT=SRCHA&IKT=12&SRT=YOP&TRM=' .$row['ppn']; 
+    #$row['url']  = 'https://kataloge.uni-hamburg.de/CHARSET=ISO-8859-1/DB=2/LNG=DU/CMD?ACT=SRCHA&IKT=12&SRT=YOP&TRM=' .$row['ppn']; 
     $ret[] = $row;
-  }   
+  }     
+ 
   return $ret; 
 }
+
+
+function getAdminEmailInfos (   )
+{
+  $SQL1 = "SELECT * FROM `location`";
+
+  $res =  mysqli_query ( $this->DB, $SQL1);
+
+  while ($row = mysqli_fetch_assoc($res)) 
+  {
+    $HIBS_location[$row['id']] = $row;
+  }
+
   
-function checkPW ($i)
+  foreach ($HIBS_location as $HIBS_loc)
+  {
+ 
+  $ret[$HIBS_loc['id']] = $HIBS_loc;
+    
+  $SQL2 = "
+  SELECT COUNT(*)
+  FROM document 
+  INNER JOIN collection ON document.collection_id = collection.id 
+  WHERE document.state_id = '1' AND collection.location_id = '".$HIBS_loc['id']."'";    /* Status 1 = Neu Angefordert */
+
+  $res =  mysqli_query ( $this->DB, $SQL2);
+  $tmp  = mysqli_fetch_assoc($res);
+  $ret[$HIBS_loc['id']][1] = $tmp['COUNT(*)']; 
+
+  $SQL2 = "                                                    
+  SELECT COUNT(*)
+  FROM document 
+  INNER JOIN collection ON document.collection_id = collection.id 
+  WHERE document.state_id = '9' AND collection.location_id = '".$HIBS_loc['id']."'";   /* Status 9 = Kaufvorschlag  */
+
+  $res =  mysqli_query ( $this->DB, $SQL2);
+  $tmp  = mysqli_fetch_assoc($res);
+  $ret[$HIBS_loc['id']][9] = $tmp['COUNT(*)'];  
+  }
+ 
+  
+  return $ret;  
+}
+
+
+function getUserAK ( $hawAccount )
 {
   $SQL = "
   SELECT user.*,
@@ -79,14 +130,41 @@ function checkPW ($i)
   FROM user,state,role
   WHERE state.name='active' 
   AND user.state_id = state.id 
-  AND user.login = \"".$i['login']."\" 
-  AND user.password = \"". $i['password'] ."\" 
+  AND user.hawaccount = \"".$hawAccount."\" 
   AND user.role_id = role.id LIMIT 1";
 
+  #print_r($SQL);
   $res =  mysqli_query ( $this->DB, $SQL);
   $ret[] = mysqli_fetch_assoc($res);
   return $ret;  
 }
+
+function doUserExist( $hawacc )
+{
+  $SQL = "
+  SELECT * 
+  FROM user 
+  WHERE `hawaccount` = \"". $hawacc ."\"" ;
+  $res =  mysqli_query ( $this->DB, $SQL);
+  $ret = mysqli_fetch_assoc($res);
+  return $ret;  
+}
+
+
+function doCollectionExist( $title_short )
+{
+  $SQL = "
+  SELECT * 
+  FROM collection 
+  WHERE `title_short` = \"". $title_short ."\"" ;
+  $res =  mysqli_query ( $this->DB, $SQL);
+  $ret = mysqli_fetch_assoc($res);
+ 
+  return $ret;  
+}
+
+
+
 
 function getUserData( $uid )
 {
@@ -102,8 +180,6 @@ function getUserData( $uid )
   $ret = mysqli_fetch_assoc($res);
   return $ret;  
 }
-
-
 
 
 function getAllDepartments()
@@ -135,7 +211,6 @@ function getAllMedStates()
   }
   return $ret;  
 }
-
 
 
 function getBibInfos( $style = NULL )
@@ -208,13 +283,10 @@ function deleteMedia($IW, $IU)
     DELETE
     FROM `document` 
     WHERE `document`.`id` = ".$IW['document'];     
-
-    
     $res =  mysqli_query ( $this->DB, $SQL);
     return  mysqli_fetch_assoc( $res );
   }
 }
-
 
 
 
@@ -223,10 +295,15 @@ function getCollection($colID)
   $SQL = "
   SELECT * 
   FROM `collection` 
-  WHERE `id` = ". $colID;
-  
+  WHERE `id`  = \"" .$colID  . "\"";
+
+
+
   $res =  mysqli_query ( $this->DB, $SQL);
-  return  mysqli_fetch_assoc( $res );
+  
+  $ret = mysqli_fetch_assoc( $res );
+  #deb($ret,1);
+  return  $ret;
 }
 
 
@@ -259,7 +336,6 @@ function setCollectionState( $colID, $state )
   
   $res =  mysqli_query ( $this->DB, $SQL);
   return $res;
- 
 }
 
 function setMediaState( $mediaID, $state )
@@ -267,23 +343,75 @@ function setMediaState( $mediaID, $state )
   $SQL = "
   UPDATE document 
   SET `state_id` = '". $state ."' WHERE `document`.`id` = ". $mediaID;
-  
-  $res =  mysqli_query ( $this->DB, $SQL);
-  return $res;
  
+  $res =  mysqli_query ( $this->DB, $SQL);
+ #deb($SQL,1);
+  return $res;
 }
 
 
-function initCollection($IW, $IU)
+function initUser($IU)
 {
+  $SQL = "
+  INSERT INTO user SET
+    role_id           = \"" . $IU['role'       ] . "\" ,
+    surname           = \"" . $IU['nachname'   ] . "\" ,
+    forename          = \"" . $IU['vorname'    ] . "\" ,
+    sex               = \"" . $IU['sex'        ] . "\" ,
+    email             = \"" . $IU['mail'       ] . "\" ,
+    state_id          = 3                             ,
+    created           = NOW()                         , 
+    last_modified     = NOW()                         , 
+    last_state_change = NOW()                         , 
+    categories_id     = \"" . $IU['department']  . "\" ,
+    department        = \"" . $IU['department']  . "\" ,
+    `hawaccount`      = \"" . $IU['akennung'  ]  . "\"";
+ 
+/*
+=$IU['shortname'   ]
+=$IU['fullname'    ]
+*/
+  $res =  mysqli_query ( $this->DB, $SQL);
+  return $res;
+}
+
+
+function updateUser($IU)
+{
+  $SQL = "
+  UPDATE `user`
+  SET
+    role_id           = \"" . $IU['role'       ] . "\" ,
+    surname           = \"" . $IU['nachname'   ] . "\" ,
+    forename          = \"" . $IU['vorname'    ] . "\" ,
+    sex               = \"" . $IU['sex'        ] . "\" ,
+    email             = \"" . $IU['mail'       ] . "\" ,
+    categories_id     = \"" . $IU['department']  . "\" ,
+    department        = \"" . $IU['department']  . "\" 
+  WHERE 
+    `hawaccount`     = \"" . $IU['akennung'  ]  . "\"";
+ #   deb($SQL,1);
+	$res =  mysqli_query ( $this->DB, $SQL);
+  return $res;
+  
+}
+
+
+
+
+function initCollection($IW )
+{
+  
   $SQL = "
   INSERT INTO collection SET
   created          =      NOW()                     , 
   last_modified    =      NOW()                     , 
   last_state_change=      NOW()                     , 
   state_id         =      3                         ,
-  user_id          = \"" .$IU['id'              ]. "\" ,
+  id               = \"" .$IW['title_short'     ]. "\" ,
+  user_id          = \"" .$_SESSION[ 'user' ]['hawaccount']. "\" ,
   title            = \"" .$IW['title'           ]. "\" ,
+  title_short      = \"" .$IW['title_short'     ]. "\" ,
   location_id      = \"" .$IW['location_id'     ]. "\" ,
   expiry_date      = \"" .$IW['expiry_date'     ]. "\" ,
   notes_to_studies = \"" .$IW['notes_to_studies']. "\" ,
@@ -297,13 +425,15 @@ function initCollection($IW, $IU)
 function updateColMetaData($w)
 {
  
-  $SQL="
+  $SQL = "
   UPDATE `collection` 
-  SET title            = \"" .$w['title'           ]. "\" ,
-      location_id      = \"" .$w['location_id'     ]. "\" ,
-      notes_to_studies = \"" .$w['notes_to_studies']. "\" ,
-      categories_id    = \"" .$w['categories_id'   ]. "\"  
-  WHERE id             = \"" .$w['id'              ]. "\"";
+  SET  location_id      = \"" .$w['location_id'     ]. "\" ,";
+
+  if( isset( $w[ 'title'            ] ) )  { $SQL .= " title                = \"" .$w['title'           ]. "\" ,";  }
+  if( isset( $w[ 'notes_to_studies' ] ) )  { $SQL .= " notes_to_studies     = \"" .$w['notes_to_studies']. "\" ,";  }
+  if( isset( $w[ 'categories_id'    ] ) )  { $SQL .= " categories_id        = \"" .$w['categories_id'   ]. "\"  ";  }
+  if( isset( $w[ 'title_short'      ] ) )  { $SQL .= " WHERE title_short    = \"" .$w['title_short'     ]. "\"";    }
+  else                                     { $SQL .= " WHERE id             = \"" .$w['id'              ]. "\"";    }
 
   $res =  mysqli_query ( $this->DB, $SQL);
   return $res;
@@ -312,8 +442,7 @@ function updateColMetaData($w)
 
 
 function updateMediaMetaData($w)
-{
-
+{  
   if( !isset( $w[ 'shelf_remain' ] ) ) { $w[ 'shelf_remain' ] = 0; }
   
                                         $SQL = " UPDATE document SET ";
@@ -324,51 +453,98 @@ function updateMediaMetaData($w)
   if (isset( $w['shelf_remain'    ])) { $SQL .= " shelf_remain     = \"" .$w['shelf_remain'      ]. "\"  ";}
                                         $SQL .= " WHERE id         = \"" .$w['document_id'       ]. "\"  "; 
   $res =  mysqli_query ( $this->DB, $SQL);
+
+ #deb($SQL,1);
   return $res;
 }
 
+
+function updateCollectionSortOrder( $collection_id, $sortorder )
+{  
+  
+  $SQL = " UPDATE collection SET ";
+  $SQL .= " sortorder         = \"" . implode(',' , $sortorder ) . "\"";
+  $SQL .= " WHERE id         = \"" . $collection_id. "\"  "; 
+  $res =  mysqli_query ( $this->DB, $SQL);
+  return $res;
+}
+
+
+
+
+
+
 function getCollectionInfos ($colID = null, $doc_type_id = null , $doc_state_id = null, $short = null  )
 {
-  $SQL = "
-  SELECT collection.*,
-    categories.description AS department,
-    user.forename AS forename, 
-    user.surname AS surname, 
-    user.sex AS sex 
-    FROM user,collection,categories 
-  WHERE  collection.categories_id = categories.id
-  AND user.id = collection.user_id"; 
-  if ($colID)
+  $SQL = "SELECT * FROM `collection`";
+  $SQL .= " WHERE  1 = 1  ";
+
+  if ($colID )
   {
-  $SQL .= " AND collection.id = " . $colID ; 
+    $SQL .= " AND collection.id = \"" . $colID ."\"  ";  
   } 
   $SQL .= " ORDER BY collection.id ";
-
-
+   
   /* ALLE Medieninfo zu dem entsprechenden SA werden ermittelt */
   $ret = false;
   $res =  mysqli_query ( $this->DB, $SQL );
-
-  if ($res )
+  
+ 
+  
+  if ( $res )
   {  
-   while ($row = mysqli_fetch_assoc($res)) 
-   {
-      $ret[$row['id']] = $row;
-      $dl = $this->getDokumentList( $row['id'], $doc_type_id,  $doc_state_id );  /*  ( $doc_ID, $doc_type_id = null , $doc_state_id = null  ) */
+   while ( $row = mysqli_fetch_assoc( $res ) ) 
+   { 
+    
+     $sortorder = explode ( ',' , $row['sortorder'] );
+
+     $userInfo = $this-> getUserAK(  $row['user_id'] );
+
+      $ret[ $row[ 'id' ] ] = $row;
+      $ret[ $row[ 'id' ]][ 'user_info' ] = $userInfo[0] ; 
+
+
+      $dl = $this->getDokumentList( $row[ 'id' ], $doc_type_id,  $doc_state_id );  /*  ( $doc_ID, $doc_type_id = null , $doc_state_id = null  ) */
       if( $dl )
-      {  
-        $ret[$row['id']][ 'document_info' ] = $dl ;
+      {  unset($withoutSortOrder);
+         unset($withSortOrder);
+      
+        foreach($dl as $d)
+        {  
+          $withoutSortOrder[$d['id']] = array_merge( $d, getDocType($d) ); ## --- Attribute hinzufügen 'doc_type', 'item', 'doc_type_id', 'state_id'   
+        } 
+
+        if(  $sortorder[ 0 ] != '' AND $doc_state_id == '' )
+        {	
+          foreach( $sortorder as $so )
+          {
+             $withSortOrder[] =  $withoutSortOrder[ $so ];
+             unset( $withoutSortOrder[ $so ] );
+          }
+         $withSortOrder = array_merge( $withSortOrder, $withoutSortOrder);
+        }
+		    else
+		    {
+           $withSortOrder =  $withoutSortOrder;
+	     	}
+        
+        $ret[ $row[ 'id' ] ][ 'document_info' ] = $withSortOrder ;
       }
       elseif( $short )  /* Wenn SA keine Medien beinhaltet, wird er wieder entfernt */
       {
         unset ($ret[$row['id']]);
       }
-      else
+      elseif($doc_state_id != null )
       {
-        $ret[$row['id']][ 'document_info' ] = null ;
+        unset ($ret[$row['id']]);
+      #  $ret[$row['id']][ 'document_info' ] = null ;
       }
+
     }
   }
+
+   #deb($ret,1);
+
   return $ret ;
 }
 
@@ -378,6 +554,39 @@ function getDocumentInfos ( $docID ) /* Kartesisches Produkt aller Dokumenten mi
   $SQL = "SELECT * FROM `document` WHERE `id`  = ". $docID ;
   $res =  mysqli_query ( $this->DB, $SQL);
   $ans =  mysqli_fetch_assoc( $res );
+  return $ans ;
+}
+
+function getDocumentID ( $book ) /* Kartesisches Produkt aller Dokumenten mit allen dazugehörigen Infos */
+{ 
+  $SQL = " SELECT id FROM `document` WHERE";
+  if( $book['collection_id'   ] ) $SQL .="  `collection_id`         = \"" .$book['collection_id'   ]."\""; 
+  if( $book['title'           ] ) $SQL .=" AND `title`              = \"" .$book['title'           ]."\""; 
+  if( $book['author'          ] ) $SQL .=" AND `author`             = \"" .$book['author'          ]."\""; 
+  if( $book['edition'         ] ) $SQL .=" AND `edition`            = \"" .$book['edition'         ]."\""; 
+  if( $book['year'            ] ) $SQL .=" AND `year`               = \"" .$book['year'            ]."\""; 
+  if( $book['journal'         ] ) $SQL .=" AND `journal`            = \"" .$book['journal'         ]."\""; 
+  if( $book['volume'          ] ) $SQL .=" AND `volume`             = \"" .$book['volume'          ]."\""; 
+  if( $book['pages'           ] ) $SQL .=" AND `pages`              = \"" .$book['pages'           ]."\""; 
+  if( $book['publisher'       ] ) $SQL .=" AND `publisher`          = \"" .$book['publisher'       ]."\""; 
+  if( $book['signature'       ] ) $SQL .=" AND `signature`          = \"" .$book['signature'       ]."\""; 
+  if( $book['ppn'             ] ) $SQL .=" AND `ppn`                = \"" .$book['ppn'             ]."\"";  
+  if( $book['doc_type_id'     ] ) $SQL .=" AND `doc_type_id`        = \"" .$book['doc_type_id'     ]."\""; 
+  if( $book['url'             ] ) $SQL .=" AND `url`                = \"" .$book['url'             ]."\""; 
+  if( $book['physicaldesc'    ] ) $SQL .=" AND `physicaldesc`       = \"" .$book['physicaldesc'    ]."\""; 
+  if( $book['state_id'        ] ) $SQL .=" AND `state_id`           = \"" .$book['state_id'        ]."\""; 
+  if( $book['relevance'       ] ) $SQL .=" AND `relevance`          = \"" .$book['relevance'       ]."\"";  
+  if( $book['notes_to_staff'  ] ) $SQL .=" AND `notes_to_staff`     = \"" .$book['notes_to_staff'  ]."\"";  
+  if( $book['shelf_remain'    ] ) $SQL .=" AND `shelf_remain`       = \"" .$book['shelf_remain'    ]."\""; 
+  if( $book['notes_to_studies'] ) $SQL .=" AND `notes_to_studies`   = \"" .$book['notes_to_studies']."\""; 
+  
+  $res =  mysqli_query ( $this->DB, $SQL);
+  
+  while ($ret = $res->fetch_array(MYSQLI_ASSOC))
+  {  
+    $ans = $ret['id'];
+  }
+
   return $ans ;
 }
 
@@ -398,7 +607,7 @@ function getStatusName ( $statusID   )
 
 function getAllDocTypes()  
 {
-  $SQL = "SELECT * FROM `doc_type` ORDER BY id asc" ;
+  $SQL = "SELECT * FROM `doc_type` ORDER BY doc_type_id asc" ;
   
   $res =  mysqli_query ( $this->DB, $SQL);
   while ($row = mysqli_fetch_assoc($res)) 
@@ -409,6 +618,21 @@ function getAllDocTypes()
 }
 
 
+function getRoleName( $roleNr )  
+{
+  $SQL = "SELECT name FROM `role` WHERE id = $roleNr" ;
+  
+  #deb( $SQL,1 );
+  $res =  mysqli_query ( $this->DB, $SQL);
+  while ($row = mysqli_fetch_assoc($res)) 
+  {
+    $ret = $row['name'];
+  }
+ return $ret;  
+}
+
+
+
 
 function getUser( $mode )
 {
@@ -416,7 +640,7 @@ function getUser( $mode )
         "tables" => "user,role,state" ,
         "cond" => "user.state_id = state.id  
           AND user.role_id = role.id
-          AND role.name = 'edit'", 
+          AND (role.name != 'edit' OR role.name != 'staff' )", 
 
         "columns" => "user.*" ,
         "order" => "surname,forename,sex"
@@ -434,10 +658,9 @@ function getUser( $mode )
     {
       $param[ 'cond' ] .= " AND state.name != 'new'" ;
     }
-  
    
   $SQL = "SELECT " .$param['columns']. " FROM " .$param['tables']. "  WHERE  ".$param['cond'];
-  
+
   $res =  mysqli_query ( $this->DB, $SQL);
 
   while ($row = mysqli_fetch_assoc($res)) 
@@ -464,6 +687,16 @@ function getExpiredCollections()
   return $res; 
 }
 
+function getNumberOfDocsPerState()
+{
+/*  
+SELECT COUNT(*)
+FROM document 
+INNER JOIN collection ON document.collection_id = collection.id 
+WHERE document.state_id = '1' AND collection.location_id = 'TWI1'
+*/  
+}
+
 
 function getSAlist( $user, $mode, $categories )
 {
@@ -477,16 +710,17 @@ function getSAlist( $user, $mode, $categories )
  $SQL  =  " SELECT c.*, u.surname, u.forename, s.name AS state_name, s.description AS state_description"; 
  $SQL .=  " FROM collection c "; 
  $SQL .=  " LEFT JOIN  user u"; 
- $SQL .=  " ON u.id = c.user_id "; 
+ $SQL .=  " ON u.hawaccount = c.user_id "; 
  $SQL .=  " LEFT JOIN  state s"; 
  $SQL .=  "  ON s.id = c.state_id"; 
- $SQL .=  " WHERE user_id = " .$user[ 'id' ]; 
+ $SQL .=  " WHERE user_id = \"" .$user[ 'hawaccount' ]."\""; 
  if ( $mode       == "view" )  {  $SQL .= " AND c.state_id = 3";                    }                  /* Zustand 3 = aktiv */  
  if ( $categories != 1      )  {  $SQL .= " AND ( u.categories_id =". $categories .")" ;   }//Filter for category/department
  $SQL .=  " ORDER BY `id` "; 
  $SQL .=  " DESC "; 
 
-
+ #deb( $SQL ,1);
+ 
  $res =  mysqli_query ( $this->DB, $SQL);
  $ret = NULL;
  if ($res)

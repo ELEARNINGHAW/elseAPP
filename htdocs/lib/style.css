@@ -28,7 +28,7 @@ fieldset
 
 }
 
-  .admin_head 
+.admin_head 
 {
   color: #C60C30; 
 }
@@ -41,6 +41,15 @@ fieldset
    .staff_head  
 {
   color: #00F; 
+}
+
+
+.currentDoc
+{
+ /* background-color:#A33  !important;
+  border:#0099ff  groove   5px !important;
+ border-collapse: collapse;*/
+ box-shadow:2px 2px 2px 2px #0099ff !important;
 }
 
 
@@ -112,6 +121,94 @@ left:12em;
 margin:0px 0 0 10px;
 }
 
+
+
+
+/*------------------------*/
+ a.en{
+display:inline;
+padding:0px 5px;
+border:1px solid #333;
+color:#fff;
+width:10px;
+text-decoration:none;
+background-color:#333;
+
+}
+
+#nav a.dis{
+display:block;
+padding:0px 5px;
+border:1px solid #333;
+color:#fff;
+text-decoration:none;
+background-color:#FFF;
+}
+/*------------------------*/
+
+#nav2, #nav2 ul{
+margin:0;
+padding:0;
+list-style-type:none;
+list-style-position:outside;
+position:relative;
+line-height:1em; 
+background-color:none;
+z-index:10;
+}
+
+#nav2 a{
+display:block;
+padding:0px;
+border:1px solid #333;
+color:#fff;
+text-decoration:none;
+}
+
+
+#nav2 a:hover{
+background-color:#fff;
+color:#FFF;
+background-color:#333;
+}
+
+#nav2 li{
+float:left;
+position:relative;
+}
+
+#nav2 ul {
+position:absolute;
+display:none;
+width:12em;
+right:0px;
+}
+
+#nav2 li ul a{
+width:12em;
+height:auto;
+float:left;
+background-color:#333;
+
+}
+
+#nav2 ul ul{
+top:auto;
+}	
+
+#nav2 li ul ul {
+left:12em;
+margin:0 0 0 0;
+}
+
+#nav2 li:hover ul ul, #nav2 li:hover ul ul ul, #nav2 li:hover ul ul ul ul{
+display:none;
+}
+#nav2 li:hover ul, #nav2 li li:hover ul, #nav2 li li li:hover ul, #nav2 li li li li:hover ul{
+display:block;
+}
+
+
 #nav li:hover ul ul, #nav li:hover ul ul ul, #nav li:hover ul ul ul ul{
 display:none;
 }
@@ -119,36 +216,72 @@ display:none;
 display:block;
 }
 
-.bgWuS, .bg60, .bg61, .bg62, .bg63, .bg64
-{
-background-color: #C60C30;
-}
-
-.bgLS, .bg30, .bg31, .bg32, .bg33, .bg34, .bg35, .bg36, .bg37  
-{
-background-color:  #E98300;
-}
-
-.bgTI, .bg50, .bg51, .bg52, .bg53, .bg54, .bg55
-{
-  background-color:  #0E905A;
-}
-
-.bgDMI, .bg20, .bg21, .bg22, .bg23  
-{
-  background-color:  #008B95;
-}
-
-.bgHAW1x, .bg1
-{
-  background-color:  #234A89;
-}
-
-.bgHAW2x, .bgALLE, bg
+.bgHAW2x, .bgALLE, .bg , .bgDef
 {
   background-color: #002664;
 }
 
+.bgHAW1x, .bg1, .bg106
+{
+  background-color:  #234A89;
+}
+
+
+
+.bgWuS, .bg60, .bg61, .bg62, .bg63, .bg64
+{
+background-color: #C60C30;   /* WS ROT */
+}
+
+.bgLS, .bg30, .bg31, .bg32, .bg33, .bg34, .bg35, .bg36, .bg37  
+{
+background-color:  #E98300; /* LS ORANGE */
+}
+
+.bgTI, .bg50, .bg51, .bg52, .bg53, .bg54, .bg55
+{
+  background-color:  #0E905A; /* TI GRÜN */
+}
+
+.bgDMI, .bg20, .bg21, .bg22, .bg23  
+{
+  background-color:  #008B95; /* DMI Grün */
+}
+
+
+/* ID der  Fachbibs */
+.bgDMI   /* DMI */
+{
+  background-color:  #008B95;/* DMI Grün */
+}
+
+.bgLS  /* LS */
+{
+  background-color:  #E98300;  /* LS ORANGE */
+}
+
+.bgSP  /* SozArb & Pflege */
+{
+  background-color: #C60C30;  /* WS ROT */
+}
+
+.bgTWI1  /* TWI I */
+{
+  background-color:   #7f2049;  /* WS ROT2 */
+}
+
+.bgTWI2  /* TWI II */
+{
+  background-color:  #0E905A; /* TI GRÜN */
+}
+
+ 
+ 
+
+.bgTD1, .bgTD2, .bgTD3, .bgTD4, .bgTD5, .bgTD6, .bgTD9
+{
+background-color: #efe96d;
+}
 
 
 .lbWuS, .lb60, .lb61, .lb62, .lb63, .lb64, .lb3
@@ -187,7 +320,7 @@ background-color:  #E98300;
 a.icon
 {
   margin: 0px;
-  padding:1px;
+  padding:0px;
   width:32px;
   height:32px;
 }
@@ -269,6 +402,23 @@ a.name:hover,  a.name2:hover
   float:left;
 }
 
+.todoHeader
+{
+  font-size:15px;
+  font-family: Arial, Helvetica, sans-serif;
+ 
+  margin: 10px;
+  margin-top: 2px;
+  padding: 2px;
+  padding-left: 35px;
+  border: 1px solid #000;
+  color:#000;
+  background-image:url(../img/svg/star.svg);
+  background-repeat:no-repeat;
+  font-weight:700;
+}
+
+
 .depName
 {
   font-size:15px;
@@ -317,28 +467,27 @@ a.name:hover,  a.name2:hover
 	font-family: Arial, Helvetica, sans-serif;
 	background-color: #F6F6F6;
 	margin: 0px;
-	margin-left: 10px;
+
 	margin-top: 0px;
-	margin-right: 10px;
 	padding: 5px;
-	padding-left: 68px;
+	padding-left: 15px;
 	border: 1px solid #999;
 	background-image:url(../img/svg/clip.svg);
 	background-repeat:no-repeat;
   background-position: 25px 5px;
-   background-size: 32px;
-    /*   text-shadow:#AAA 1px 1px;
-     */
+  background-size: 32px;
+    /*   text-shadow:#AAA 1px 1px;   */
 }
  
 .SAMeta{
 	font-size:16px;
 	font-family: Arial, Helvetica, sans-serif;
-        margin: 0px;
-	margin-right: 10px;
-	margin-left: 10px;
-        padding: 2px;
+  margin: 0px;
+	margin-right: 0px;
+	margin-left: 0px;
+  padding:0px;
 	padding-left: 20px;
+  height: 35px;
 
 }
 
@@ -359,12 +508,15 @@ a.name:hover,  a.name2:hover
 .SAdozName{
 	font-size:14px;
 	font-family: Arial, Helvetica, sans-serif;
-	margin: 3px;
-	margin-left: 10px;
-	padding: 2px;
-	padding-left: 0px;
+	margin: 0px;
+	margin-left: 0px;
+	padding: 0px;
+	padding-top: 5px;
   color:#FFF;
+  line-height: 95%;
   font-weight:700;
+  height: 30px;
+ display:inline-block;
  
 }
 
@@ -375,7 +527,6 @@ a.name:hover,  a.name2:hover
 	background-color: #FFF;
 	padding: 10px;
 	border: 1px solid #999;
-
 	font-family: Arial, Helvetica, sans-serif;
 	margin: 3px;
 	margin-left: 10px;
@@ -384,69 +535,63 @@ a.name:hover,  a.name2:hover
 
 }
 
-.medVerlag, .medBand, .medAuflage, .medSignatur ,.medJahrgang
-{
-	padding-right:3px;
-	font-size:10px;
-	font-family: Arial, Helvetica, sans-serif;
-	background-color: #FEFEFE;
- 	text-align:right;
-  /*display:  none;*/
-        
-
-}
-
-.medTitel{
-	font-size:13px;
+.medVerlag, .medBand, .medAuflage, .medSignatur ,.medJahrgang, .medTitle , .medTyp, .medAutor , .medSignatur
+{	font-size:12px;
 	font-family: Arial, Helvetica, sans-serif;
 	margin: 1px;
-	margin-left: 0px;
-	padding: 5px;
+
 	padding-left: 0px;
-	font-weight:600;
-	background-color: #000;
- 
- 
+  display:inline-block;
+  white-space:normal;
 }
 
-.medAutor{
-	font-size:13px;
-	font-family: Arial, Helvetica, sans-serif;
-	margin: 1px;
-	margin: 1px;
-	margin-top: 4px;
-	padding: 5px;
-	padding-left: 0px;
-       
+
+
+td{
+
+  margin:0;
+  padding:0;
+  vertical-align: top; 
+  height:100%;
 }
 
+
+
+.medHead{
+ font-size:12px;
+ margin-right: 5px;
+ padding:2px;
+ width: 75px;
+ text-align:  right; 
+ background-color: #AEAEAE;
+ color: #FFF;
+  display:inline-block;
+ 
+
+}
 
 
 .bibStandort, .prebib{
 	margin: 1px;
 	margin: 0px;
 	padding: 0px;
-  height: 40px;
-
+  height: 28px;
   width:1px;
-    display:inline-block
+  display:inline-block;
 }
-
 
 .bibStandort{
 	font-family: Arial, Helvetica, sans-serif;
 	font-size:11px;
   margin: 1px;
-	  margin-left: 0px;
+	margin-left: 0px;
 	padding: 5px;
 	padding-top: 0px;
 	padding-left: 32px;
   width:auto;
   left:30px;
-  float:left;
+
 }
-
-
 
 .state_1  /* new */
 {
@@ -488,19 +633,22 @@ a.name:hover,  a.name2:hover
 
 .status
 { 
-  text-transform:uppercase;
+
   text-align: center;
   display:block;
   float:right;
   margin:0px;
-  margin-left:5px; 
-  top:0px; 
-  height:30px; 
-  padding-left:10px;  
-  padding-right: 10px;
-  padding-top:0px;  
-  font-size:12px; 
-  width: 70px;
+  margin-top:2px; 
+  margin-left:3px; 
+  margin-right:-8px; 
+  margin-bottom:1px; 
+  line-height: 100%;
+
+  padding:0px;  
+  padding-top:5px;  
+  padding-bottom:5px;  
+  font-size:9px; 
+  width: 50px;
   border: solid black 1px;
   background-color: #FFF;
 }
@@ -513,9 +661,9 @@ a.name:hover,  a.name2:hover
   height:30px; 
   float:right;
   margin:0px;
-  margin-left:5px; 
-  padding-left:10px;  
-  padding-right: 10px;
+  margin-left:0px; 
+  padding-left:0px;  
+  padding-right: 0px;
   padding-top:0px;  
 
   background-color: #FFF;
@@ -558,7 +706,16 @@ a.name:hover,  a.name2:hover
 {
   border-color: #F00 ;  
 }
- 
+
+
+.mediaInSA-placeholder
+{
+  width:100%;
+  height: 10px;
+  background-color: #0F0;
+  border: solid #666 1px;
+}
+
 
 
 .mediaInSA
@@ -567,35 +724,39 @@ a.name:hover,  a.name2:hover
   padding-left: 50px; 
   padding-top:0px; 
   padding-bottom:0px;
-  margin:10px; 
-  margin-bottom: 0px; 
- 
+  margin:0px; 
+  margin-bottom: 6px; 
   border-top: solid black 2px;
   border-bottom:  solid #999 2px;
   border-right: solid #666 1px;
-  
-  height: 100%;
-
 }
 
 .medium_1 /* Buch */
 {
-  background-image:url(../img/svg/txtBuch.svg);
+  background-image:url(../img/svg/txtBuch.png);
   background-repeat:repeat-y;
-  background-color: #FAFAFA; 
+  background-color: transparent; 
 }
+
+.medium_2 /* Buch Literaturhinweis */
+{
+  background-image:url(../img/svg/txtLHBuch.png);
+  background-repeat:repeat-y;
+  background-color: #F0F0F0; 
+}
+
 
 
 .medium_4 /* E-Book */
 {
-  background-image:url(../img/svg/txtE-Book.svg);
+  background-image:url(../img/svg/txtE-Book.png);
   background-repeat:repeat-y;
   background-color: #FFF; 
 }
 
 .addMedInSA
 {
-    padding:10px;
+  padding:10px;
 	padding-left:50px; 
 	margin:10px; 
 	background-color: #E0E0E0; 
@@ -636,7 +797,7 @@ a.name:hover,  a.name2:hover
   overflow: auto;
   z-index: 1001;
   position: absolute;
-  width: 500px;
+  width: 600px;
   min-height: 300px;
 }
 /*-- HELP WINDOW --*/
@@ -672,14 +833,38 @@ a.name:hover,  a.name2:hover
 
 
 
+.text{
+	font-size:12px;
+	font-family: Arial, Helvetica, sans-serif;
+  margin: 15px;
+  padding: 5px;
+  padding-left: 115px;
+	border: 1px solid #EEE;
+  background-color: #EEE
+}
+
+.erwebungsvorschlag
+{
+  text-decoration: none ; 
+  font:700 13px; 
+  color:#000;
+ padding:3px;
+}
+
+.erwebungsvorschlag:hover
+{
+  background-color: #FEFEFE;
+}
+
+
 .staffnote{
 	font-size:12px;
 	font-family: Arial, Helvetica, sans-serif;
-        margin: 5px;
-        padding: 5px;
-padding-left: 30px;
+  margin: 5px;
+  padding: 5px;
+  padding-left: 30px;
 	border: 1px solid #EEE;
-  background-color: #A7B7D0;
+  background-color: #ffff99;
 }
 
 
@@ -697,12 +882,9 @@ padding-left: 30px;
   display:block;
   border-top: solid black 1px;
   border-bottom:  solid #999 1px;
- 
-margin: 0px;
-margin-bottom: 8px;
-
+  margin: 0px;
+  margin-bottom: 8px;
 }
-
 
 .medLink{
   font-size:13px;
@@ -715,10 +897,8 @@ margin-bottom: 8px;
   margin:0px; 
   margin-top:2px; 
   margin-bottom:2px; 
-  margin-right: 0px; 
+  margin-right: -7px; 
   border:    #FFF solid 1px; 
-
-
 }
 
 .medLink:hover {
@@ -728,8 +908,6 @@ margin-bottom: 8px;
   color: #000;
   background-color: #FFF;
   border :    #000 solid 1px; 
- 
-
 }
   
 .medLink:focus    {
@@ -745,12 +923,15 @@ a.hitlink_print, a.hitlink_electronic {
   background-color: #FFF;
   color:#666;
 	text-decoration:none;
-	font-size:12px;
+  text-align:  left; 
+  font-size:11px;
 	font-weight:700;
-  padding: 10px;
-  padding-left: 40px;
+  padding: 6px;
+  margin-left:15px;
+  margin-top:30px;
+  margin-right: 5px;
   width: 640px;
-  border: 1px solid #000;
+  border: 1px solid #CCC;
   display: block;	
 }
 
@@ -771,24 +952,36 @@ a.hitlink_electronic
 
 a.hitlink_print:hover, a.hitlink_electronic:hover 
 {
-
-	background-color: #666;
+	background-color: #EEE;
 	color:#FFF;
 }
 
 .mediaListHeader
 {
-	color:#999;
+	color:#FFF;
+  margin-right: 5px;
+  padding:2px;
+  width: 95px;
+  text-align:  right; 
+  background-color: #AEAEAE;
+  display:inline-block;
 }
 
-
+.mediaTxt
+{
+  color:#000;
+  margin-right: 5px;
+  padding:2px;
+  text-align:  left; 
+  background-color: #FAFAFA;
+}
 
 .border2top
 {
-    border-top:solid white 20px; 
-    font-weight: 700;
-    padding-top:10px;  
-    margin:30px;
+  border-top:solid white 20px; 
+  font-weight: 700;
+  padding-top:10px;  
+  margin:30px;
 }
 
 .checkBox

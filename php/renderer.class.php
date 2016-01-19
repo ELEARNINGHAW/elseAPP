@@ -1,5 +1,5 @@
 <?php
-require_once('../php/config.php');
+
 require_once '../smarty/libs/Smarty.class.php';
 
 class Renderer
@@ -9,7 +9,7 @@ var $smarty;
 
 function   Renderer()
 {
-  global $templates_compile_dir;
+  $conf = getConf();
 
   $this->smarty = new Smarty;
   $this->smarty->compile_check = true;
@@ -17,11 +17,10 @@ function   Renderer()
 
   # set paths
   $this->smarty->template_dir = "../templates";
-  $this->smarty->compile_dir = $templates_compile_dir;
-  $this->smarty->config_dir = "../configs";
+  $this->smarty->compile_dir  = $conf['templates_compile_dir'];
+  $this->smarty->config_dir   = "../configs";
   $this->smarty->addTemplateDir('./templates');
 }
-
 
 function smarty_init() {
 }
@@ -46,10 +45,9 @@ function guess_mime_type($fn) {
 }
 
 
-function doRedirect($url = "index.php" ) 
+function doRedirect($url = "index.php?categories=1" ) 
 {
- 	#die ($url);
-  $this->smarty->assign("url", $url);
+    $this->smarty->assign("url", $url);
     header("Location: $url"); 	
 	$this->smarty->display('header.tpl');
 	$this->smarty->display('redirect.tpl');
@@ -57,14 +55,14 @@ function doRedirect($url = "index.php" )
 	exit(0);	
 }
 
-function redirectext($url = "index.php") 
-{ 	$this->smarty->assign("url", $url);
+function redirectext($url = "index.php?categories=1") 
+{ 	
+    $this->smarty->assign("url", $url);
 	$this->smarty->display('header.tpl');
 	$this->smarty->display('redirectext.tpl');
 	$this->smarty->display('footer.tpl');
 	exit(0);	
 }
-
 
 
 function do_template( $template, $kw, $HuF = true ) 
@@ -105,9 +103,6 @@ function displayConfirm($INPUT)
   $this->smarty->display( "confirm.tpl"   );
   $this->smarty->display( "footer.tpl"    );
 }
-
-
-
 
 }
 

@@ -5,18 +5,22 @@ $debug_level  = 1;
 $CONST_letter_header = array ( 'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' , 'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' , 'U' , 'V' , 'W' , 'X' , 'Y' , 'Z' ) ;
 
 $const_FAK['DMI'] = array (20, 21, 22, 23); 
-$const_FAK['LS' ] = array (30,31,32,33,34,35,36,37,430);
-$const_FAK['WS' ] = array (50,51,52,53,54,55);
-$const_FAK['TI' ] = array (60,61,62,63,64,65);
+$const_FAK['LS' ] = array (30,31,32,33,34,35,36,37,39, 430);
+$const_FAK['TI' ] = array (50,51,52,53,54,55);
+$const_FAK['WS' ] = array (60,61,62,63,64);
+
+$const_BIB['DMI'   ] = array (21, 22, 23); 
+$const_BIB['LS'    ] = array (31,32,33,34,35,36,37,39 ,430); 
+$const_BIB['TWI2'  ] = array (61,62,63,64,65); 
+$const_BIB['TWI1'  ] = array (61,62); 
+$const_BIB['SP'    ] = array (63,64); 
+
 
 
 if (!isset ($default_role_id)) $default_role_id = 3;
 
-if ( isset ( $_POST[ 'location_id' ] ) )
-{  $location_id = $_POST[ 'location_id' ] ;
-} else
-{  $location_id = 1 ;
-}
+if   ( isset ( $_POST[ 'location_id' ] ) )  { $location_id = $_POST[ 'location_id' ] ; }
+else                                        { $location_id = 1 ;                       }
 
 ## actions info
 $CONST_actions_info = array (
@@ -33,11 +37,12 @@ $CONST_actions_info = array (
             "collection" => "role=admin,role=edit,role=staff" ,
             "book"       => "role=admin,role=edit,role=staff" ,
             "ebook"      => "role=admin,role=edit,role=staff" ,
-        ) ,
+            "lh_book"      => "role=admin,role=edit,role=staff" ,
+          ) ,
     ) ,
-
+/*
    'b_coll_release'         => array 
-   (                                                                            /* SA wird aufgelöst      (3 -> 5): [ist aufgelöst]    */
+   (                                                                           # SA wird aufgelöst      (3 -> 5): [ist aufgelöst]    #
         'button'            => 'b_coll_release' ,
         'button_label'      => 'Auflösen' ,
         'input'             => array ( "state" => "inactive" ) ,
@@ -51,7 +56,7 @@ $CONST_actions_info = array (
     ) ,
     
     'b_coll_revive'         => array 
-     (                                                                          /*  SA wird erneuert   (5 -> 3): [ist aktiv] und verlängert     */
+     (                                                                          #  SA wird erneuert   (5 -> 3): [ist aktiv] und verlängert     #
         'button'            => 'b_coll_revive' ,
         'button_label'      => 'Erneuern' ,
         'input'             => array ( "state" => "active" ) ,
@@ -64,9 +69,9 @@ $CONST_actions_info = array (
         ) ,
     ) ,
 
-    
+*/    
     'b_coll_meta_edit'      => array 
-    (                                                                           /*  Metadaten des SA bearbeiten              (3 -> 3): [ist aktiv]   */
+    (                                                                           #  Metadaten des SA bearbeiten              (3 -> 3): [ist aktiv]  #
         'button'            => 'b_coll_meta_edit' ,
         'button_label'      => 'Bearbeiten' ,
         'input'             => array ( "mode" => "edit" ) ,
@@ -99,14 +104,13 @@ $CONST_actions_info = array (
         (
             "state"    => array ( "inactive" ) ,
             "mode"     => array ( "edit" , "admin" , "staff" ) ,
-            "item"     => array ( "book",  "ebook" ,"collection"     ) ,
+            "item"     => array ( "book",  "ebook" ,"lh_book"      ) ,
         ) ,
         'acl' => array
         (
-            "collection" => "role=admin,owner=true,role=staff" ,
             "book"       => "role=admin,owner=true,role=staff" ,
             "ebook"      => "role=none,owner=none" ,
-            "user"       => "role=admin" ,
+            "lh_book"      => "role=none,owner=none" ,
         ) ,
     ) ,
     
@@ -138,7 +142,7 @@ $CONST_actions_info = array (
         (
             "state"    => array ( "new" ) ,
             "item"     => array ( "book" ) ,
-            "mode"     => array ( "edit" , "admin" ) ,
+            "mode"     => array ( "edit" , "staff" , "admin" ) ,
         ) ,
     ) ,
         
@@ -195,13 +199,12 @@ $CONST_actions_info = array (
         'input'             => array ( "state" => "open" ) ,
         'button_visible_if' => array 
         (
-            "item"      => array ( "book" ) ,
-            "state"     => array ( "obsolete" ) ,
-            "mode"      => array ( "edit" , "admin" ) ,
+            "item"      => array ( 'book' ) ,
+            "state"     => array ( 'obsolete' ) ,
+            "mode"      => array ( 'edit', 'staff' , 'admin' ) ,
         ) ,
         'acl' => array 
         (
-            "article"   => "role=admin, owner=true" ,
             "book"      => "role=admin, owner=true, role=staff" ,
         ) ,
     ) ,
@@ -216,7 +219,7 @@ $CONST_actions_info = array (
         (
             "item"       => array ( "book" , "article" ) ,
             "state"      => array ( "inactive" ) ,
-            "mode"       => array ( "edit" , "admin", 'staff' ) ,
+            "mode"       => array (  "admin", 'staff' ) ,
         ) ,
         'acl' => array 
         (
@@ -225,8 +228,7 @@ $CONST_actions_info = array (
         ) ,
     ) ,
 
-
-    
+ 
     
     'b_deactivate'            => array 
     (                                                                           /*  E-Book wird deaktiviert            (3 -> 5): [Ist inaktiv]     */
@@ -236,12 +238,13 @@ $CONST_actions_info = array (
         'button_visible_if' => array
         (
             "state"  => array ( "active" ) ,
-            "item"   => array ( "ebook" ) ,
+            "item"   => array ( "ebook", "lh_book" ) ,
             "mode"   => array ( "edit" , "admin" ,'staff' ) ,
         ) ,
         'acl' => array 
         (
             "ebook"  => "owner=true,role=admin, role=staff",
+            "lh_book"  => "owner=true,role=admin, role=staff",
         ) ,
     ) ,
     
@@ -253,13 +256,15 @@ $CONST_actions_info = array (
         'input'             => array ( "state" => "active" ) ,
         'button_visible_if' => array
          (
+
             "state"   => array ( "inactive" ,"delete" ) ,
-            "item"    => array ( "file" , "url" , "ebook" ) ,
+            "item"    => array ("lh_book", "ebook" ) ,
             "mode"   => array ( "edit" , "admin" ,'staff' ) ,
         ) ,
         'acl' => array 
         (
             "ebook"  => "owner=true,role=admin, role=staff",
+            "lh_book"  => "owner=true,role=admin, role=staff",
         ) ,
     ) ,
 
@@ -272,14 +277,14 @@ $CONST_actions_info = array (
         'input'             => array ( "mode" => "edit" ) ,
         'button_visible_if' => array 
         (
-            "item"     => array ( "book" , "ebook" , "user" ) ,
+            "item"     => array ( "book" , "ebook"  , "lh_book"  ) ,
             "mode"     => array ( "edit" , "staff" , "admin" ) ,
         ) ,
         'acl'               => array 
         (
             "book"    => "role=admin,role=staff,owner=true" ,
             "ebook"   => "role=admin,role=staff,owner=true" ,
-            "user"    => "role=admin,           owner=true" ,
+            "lh_book"   => "role=admin,role=staff,owner=true" ,
         ) ,
     ) ,
     
@@ -294,7 +299,7 @@ $CONST_actions_info = array (
         'acl'               => array ( "any" => "role=admin,role=staff" , ) ,
         'button_visible_if' => array 
         (
-            "item" => array (  "book" , "ebook" ) ,
+            "item" => array (  "book" , "ebook", "lh_book" ) ,
             "mode" => array ( "staff" , "admin" ) ,
         ) ,
     ) ,
@@ -309,12 +314,11 @@ $CONST_actions_info = array (
         'button_visible_if' => array 
         (
             "state"  => array ( "delete" ) ,
-            "item"   => array (  "book" , "ebook", "collection" ) ,
+            "item"   => array (  "book" , "ebook", "lh_book" ) ,
             "mode"   => array ( "staff" , "admin" ) ,
         ) ,
     ) ,
-    
-    
+  
     
     /*
      

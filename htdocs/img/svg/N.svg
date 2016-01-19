@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.1 "
-   sodipodi:docname="help.svg">
+   sodipodi:docname="X.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -25,16 +25,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.108541"
-     inkscape:cx="17.460019"
-     inkscape:cy="-4.6146958"
+     inkscape:cx="22.039292"
+     inkscape:cy="19.638901"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="text3838-8"
      showgrid="false"
-     inkscape:window-width="935"
+     inkscape:window-width="938"
      inkscape:window-height="786"
-     inkscape:window-x="609"
-     inkscape:window-y="25"
-     inkscape:window-maximized="0"
+     inkscape:window-x="2254"
+     inkscape:window-y="19"
+     inkscape:window-maximized="1"
      width="32px"
      showguides="true"
      inkscape:guide-bbox="true">
@@ -44,7 +44,7 @@
        id="guide3842" />
     <sodipodi:guide
        orientation="1,0"
-       position="16.023706,22.415185"
+       position="16.563831,15.753644"
        id="guide2991" />
     <sodipodi:guide
        orientation="0,1"
@@ -68,17 +68,8 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-1020.3619)">
-    <rect
-       style="fill:#1a1a1a;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       id="rect15313"
-       width="40"
-       height="37.207474"
-       x="-4.8018608"
-       y="1105.9243"
-       rx="4.1501708"
-       ry="4.6416383" />
     <g
-       transform="matrix(1.1715252,0,0,0.85358813,-3.8708951,-3.5108347)"
+       transform="matrix(1.1715252,0,0,0.85358813,40.41935,0.54009229)"
        style="font-size:29.02571678px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:HAW Frutiger Next Regular;-inkscape-font-specification:HAW Frutiger Next Regular"
        id="text3838">
       <path
@@ -88,7 +79,7 @@
          inkscape:connector-curvature="0" />
       <text
          xml:space="preserve"
-         style="font-size:27.40637398000000100px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:HAW Frutiger Next Regular;-inkscape-font-specification:HAW Frutiger Next Regular"
+         style="font-size:27.40637398px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:HAW Frutiger Next Regular;-inkscape-font-specification:HAW Frutiger Next Regular"
          x="9.3159533"
          y="1049.0311"
          id="text2987"
@@ -98,7 +89,16 @@
            id="tspan2989"
            x="9.3159533"
            y="1049.0311"
-           style="font-weight:bold;-inkscape-font-specification:'HAW Frutiger Next Regular, Bold';fill:#ffffff">N</tspan></text>
+           style="font-weight:bold;fill:#ffffff;-inkscape-font-specification:'HAW Frutiger Next Regular, Bold'">N</tspan></text>
+      <rect
+         style="fill:#1a1a1a;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect15313-1"
+         width="34.143524"
+         height="43.589493"
+         x="-3.470958"
+         y="1189.1019"
+         rx="3.5425365"
+         ry="5.4377961" />
     </g>
     <rect
        style="fill:none;stroke:#ffffff;stroke-width:1.99999988000000010;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
@@ -109,5 +109,19 @@
        y="1021.8834"
        ry="4.6416383"
        rx="4.1501708" />
+    <g
+       transform="matrix(1.1715252,0,0,0.85358813,1.3139276,-3.1556389)"
+       style="font-size:29.02571678px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:HAW Frutiger Next Regular;-inkscape-font-specification:HAW Frutiger Next Regular"
+       id="text3838-8">
+      <g
+         transform="scale(0.85358813,1.1715252)"
+         style="font-size:27.40637398px;line-height:125%;fill:#ffffff;font-family:HAW Frutiger Next Regular;-inkscape-font-specification:HAW Frutiger Next Regular"
+         id="text2987-6">
+        <path
+           d="m 17.004264,1048.8138 -6.742028,-14.9368 0,14.9368 -3.5905632,0 0,-18.2798 5.9198702,0 6.769629,14.9636 0,-14.9636 3.589726,0 0,18.2798 z"
+           style="font-weight:bold;fill:#ffffff;-inkscape-font-specification:'HAW Frutiger Next Regular, Bold'"
+           id="path3010" />
+      </g>
+    </g>
   </g>
 </svg>

@@ -1,118 +1,108 @@
 <?php
-/* index.php
- * - Liste aller SAs
- * - Admin sieht alle SAs         (und kann alle SA bearbeiten)
- * - Dozent sieht nur eigene SAs  (und kann seine SA bearbeiten)
- * - Studi sieht (noch) alle SAs  (und kann NICHTS bearbeiten)
- * 
- * index.tpl
- *  */
-require_once '../php/config.php' ;
+/* --- TODO --- */
+#  --- CHECK PERMISSIONS ---
+# check_permission($INPUT)
 
-require_once '../php/sql.class.php' ;
-require_once '../php/util.class.php' ;
-require_once '../php/renderer.class.php' ;
+require_once('../php/config.php'            );
+require_once('../php/util.class.php'        );
+require_once('../php/collection.class.php'       );
+require_once('../php/media.class.php'       );
 
-#session_unset();
+$util       = new Util( );
+$collection = new Collection( );
+$media      = new Media();
+
+# syntax    # index.php?action=xxx&item=yyy&id=zz
+
+$INPUT = $util->getInput() ;                                #--- GET ALL INPUT (POST/GET) ---
+
+if ( isset ( $_SESSION[ 'work'  ] ) ) $IW = $_SESSION[ 'work' ];
+if ( isset ( $_SESSION[ 'user'  ] ) ) $IU = $_SESSION[ 'user' ];
+if ( isset ( $_SESSION[ 'coll'  ] ) ) $IC = $_SESSION[ 'coll' ];
+
+#deb($INPUT,1);
+#deb($IW);
+#deb($IU,1);
+#deb($_SESSION,1);
+
  
-#require_once '../php/error.php' ;
 
-$sql      = new SQL() ;
-$util     = new Util($sql) ;
-$renderer = new Renderer();
+$issetCategories = isset( $IW[ 'categories'] );
+$issetLetter     = isset( $IW[ 'letter'    ] );
 
 
-$letter_exist = array () ;
-$letter_eq    = array () ;
-
-#$util -> expire () ;  /* pseudo cron: abgelaufene SA bekommen neuen status*/
-
-/* ----------------- LISTE DER INPUTPARAMETER  ------------------ */
-$default = array
-(   "todo" => "view" ,
-    "mode" => "view" ,
-    "categories" => "1" , /* Departments,  1 = ALLE */
-    "letter" => "" ,
-     "item" => "collectionList" ,
-) ;
-
-$INPUT['work']  = array_merge($default, $_GET, $_POST   ); 
-
-if ( isset ( $_SESSION['work'][ 'mode'   ] ) )   {  $INPUT['work'][ 'mode'   ] = $_SESSION['work'][ 'mode'   ] ;   } 
-if ( isset ( $_SESSION['work'][ 'letter' ] ) )   {  $INPUT['work'][ 'letter' ] = $_SESSION['work'][ 'letter' ] ;   } # Sortierbuchstabe
-
-$tpl_var = $INPUT ;
-$tpl_var[ 'html_options' ]['categories'] = $sql -> getAllDepartments() ;                                                     ## Liste aller Departments (Categories)
-$tpl_var[ 'collection' ] = array () ;
-
-
-
-$user = $sql->getUser( $INPUT['work']['mode']);                                                                              ## LISTE mit N Einträgen mit Stammdaten aller registrieter Nutzer 
-
-foreach ( $user as $u )                                                                                                      ## Liste wird mit entsprechenden SAs erweitert 
-{
-  $tpl_var[ 'html_options' ][ 'user' ][ $u[ 'id' ] ] =  getFullUserName($u);                                                 #----- LISTE DER ELSE USER  = $tpl_var[ 'html_options' ][ 'user' ]   
-  $SAlist                                            =  $sql->getSAlist( $u, $INPUT['work']['mode'], $INPUT['work']['categories'] );
-  if ( isset ( $SAlist[ 0 ][ 'surname' ] ) && $letter_eq != substr ( $SAlist[ 0 ][ 'surname' ] , 0 , 1 ) )                    ## Wenn User mindestens ein Semesterapparat hat
-  { $letter = substr ( $SAlist[ 0 ][ 'surname' ] , 0 , 1 );
-    $letter_exist[$letter] = $letter;                                                                                         ## Wird sein Anfangsbuchstabe gespeichert
-  }
-
- $key  = getKey( $u );
-  $tpl_var[ 'collection' ][ $key ] = NULL ;  
-  
-  $substring = strtolower ( $INPUT['work'][ 'letter' ] ) ;
-  
-  if ( $substring )                                                                                                             /* FILTER AUF Anfangsbuchstaben von Dozenten gewählt */
-  {
-    if ( strtolower ( substr ( $u[ 'surname' ] , 0 , 1 ) ) == ( $substring ) )
-    {  if ( ! empty ( $SAlist ) )  {  $tpl_var[ 'collection' ][ $key ] = array_merge ( (array) $tpl_var[ 'collection' ][ $key ] , $SAlist ) ;  }
-    }
-  }
-  else                                                                                                                          /* KEIN FILTER auf Anfangsbuchstabe  -- ALLE Dozenten gewählt */
-  { if ( ! empty ( $SAlist ) )    {  $tpl_var[ 'collection' ][ $key ] = array_merge ( (array) $tpl_var[ 'collection' ][ $key ] , $SAlist ) ;   }
-  }
-  #------------------------------------------------------------------------------------------------------------------- 
+if ( isset ( $IW['b_cancel'] ) )
+{  $IW['last_page'] = 'index.php?categories=1';
 }
 
-#------------------------------------------------------------------------------------------------------------------- 
-/*
-  foreach ( $tpl_var[ 'collection' ] as $k => $v )  # sort collections
-  {
-  usort( $v, "cmp_coll" );
-  $tpl_var[ 'collection' ][ $k ] = $v;
-  }
- */
-
-#------------------------------------------------------------------------------------------------------------------- 
-if ( !isset( $_SESSION[ 'user' ] ) ) { $_SESSION['user'] = NULL; }
-#------------------------------------------------------------------------------------------------------------------- 
-$tpl_var[ 'user' ]           = $_SESSION[ 'user' ] ;
-$tpl_var[ 'actions_info' ]   = $CONST_actions_info ;                                                                           # aus const.php ##===================== ACTION INFO BESSER HIER IM PHP AUSWERTEN, NICHT IM TEMPLATE  
-$tpl_var[ 'letter_output' ]  = $util->getLetterOutput( $CONST_letter_header, $letter_exist ) ;                                                          /* Liste mit allen Anfangsbuchstaben aller Nutzer */
-$tpl_var[ 'source' ]         = 'index.php' ;
-##------------------------------------------------------------------------------------------------------------------- 
-#deb($_SESSION);
-#deb($tpl_var);
-$renderer -> do_template ( 'index.tpl' , $tpl_var , TRUE ) ;
-
-function getFullUserName($u)
+else if ( $issetCategories OR $issetLetter  ) 
 {
-  return $u[ 'forename' ] . " " . $u[ 'surname' ] ; /*  Vorname, Nachname */
-}
-
-function getKey( $u )
-{
-return trim ( $u[ 'haw-account' ] ).'::'.  trim ( $u[ 'surname' ] ) .'::'. trim ( $u[ 'forename' ] ) ;
+  $media ->  getFilterHeader ();
 }
 
 
-function cmp_coll ( $a , $b )                          # callback function for usort() 
-{
-  $key_a = $a[ 'title' ] . $a[ 'collection_no' ] ;
-  $key_b = $b[ 'title' ] . $b[ 'collection_no' ] ;
-  return strcmp ( $key_a , $key_b ) ;
+
+
+else if ( $IW['item'] == 'collection' )
+{# deb($IW);
+  if      ( $IW['action'] == 'b_coll_release'      )  { $collection->setCollectionState_5      ( $IW           );    } /* Zustand 5 = 'AUFGELÖST'                                    */
+  else if ( $IW['action'] == 'b_coll_revive'       )  { $collection->setCollectionState_3      ( $IW           );    } /* Zustand 3 = 'AKTIV'                                        */
+  else if ( $IW['action'] == 'b_delete'            )  { $collection->setCollectionState_6      ( $IW           );    } /* Zustand 6 = 'GELÖSCHT'/Mülleimer                           */
+  else if ( $IW['action'] == 'b_coll_meta_edit' 
+         && $IW['todo'  ] == 'save'                )  { $collection->updateColMetaData         ( $IW , $IU     );    } /* Metadaten des SA updaten                                  */
+  else if ( $IW['action'] == 'b_coll_meta_edit'    )  { $collection->editColMetaData           ( $IW , $IU     );    } /* Anzeigen des Formulars um Metadaten des SA zu bearbeiten  */
+  else if ( $IW['action'] == 'b_new'   
+         && $IW['todo'  ] == 'init'                )  { $collection->saveNewCollection         ( $IW, $IU      ) ;   } /* Metadaten des NEUEN SA speichern / SA anlegen            */
+  else if ( $IW['action'] == 'b_new'               )  { $collection->newCollection             ( $IW           ) ;   } /* Metadaten des NEUEN SA ermitteln/eingeben                */
+  else if ( $IW['action'] == 'show'                )  { $collection->showCollection            ( $IW, $IU      ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
+  else if ( $IW['action'] == 'b_coll_edit'         )  { $collection->editCollection            ( $IW, $IU, $IC ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
+  else if ( $IW['action'] == 'print'               )  { $collection->showCollectionPrintversion( $IW, $IU      ) ;   } /* Printversion des SAs wird angezeigt (nur aktive Medien)   */
+  else if ( $IW['action'] == 'showopen'            )  { $collection->showCollectionLists       ( $IW, $IU      ) ;   } /* Zeigt die Liste der SAs, gefiltert nach deren Zustand     */
+  else if ( $IW['action'] == 'b_kill'              )  { $collection->ereaseCollection          ( $IW, $IU      ) ;   } /* Löscht SA endgültig                                       */
+  else if ( $IW['action'] == 'resort'              )  { $collection->resortCollection          ( $IW, $IC      ) ;   } /* Setzt neue Reihenfolge der Dokumente im SA                 */
+     
+#      sortoder: sortedIDs
 }
 
+else if ( $IW['item'] == 'book' )
+{
+       if ( $IW['action'] == 'b_new'               )  {  $media->showNewBookForm    ( $IW      ); } /* Eingabemaske für Mediensuche anzeigen                           */
+  else if ( $IW['action'] == 'search'              )  {  $media->searchMedia        ( $IW      ); } /* Suchprozess des Mediums wird gestartet                          */
+  else if ( $IW['action'] == 'annoteNewMedia'      )  {  $media->annoteNewMediaForm ( $IW, $IU ); } /* Eingabemaske Metadaten für Buch Annotation anzeigen             */
+  else if ( $IW['action'] == 'init'                )  {  $media->saveNewMedia       ( $IW, $IC , $IU ); } /* Metadaten eines neues Buch speichern                            */
+  else if ( $IW['action'] == 'suggest'             )  {  $media->saveNewMediaSuggest( $IW , $IU);      } /* Metadaten eines Literaturvoschlag speichern                     */
+  else if ( $IW['action'] == 'b_edit'              )  {  $media->editMediaMetaData  ( $IW, $IC ); } /* Formular zur Bearbeitung der Metadaten des Buchs wird gezeigt   */
+  else if ( $IW['action'] == 'save'                )  {  $media->updateMediaMetaData( $IW, $IU ); } /* Update der Metadaten des Buchs                                  */
+  else if ( $IW['action'] == 'b_accept'            )  {  $media->acceptMedia        ( $IW );      } /* angefordertes Buch wird akzeptiert zur Bearbeitung              */
+  else if ( $IW['action'] == 'b_finished'          )  {  $media->doneMedia          ( $IW );      } /* angefordertes Buch steht für die Studies bereit                 */
+  else if ( $IW['action'] == 'b_cancel_order'      )  {  $media->cancelMedia        ( $IW );      } /* Buchbestellung wird storiert                                    */
+  else if ( $IW['action'] == 'b_release'           )  {  $media->releaseMedia       ( $IW );      } /* Buch wird zurückgegeben                                         */
+  else if ( $IW['action'] == 'b_revive'            )  {  $media->reviveMedia        ( $IW );      } /* storierte Buchbestellung wird erneuert                          */
+  else if ( $IW['action'] == 'b_delete'            )  {  $media->deleteMedia        ( $IW );      } /* Buch wird aus SA gelöscht                                       */
+  else if ( $IW['action'] == 'b_kill'              )  {  $media->ereaseMedia        ( $IW, $IU ); } /* Buch wird endgültig aus SA gelöscht                             */
+  else if ( $IW['action'] == 'b_return'            )  {  $media->returnDoneMedia    ( $IW );      } /* Buchrückgabe ist erledigt                                       */
+  else if ( $IW['action'] == 'b_cancel_release'    )  {  $media->cancel_release     ( $IW );      } /* Buch verlängern / Buchrückgabe abbrechen                        */
+  else if ( $IW['action'] == 'purchase_suggestion' )  {  $media->purchase_suggestion( $IW, $IU ); } /* Erwebungsvorschlag (nach 0 Suchtreffern)                        */
+  else if ( $IW['action'] == 'b_new_email'         )  {  $media->showMailForm       ( $IW, $IU, $IC ); } /* Mailformular für Infomail an Nutzer                        */
+}
+
+else if ( $IW['item'] == 'ebook' OR $IW['item'] == 'lh_book' )
+{
+  if      ( $IW['action'] == 'b_edit'              )  {  $media->editMediaMetaData  ( $IW, $IC );   } /* Metadaten des SA bearbeiten                                     */
+  else if ( $IW['action'] == 'annoteNewMedia'      )  {  $media->annoteNewMediaForm ( $IW, $IU );   } /* Eingabemaske Metadaten für Buch Annotation anzeigen             */
+  else if ( $IW['action'] == 'save'                )  {  $media->updateMediaMetaData( $IW, $IU );   } /* Update der Metadaten des Buchs                                  */
+  else if ( $IW['action'] == 'init'                )  {  $media->saveNewMedia       ( $IW, $IC , $IU );   } /* Update der Metadaten des Buchs                                  */
+  else if ( $IW['action'] == 'b_deactivate'        )  {  $media->deactivateMedia    ( $IW      );   } /* Medium Deaktivieren                                             */
+  else if ( $IW['action'] == 'b_activate'          )  {  $media->activateMedia      ( $IW      );   } /* Medium Aktivieren                                               */
+  else if ( $IW['action'] == 'b_delete_ebook'      )  {  $media->deleteMedia        ( $IW      );   } /* Medium wird aus SA gelöscht                                     */
+  else if ( $IW['action'] == 'b_delete'            )  {  $media->deleteMedia        ( $IW      );   } /* Medium wird aus SA gelöscht                                     */
+  else if ( $IW['action'] == 'b_new_email'         )  {  $media->showMailForm       ( $IW, $IU, $IC );   } /* Erwebungsvorschlag (nach 0 Suchtreffern)                        */
+}
+
+else if ( $IW['item'] == 'email' )
+{
+  if      ( $IW['action'] == 'sendmail'            )  {  $media->send_email(  $IW, $IU  );   } /* Metadaten des SA bearbeiten                                          */
+}
 
 ?>
+  

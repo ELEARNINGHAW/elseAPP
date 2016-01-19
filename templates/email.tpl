@@ -1,13 +1,17 @@
-<div class="SAMeta bg{$ci.categories_id}">
-   <a href="action.php?item=collection&collection_id={$ci.id}&item=collection&action=b_coll_edit" style="text-decoration: none;"><div class="SAtitel" >{$ci.title}</div></a> 
-</div>
+   
+ <h3 style="margin:10px; padding:10px; color: #FFF; background-color: #800000;">
+{$ci.title} : {$documentName } : Email
+   <a style="float:right;" href="index.php?item=collection&action=show&collection_id={$coll.title_short}">
+  <img  class="icon" style="margin-top:-4px;" title="Zurück" src="img/svg/chevron-left_w.svg" />
+</a>
+</h3> 
 
 
-{if $link == ''}  
+{if $linkTxt == ''}  
   <br />
   <div  style="margin:10px; font-family:Arial, Helvetica, sans-serif;" >An: {$toFirstName} {$toName} &lt;{$toEmail}&gt; </div>
 <div  style="margin:10px; font-family:Arial, Helvetica, sans-serif;" >Betreff: Ihr ELSE Semesterapparat </div>
-<form  action="action.php" >
+<form  action="index.php" >
 
 <input  name="to"              type="hidden"  value="{$toEmail}"/>
 <input  name="from"            type="hidden"  value="{$fromEmail}"/>
@@ -22,12 +26,16 @@ Ihr Semesterapparat: {$collectionName }
 Ihr Dokument: {$documentName }
 
 
+{$doc_info.notes_to_staff}
  
 
 Mit freundlichen Gr&uuml;&szlig;en
-
 {$fromFirstName} {$fromName}
+
 HIBS-Serviceteam 
+{$fromEmail}
+
+
 
 </textarea>
 <br />
@@ -41,7 +49,7 @@ HIBS-Serviceteam
   <br />
   <br />
   
-  <h1 style="text-align: center ">{$link}</h1>
+  <h1 style="text-align: center"><a style="text-decoration: none;" href="{$url}">{$linkTxt}</a></h1>
   
   
 {/if}

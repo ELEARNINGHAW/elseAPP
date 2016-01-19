@@ -1,25 +1,44 @@
 {assign var="edit_mode"   value="0"} 
 {assign var="staff_mode"  value="0"}
-
-{if $user.role_name == "edit"}   {assign var="edit_mode"  value="1"}                                      {/if}
-{if $user.role_name == "staff"}  {assign var="edit_mode"  value="1"} {assign var="staff_mode" value="1"}  {/if}
-{if $user.role_name == "admin"}  {assign var="edit_mode"  value="1"} {assign var="staff_mode" value="1"}  {/if}
-
+{if $user.role_name == "edit"  OR  $user.role_name == "staff"  OR  $user.role_name == "admin" } {assign var="edit_mode"  value="1"} {/if}
+{if $user.role_name == "staff" OR  $user.role_name == "admin"                                 } {assign var="staff_mode" value="1"} {/if}
+<div class="column">
 {foreach key=cid item=ci from=$collection_info}
-{if $work.collection_id != "" OR  $work.action == 'showopen'}
- <div class="SAMeta bg{$ci.categories_id}">
-   <a href="action.php?item=collection&collection_id={$ci.id}&item=collection&action=b_coll_edit" style="text-decoration: none;"><div class="SAtitel" >{$ci.title}</div></a> 
-   <div class="SAdozName">von:   {$ci.forename|escape} {$ci.surname|escape}  /  {$ci.department}  </div>
-    <a target="_blank" href="action.php?item=collection&collection_id={$work.collection_id|escape:"url"|escape}&amp;action=show&todo=print&amp;state={$work.state|escape:"url"|escape}&amp;type={$work.type|escape:"url"|escape}&amp;sort_crit={$work.sort_crit|escape:"url"|escape}"><img src="img/svg/print_w.svg"    width="32"  height="32" style="position:relative; float:right; padding-right: 2px; margin:2px; margin-right:-1px; top:-40px;" title="Druckversion"   /></a>
-      {if ($staff_mode and $edit_mode) }
-        <!-- a href="#" title="Alle inaktiven Dokumente entfernen"               >                                                                                                                                                                                <img src="img/svg/flash_w.svg"     width="32"  height="32" style="position:relative; float:right;  margin:2px; top:-40px;" /></a -->
-      {/if}
-      {if ($edit_mode or $staff_mode)  }   
-        <a href="action.php?item=collection&action=b_coll_meta_edit&collection_id={$ci.id}&redirect=SA" title="Bearbeiten der Allgemeinen Infos des Semesterapparats">                                                                           <img src="img/svg/settings_w.svg"  width="32"  height="32" style="position:relative; float:right;  margin:2px; top:-40px;" /></a>
-      {/if}
-      {if $edit_mode and $work.collection_id != "" }
-        <a href="action.php?collection_id={$ci.id}&item=book&action=b_new&b_new=neu+anlegen"  title="Neues Buch dem Semesterapparat hinzufügen"  >                                                                                               <img src="img/svg/addBook_w.svg"   width="32"  height="32" style="position:relative; float:right;  margin:2px; top:-40px;" /></a>
-      {/if}
+  {if $ci.title_short != "" OR  $work.action == 'showopen'}
+  <div class="SAMeta bgDef bg{$ci.location_id}">
+  {if ( $staff_mode )}   
+    <span> 
+      <a class="SAdozName" href="index.php?item=collection&amp;action=show&amp;collection_id={$ci.title_short}&amp;ro={$user.role_encode}" title="Bearbeiten der Allgemeinen Infos des Semesterapparats">  
+      {$ci.title}<br/>von: {$ci.user_info.forename|escape} {$ci.user_info.surname|escape}</a>
+    </span>
+  {else}
+    <div class="SAdozName">ELSE<br />Der elektronische Semesterapparat </div>
+  {/if}
+  
+
+  {if ($work.todo != "print" AND ($edit_mode OR $staff_mode)) }
+  <a target="help_win" class="modalLink" href="#helpit" title="Weitere Informationen über ELSE"                  ><img src="img/svg/help.svg"        width="32"  height="32" style="position:relative; float:right; padding-right: 2px; margin:2px; margin-right:-1px;"  /></a>
+
+  <a target="_blank" href="index.php?item=collection&amp;collection_id={$ci.title_short|escape:"url"|escape}&amp;action=show&amp;todo=print&amp;ro={$user.role_encode}">
+  <img src="img/svg/print_w.svg"    width="32"  height="32" style="position:relative; float:right; padding-right: 2px; margin:2px; margin-right:-1px;" title="Druckversion"   /></a>
+
+  {if ($edit_mode OR $staff_mode)}   
+    <a href="index.php?item=collection&amp;action=b_coll_meta_edit&amp;collection_id={$ci.title_short}&amp;redirect=SA&amp;ro={$user.role_encode}" title="Bearbeiten der allgemeinen Infos des Semesterapparats">
+    <img src="img/svg/settings_w.svg"  width="32"  height="32" style="position:relative; float:right;  margin:2px; " /></a>
+  {/if}
+  {if $edit_mode AND $ci.title_short != "" }
+    <a href="index.php?collection_id={$ci.title_short}&amp;item=book&amp;action=b_new&amp;b_new=neu+anlegen&amp;ro={$user.role_encode}"  title="Neues Medium (Buch, E-Book,...) dem Semesterapparat hinzufügen"  >
+    <img src="img/svg/addBook_w.svg"   width="32"  height="32" style="position:relative; float:right;  margin:2px; " /></a>
+  {/if}
+
+  {else}
+  <a target="_blank" href="#"  onclick="window.print(); return false;">
+   <img src="img/svg/print_w.svg"    width="32"  height="32" style="position:relative; float:right; padding-right: 2px; margin:2px; margin-right:-1px;" title="Zum Drucker senden"   /></a>
+  {/if}
+
+  
+  
+  
   </div>
 {/if}
 
@@ -27,74 +46,66 @@
   <div class="studihint">  <div style="color:red;" >Hinweise zur Vorlesung</div>   {$ci.notes_to_studies|replace:"\\":" "|nl2br} </div>
 {/if}
 
+{if isset($ci.document_info)}
 {foreach from=$ci.document_info item=di} 
   {if $edit_mode == 0 AND  $di.state_id == 3  OR $edit_mode == 1 AND $di.state_id != 6 OR $work.action == 'showopen' }
+   {if $work.document_id == $di.id} {assign var="current" value="currentDoc"} {else}  {assign var="current" value="XXX"} {/if}
 
-  <div class="mediaInSA medium_{$di.doc_type_id}" > 
-    <a title="Buch Im Onlinekatalog anzeigen" class="medLink .s_standard state_{$di.state_id}" href="{$di.url}" target="_blank" onclick="return -1"> 
-      {if $di.title  != "" }     {$di.title}     {else}  ohne Titel  {/if}
-      <div class="medAutor">Autor:{if $di.author != "" } {$di.author} {/if} </div>
-    <div class="medVerlag2"> 
-      {if $di.signature  != "" } <span class="medSignatur" >              {$di.signature|utf8_decode|escape}                             </span>{/if}
-      {if $di.publisher  != "" } <span class="medVerlag"   >               {$di.publisher|escape|regex_replace:"/[,. ]*$/":""            }</span> {/if}
-      {if $di.year       != "" } <span class="medJahrgang" >               {$di.year|escape|regex_replace:"/[,. ]*$/":""                 }</span> {/if}
-      {if $di.volume     != "" } <span class="medBand"     >          Band:{$di.volume|utf8_decode|escape|regex_replace:"/[,. ]*$/":""   }</span>{/if}
-      {if $di.journal    != "" } <span class="medAuflage"  >              {$di.journal|escape|regex_replace:"/[,. ]*$/":""              } </span>{/if}
-    </div>
-    </a>
-
-    
+<div  id="{$di.id}" class="mediaInSA medium_{$di.doc_type_id} {$current} " >  
+   <a name="{$di.id}" style="position:relative; top:-220px;"></a>
+    <a title="Buch Im Onlinekatalog anzeigen" class="medLink .s_standard state_{$di.state_id}" href="https://kataloge.uni-hamburg.de/CHARSET=ISO-8859-1/DB=2/LNG=DU/CMD?ACT=SRCHA&amp;IKT=12&amp;SRT=YOP&amp;TRM={$di.ppn}" target="_blank" onclick="return -1"> 
+      <table>
+    {if $di.title          != "" } <tr><td><div class="medHead">Titel:  </div></td><td> <div class="medTitle"  >{$di.title}                        </div>{if $di.year   != "" } <div class="medJahrgang" >{$di.year|escape|regex_replace:"/[,. ]*$/":""}</div> </td></tr> {/if}  {else}  ohne Titel</td></tr> </div> {/if}
+    {if $di.physicaldesc   != "" } <tr><td><div class="medHead">Format: </div></td><td><div class="medTyp"    >{$di.doc_type|escape} / {$di.physicaldesc|escape}         </div></td></tr>{/if}
+    {if $di.author         != "" } <tr><td><div class="medHead">Autor:  </div></td><td><div class="medAutor"  >{$di.author}                       </div></td></tr>{/if}
+    {*if $di.signature      != "" } <br /><span class="medHead">Signatur: </span><span class="medSignatur" >{$di.signature|escape}</span>{/if*}
+      </table>
+  </a>
     {if $di.notes_to_studies != "" }   <div class="medhint">Zur Beachtung: {$di.notes_to_studies|nl2br}  </div> {/if}
-
-    <span class="prebib">  </span>
-    
-    <div class="bibStandort"> 
-      {if $di.location_id != "" and $di.doc_type_id == 1 }
-        {if $di.shelf_remain != 1}  {$fachbib[ $di.location_id ].description|escape},<br/> im Regal "Semesterapparate" 
-        {else}                                    Im Buchbestand der Fachbibliothek<br/> (wie im Online-Katalog angegeben).
+  <div class="bibStandort"> 
+      {if $di.location_id != "" }
+        {if $di.doc_type_id == 1 OR $di.doc_type_id == 3}{* Buch im SA  / LitHinweis Buch / CD Rom *}
+          {if $di.shelf_remain != 1}  {$fachbib[ $ci.location_id ].description|escape},<br/> im Regal "Semesterapparate"   {else} Im Buchbestand der Fachbibliothek<br/> (wie im Online-Katalog angegeben). {/if}
         {/if}
+        {if  $di.doc_type_id == 2 }{* LitHinweis Buch  *}
+            Im Buchbestand der Fachbibliothek<br/> (wie im Online-Katalog angegeben).  
+        {/if}
+
+        {if $di.doc_type_id == 4 }{* PDF *}
+               Im Online-Katalog,<br/>  erreichbar nur aus dem HAW-Netz (oder VPN).
+       {/if}
       {/if}
     </div>
-
-    {if ($staff_mode or $edit_mode) and ($user.role_name != "print") }  
-          <div class="status s_{$di.state_id}" />{$media_state[$di.state_id].description}</div>
-
+    
+    {if ($staff_mode or $edit_mode) and ($work.todo != "print") }  
+    <div class="status s_{$di.state_id}" />{$media_state[$di.state_id].description}</div>
     <div class="iconlist"> 
       {include file="action_button_bar.tpl" 
-    mode        = $user.role_name 
-    item        = $doc_type[$di.doc_type_id].name
-    state       = $media_state[$di.state_id].name
-    collection_id      = $work.collection_id 
-    document_id = $di.id
-    url         = $di.url
-    protected   = $di.protected
-     }
+    role_encode    = $user.role_encode 
+    mode           = $user.role_name 
+    item           = $di.item
+    state          = $media_state[$di.state_id].name
+    collection_id  = $ci.title_short 
+    document_id    = $di.id
+    url            = $di.url
+    protected      = $di.protected
+    ppn            = $di.ppn
+    }
     </div> 
-
   {/if}
-  {if ($staff_mode or $edit_mode) and ($di.state_id == 1 or $di.state_id == 2) } {* new or open  *}
-    {if $di.notes_to_staff != "" }
+  {if ($staff_mode or $edit_mode) AND ($di.notes_to_staff != "") and  ($di.state_id == 1 or $di.state_id == 2 or $di.state_id == 9) } {* new or open  *}
       <div class="staffnote"> {$di.notes_to_staff|escape|nl2br} </div>
-    {/if}
   {/if}
-  {/if}
+
 </div>
-{/foreach}
-
-
-
-
-{if ($staff_mode or $edit_mode) and (isset ($di.num_email)) }  
-  Es 
-  {if $di.num_email ==  1 }  ist eine E-Mail
-  {else}                                   sind {$di.num_email|escape} E-Mails 
-  {/if}                                    vorhanden.
-  {include file="action_button.tpl" action="view_email" }
-{/if}
-<!---->
+  {/if}
+  {/foreach}
+  {/if}
 
 {foreachelse}              
   <div style="padding:10px; margin:10px; margin-top:0px; color: #000; font-size: 14px; border: solid #AAA 2px; background-color:#efe96d; ">
     Es ist kein  Dokument  vorhanden.
   </div>
 {/foreach}
+</div>  
+

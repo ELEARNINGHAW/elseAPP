@@ -4,92 +4,93 @@ session_start();
 #set_include_path ( '../smarty/libs' . PATH_SEPARATOR . get_include_path () ) ;
 
 require_once '../php/const.php' ;
-$serverName = $_SERVER[ 'SERVER_NAME' ];
 
+function getConf()
+{
+$serverName = $_SERVER[ 'SERVER_NAME' ];
 
 if ($serverName == 'lernserver.el.haw-hamburg.de' )
 {
-  ## MySQL Database parametes
-  $db_host = "localhost";		
-  $db_name = "semapp";	
-  $db_user = "semapp";
-  $db_pass = "semapp";
- 
-  #$sitebase = "http://semapp.bbt.haw-hamburg.de";
-
-  ## Directory for storing uploaded documents 
-  $upload_base_dir="/home/ELSE/upload/";
-  
-  ## Directory for storing compiled HTML teplates
-  $templates_compile_dir = "/home/ELSE/template/";
-
-  $canYAZ = true;
+  $conf['db_host']               = "localhost";		                     ## MySQL Database parametes
+  $conf['db_name']               = "semapp";	
+  $conf['db_user']               = "semapp";
+  $conf['db_pass']               = "semapp";
+  $conf['upload_base_dir']       ="/home/ELSE/upload/";                ## Directory for storing uploaded documents 
+  $conf['templates_compile_dir'] = "/home/ELSE/template/";             ## Directory for storing compiled HTML teplates
+  $conf['canYAZ']                = true;
 }
   
-if ($serverName == 'localhost' || $serverName == '127.0.0.1' )
-{ 
-  ## MySQL Database parametes
-  $db_host = "localhost";		
-  $db_name = "semapp";	
-  $db_user = "semapp";
-  $db_pass = "semapp";
-
-  #$sitebase = "http://semapp.bbt.haw-hamburg.de";
-  
-  ## Directory for storing uploaded documents 
-  $templates_compile_dir ="C:/Users/semapp/upload/";  
-  
-  ## Directory for storing compiled HTML teplates
-  $templates_compile_dir ="C:/Users/semapp/templates/";
+else if ($serverName == 'localhost' OR $serverName == '127.0.0.1' )
+{  
+  $conf['db_host']               = "localhost";		                      ## MySQL Database parametes
+  $conf['db_name']               = "semapp";	
+  $conf['db_user']               = "semapp";
+  $conf['db_pass']               = "semapp";
+  $conf['templates_compile_dir'] ="C:/Users/semapp/upload/";            ## Directory for storing uploaded documents 
+  $conf['templates_compile_dir'] ="C:/Users/semapp/templates/";         ## Directory for storing compiled HTML teplates
 }
 
+$conf['opac_url']                = "https://kataloge.uni-hamburg.de/CHARSET=ISO-8859-1/DB=2/LNG=DU/CMD?ACT=SRCHA&IKT=12&SRT=YOP&TRM=";  ## URL of the online library catalogue
+$conf['default_email_from']      = "Semesterapparate HIBS HAW Hamburg <hibs.mailservice@haw-hamburg.de>";
+$conf['default_email_subject']   = "[HIBS] Ihr Semesterapparat";
 
-## URL of the online library catalogue
+$conf['debug_level']             = 0;  ## Debugging level (0 .. 99)
+$conf['default_role_id']         = 3;  ## Default Role id for new users. 
+$conf['default_location_id']     = 1;  # Default Location id for new document collections
+
 #$opac_url = "https://kataloge.uni-hamburg.de/CHARSET=ISO-8859-1/DB=2/LNG=DU/CMD?ACT=SRCHA&IKT=12&SRT=YOP&TRM=";
 #$opac_url = "https://hhas21.rrz.uni-hamburg.de/DB=2/LNG=DU/CMD?ACT=SRCHA&IKT=12&SRT=YOP&TRM=";
 #$opac_url = "http://kataloge.uni-hamburg.de/DB=1/";
-$opac_url = "https://kataloge.uni-hamburg.de/CHARSET=ISO-8859-1/DB=2/LNG=DU/CMD?ACT=SRCHA&IKT=12&SRT=YOP&TRM=";
 
 
+#getAllDocTypes()  
 
 
-## The web server needs read and write permission on these 
-## directories.  For security reasons, the directories should 
-## be located *outside* the webserver's document root.
+return $conf;
+}
 
-# E-Mail parameters
-
-$default_email_from 	= "Semesterapparate HIBS HAW Hamburg <hibs.mailservice@haw-hamburg.de>";
-$default_email_subject  = "[HIBS] Ihr Semesterapparat";
-
-
-## Z39.50 configuration (library catalogue search)
-# Enable the search function for the library catalogue.
-# The catalogue must have a z39.50 interface for this to work.
-
-#$use_z3950 = FALSE;
-#$use_z3950 = TRUE;
-
-#$z_host = "z3950.gbv.de";
-#$z_port = "20010"; #ISO-8859-1 search
-#$z_port = "20012"; #UTF-8 search
-#$z_user = "999";
-#$z_pass = "abc";
-#$z_db   = "hh_haw";
-
-#####  these settings do not need to be changed
-
-## Debugging level (0 .. 99)
-$debug_level = 0;
-#$debug_level = 200;
-
-## Default Role id for new users.  
-$default_role_id = 3;
-
-# Default Location id for new document collections
-$default_location_id = 1;
-
+function getDocType($book)
+{
  
+  if (isset ($book['physicaldesc']) AND !isset ($book['state_id'] )  ) 
+  {                                                                                               $book['state_id'   ]  =  1 ;
+    if(      stristr(  $book['physicaldesc']  , 'Online') == TRUE ) { $book['doc_type_id']  = 4;  $book['state_id'   ]  =  3;}  
+    else if( stristr(  $book['physicaldesc']  , 'CD-ROM') == TRUE ) { $book['doc_type_id']  = 3;  $book['state_id'   ]  =  1;}
+  } 
+
+  if (!isset ($book['doc_type_id'])) 
+  {
+    $book['doc_type_id'] = 1;
+  }
+  
+  if( $book['doc_type_id']  == 4 ) 
+  { 
+    $book['doc_type'   ]  = "electronic";   #  E-BOOK            
+    $book['item'       ]  = 'ebook'; 
+  }
+  else if( $book['doc_type_id']  == 3 )     # CD-ROM
+  {
+    $book['doc_type'   ]  = "cd-rom";
+    $book['item'       ]  = 'book'; 
+   /* Status: NEU BESTELLT  */
+  }
+  else if( $book['doc_type_id']  == 2 )      # BUCH als Literaturhinweis
+  {
+    $book['doc_type'   ]  = "print";
+    $book['item'       ]  = 'lh_book'; 
+  }
+  else                                       # BUCH im Semesterapparat
+  {
+    $book['doc_type'   ]  = "print";
+    $book['item'       ]  = 'book'; 
+    $book['doc_type_id']  =  1;               
+  }
+ 
+  return $book;
+}
+
+
+
 
 function deb($obj, $kill=false) {   echo "<pre>";  print_r ($obj);  echo "<pre>";  if($kill){die();} }
 

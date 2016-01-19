@@ -1,42 +1,49 @@
 {config_load file='site.conf'}
 {config_load file='site.conf' section='new_book'}
 
-<a style="text-decoration: none; " href="action.php?item=collection&mode=edit&state=&collection_id={$colData[$work.collection_id].id}&document_id={$colData[$work.collection_id].id}">
-  <h3 style="margin:10px; padding:10px; margin-bottom: 0px;  margin-top: 0px; color: #FFF; background-color: #990000;">{$colData[$work.collection_id].title}</h3></a>
+  
+  
+ <h3 style="margin:10px; padding:10px; color: #FFF; background-color: #800000;">
+{$colData[$coll.title_short].title} : Katalogsuche
+   <a style="float:right;" href="index.php?item=collection&action=show&collection_id={$coll.title_short}">
+  <img  class="icon" style="margin-top:-4px;" title="Zurück" src="img/svg/chevron-left_w.svg" />
+</a>
+</h3>
+  
 
 {if $page == "1"}                      {* ------- Eingabefelder Titel/Autor/Signatur für die Buch-Suchmaske ----------- *}
 
-  {if $searchHits == 1}
-   <h3 style="margin:10px;  margin-bottom: 0px;  margin-top: 0px; padding:10px; color: #FFF; background-color: #600000;">Katalogsuche </h3>
-  {elseif $searchHits < 1}
-  <h3 style="margin:10px; margin-bottom: 0px; margin-top: 0px; padding:10px; color: #FFF; background-color: #600000;">Suchergebniss: {$searchHits} Treffer</h3>
-  <div style="margin:10px;  padding:10px; border:solid 1px black;"><span style= "color: red;">
-      <b>Es wurde kein Eintrag im Katalog mit dem Suchbegriff [{$book.title} {$book.author} {$book.signature} ] gefunden</b></span>
-    <p>Sie k&ouml;nnen nun: 
-    <ol type="A">
-      <li>die Suche erneut nutzen, oder </li> 
-      <li>einen Bestellwunsch über einen Erwerbungsvorschlag vornehmen.<br/> Die Bearbeitung kann 2-3 Wochen dauern.
-    <br />
-    <br />
-    <a  style =" text-decoration: none ; font:700 14px; color:#000; background-color: #EFEFEF; padding:3px; "  href="http://localhost/ELSE/htdocs/action.php?item=book&action=purchase_suggestion&collection_id={$colData[$work.collection_id].id}">Erwerbungsvorschlag</a>
-      </li>
-    </ol>
-    
+  {if $searchHits < 1}
+  <h3 style="margin:10px; margin-bottom: 0px; margin-top: 0px; padding:10px; color: #FFF; background-color: #600000;">Suchergebniss: {$searchHits} Treffer  für {$book.title}{$book.author}{$book.signature}</h3>
+  <div style="margin:10px;  padding:0px;"> 
+    Sie k&ouml;nnen nun: 
   </div>
+
+  <div style="margin:10px; margin-bottom: 10px; padding:10px;  padding-bottom:20px;  text-height: 150%; border:solid 1px black; ">
+  <div style="font-size:35px; float:left; padding:10px; margin:5px; display:block;   background-color:#EFEFEF">A</div>
+  Einen Bestellwunsch über einen Erwerbungsvorschlag vornehmen.<br/><br> Die Bearbeitung kann 2-3 Wochen dauern.<br><br>
+  <div style="display:block; padding:4px; margin-left:55px; width:450px; "  >
+  <a style ="text-decoration: none;"  href="index.php?item=book&action=purchase_suggestion&collection_id={$colData[$coll.title_short].id}"><div style="border:1px solid black; font:700 14px; color:#000; background-color: #EFEFEF; padding:3px; " >Zum Erwerbungsvorschlag</div></a>
+  </div>
+  </div> 
+    
+    
   {/if}
   
   <div style="margin:10px; margin-bottom: 0px; padding:10px; border:solid 1px black; ">
+    
+ {if $searchHits < 1}
+   <div style="font-size:35px; float:left; padding:10px; margin:5px; margin-bottom:100px;display:block;   background-color:#EFEFEF">B</div>Eine neue Suche starten:<br><br>
+ {/if}
   Bitte geben Sie in dieser Suchmaske <b>Titel</b> und / oder <b>Autor</b> und / oder <b>Signatur</b> ein.<br><br>
   Das Buch wird dann im HIBS Online-Katalog gesucht.<br><br>
   Bei mehreren Treffern erscheint eine Auswahlliste. Es werden maximal 50 Treffer angezeigt.<br><br>
   Ihre Auswahl wird  &uuml;bernommen und erscheint in Ihrer Literaturliste. <br><br>
-  </div>
 
-  <div style="margin:10px; margin-top:0px;  padding:10px; border:solid 1px black; ">
-  <form action="action.php" method="post">
+  <form action="index.php" method="post">
   <input type="hidden" name="action" value="search" >
   <input type="hidden" name="item" value="book">
-  <input type="hidden" name="collection_id" value="{$colData[$work.collection_id].id|escape}">
+  <input type="hidden" name="collection_id" value="{$colData[$coll.title_short].id|escape}">
 
   <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
    <tbody>
@@ -45,21 +52,14 @@
     <tr><td class="head1">Signatur:                                            </td><td><input class="txtin"  size="80" value="{$book.signature|escape}" name="signature"></td></tr>
    </tbody>
   </table>
-  <input style="float: right;" name="b_ok" value="&nbsp;&nbsp;&nbsp;OK&nbsp;&nbsp;&nbsp;" type="submit">
-  <input style="float: right;" name="b_cancel" value="Abbrechen" type="submit">
+  <input style="float: right;" name="b_ok" value="&nbsp;&nbsp;&nbsp;SUCHE&nbsp;&nbsp;&nbsp;" type="submit">
   </form>
 {/if}
 
 
-
-
-
-
 {if $page == "2"}                       {* ------- Tefferliste der Suche   ----------- *}
-  <h3 style="margin:10px; margin-bottom: 0px; margin-top: 0px; padding:10px; color: #FFF; background-color: #600000;">Suchergebniss: {$searchHits} Treffer</h3>
-  <div style="margin:0px; margin-left:10px; margin-right:10px; padding:10px; font-weight: bold; color:#990000; border: 1px solid #444;">Bitte w&auml;hlen Sie das gew&uuml;nschte Buch aus der Liste aus </div>
-  <table style="margin-left:10px; text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-     <tbody>
+  <h3 style="margin:10px; margin-bottom: 0px; margin-top: 0px; padding:10px; color: #FFF; background-color: #600000; font-size: 11px; ">Suchergebniss: {$searchHits} Treffer</h3>
+  <div style="margin:0px; margin-left:10px; margin-right:10px; padding:10px; font-weight: bold; color:#990000; border: 1px solid #444; font-size: 11px; ">Bitte w&auml;hlen Sie das gew&uuml;nschte Medium aus der Liste aus </div>
 
       {foreach from=$books_info item=b}        
         {assign var="item"  value=""}
@@ -68,30 +68,34 @@
           {if ($b.physicaldesc == 'electronic' )} {assign var="item"  value="ebook"} {/if}
         {/if}
 
-      {if (isset ( $b.title  ) AND $b.title != "" )}
-          <tr valign="top"><td  class="border2top"  colspan="3"></td></tr>
-          <tr valign="top">
-           <td class="mediaListHeader" style="padding: 10px;padding-left:3px;">Titel:</td>
-           <td>      <a class="hitlink_{$b.physicaldesc}" href="action.php?ppn={$b.ppn}&item={$item}&action=annoteNewMedia&collection_id={$colData[$work.collection_id].id} ">{$b.title|escape} <span class="mediaListHeader">({$b.physicaldesc|escape})</span></a></td>
-        </tr>
-      {/if}
-      {if (isset ( $b.author       ) AND $b.author       != "" )} <tr valign="top"><td class="mediaListHeader">Autor:    </td><td>{$b.author|escape}      </td></tr>{/if}
-      {if (isset ( $b.signature    ) AND $b.signature    != "" )} <tr valign="top"><td class="mediaListHeader">Signatur: </td><td>{$b.signature|escape}   </td></tr>{/if}
-      {if (isset ( $b.physicaldesc ) AND $b.physicaldesc != "" )} <tr valign="top"><td class="mediaListHeader">Medienart:</td><td>{$b.physicaldesc|escape}</td></tr>{/if}
-      {if (isset ( $b.edition      ) AND $b.edition      != "" )} <tr valign="top"><td class="mediaListHeader">Edition:  </td><td>{$b.edition|escape}     </td></tr>{/if}
-      {if (isset ( $b.publisher    ) AND $b.publisher    != "" )} <tr valign="top"><td class="mediaListHeader">Verlag:   </td><td>{$b.publisher|escape}   </td></tr>{/if}
-      {if (isset ( $b.year         ) AND $b.year         != "" )} <tr valign="top"><td class="mediaListHeader">:         </td><td>{$b.year|escape}        </td></tr>{/if}
-      {if (isset ( $b.volume       ) AND $b.volume       != "" )} <tr valign="top"><td class="mediaListHeader">:         </td><td>{$b.volume|escape}      </td></tr>{/if}
-      </a>
+   <a class="hitlink_{$b.doc_type}" href="index.php?ppn={$b.ppn}&item={$b.item}&action=annoteNewMedia&collection_id={$colData[$coll.title_short].id} ">
+  <table>
+     {if (isset ( $b.title         ) AND $b.title        != "" )}<tr><td><div class="mediaListHeader">Titel:    </div></td><td><span class="mediaTxt">{$b.title|escape}                           </span></td></tr>{/if}
+      {if (isset ( $b.author       ) AND $b.author       != "" )}<tr><td><div class="mediaListHeader">Autor:    </div></td><td><span class="mediaTxt">{$b.author|escape}                          </span></td></tr>{/if}
+      {if (isset ( $b.signature    ) AND $b.signature    != "" )}<tr><td><div class="mediaListHeader">Signatur: </div></td><td><span class="mediaTxt">{$b.signature|escape}                       </span></td></tr>{/if}
+      {if (isset ( $b.doc_type     ) AND $b.doc_type     != "" )}<tr><td><div class="mediaListHeader">Art:      </div></td><td><span class="mediaTxt">{$b.doc_type|escape}                        </span></td></tr>{/if}
+      {if (isset ( $b.physicaldesc ) AND $b.physicaldesc != "" )}<tr><td><div class="mediaListHeader">Format:   </div></td><td><span class="mediaTxt">{$b.physicaldesc|escape}                    </span></td></tr>{/if}
+      {if (isset ( $b.edition      ) AND $b.edition      != "" )}<tr><td><div class="mediaListHeader">Edition:  </div></td><td><span class="mediaTxt">{$b.edition|escape}                         </span></td></tr>{/if}
+      {if (isset ( $b.publisher    ) AND $b.publisher    != "" )}<tr><td><div class="mediaListHeader">Verlag:   </div></td><td><span class="mediaTxt">{$b.publisher|escape}                       </span></td></tr>{/if}
+      {if (isset ( $b.year         ) AND $b.year         != "" )}<tr><td><div class="mediaListHeader">:         </div></td><td><span class="mediaTxt">{$b.year|escape}                            </span></td></tr>{/if}
+      {if (isset ( $b.volume       ) AND $b.volume       != "" )}<tr><td><div class="mediaListHeader">:         </div></td><td><span class="mediaTxt">{$b.volume|escape}                          </span></td></tr>{/if}
+    </table>
+  </a>
 
-      {foreachelse}                                               <tr><td> <b> Keine B&uuml;cher mit Signatur  gefunden.</b> <br> Bitte versuchen Sie es noch einmal.</td></tr>
+      {foreachelse}                                               <b> Keine B&uuml;cher mit Signatur  gefunden.</b> <br> Bitte versuchen Sie es noch einmal.
 
       {/foreach}
 
-     </tbody>
-    </table>
 
+
+   <div class="text">
+     Haben Sie nicht das Gewünschte gefunden?<br/> Machen Sie doch einen 
+     <a  class="erwebungsvorschlag"  href="index.php?item=book&action=purchase_suggestion&collection_id={$colData[$coll.title_short].id}">Erwerbungsvorschlag</a>
+   </div>
+      
 {/if}
+
+
 
 
 

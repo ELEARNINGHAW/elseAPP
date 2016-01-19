@@ -1,43 +1,31 @@
-{if ( not isset( $header_done ) ) } {assign var=header_done value="1"}
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8" />
   <link rel="stylesheet" href="lib/style.css" type="text/css" media="screen" />
   <title>Semesterapparate</title>
+
+  <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  
+  <script type='text/javascript' src='lib/jquery.modal.js'></script>
+  <script type="text/javascript" src="lib/else.js"></script>
 </head>
-<body style="margin:0px; padding:0px;">
- 
+
+
+<body style='margin:0px; padding:0px;' onload="killAnimation();">
 {if not isset($user.sex)}                {$user.sex                 = ''}  {/if}
 {if not isset($user.degree_description)} {$user.degree_description  = ''}  {/if}
 {if not isset($user.forename)}           {$user.forename            = ''}  {/if}
 {if not isset($user.surname)}            {$user.surname             = ''}  {/if}
 {if not isset($user.id)}                 {$user.id                  = ''}  {/if}
-        
 {if $work.todo != "print"  }
-  
-<div style="position:relative; height: 50px;  left:0px; top:0px; margin:0px; background-color: #FFF;  " >
-<div> 
-  <a href="index.php" title="ELSE - Der Elektronische Semesterapparat der HAW-Hamburg"><img src="img/svg/ELSE.logo.svg"    width="150"  height="38" style="position:absolute; left:5px;  top:5px; float:left" /></a> 
-</div> 
-  
- 
-{if $user.id != "" }
-  <div style="position:absolute; left:180px; top:0px; padding:12px; padding-left:10px; height:10px; margin:0px;">
-    <div class="{$work.mode}_head"><a title="{$work.mode}">[{$work.mode}:] {$user.forename|escape}  {$user.surname}</a></div>
-  </div>
-{/if}
-  <span style="position:absolute; right:140px; top:7px; color:#000; font-family:Arial, Helvetica, sans-serif; font-size:15px; text-align:right;" ><a href="login.php" style="text-decoration: none; color: #000;">E</a>-Semesterapparat<br /> der HAW-Hamburg</span> 
-  <a href="logout.php" title="HIBS - Der Hochschul Informations- und Bibliothekarsservice der HAW-Hamburg" ><img src="img/svg/HIBS.logo.svg" width="128" height="32" style="position:absolute; right:5px; top:10px;"  /></a> 
-</div>
-  
-  
-
-<div style="position:relative;   padding:0px; height:38px; margin:0px;  background-color: #234A89;  margin-left:10px; margin-right: 10px;">
-  {if $work.item == "collection" AND  $work.mode != "admin" AND  $work.mode != "staff"  } <a href="index.php"  style="text-decoration: none;"><div style="color: #FFF; padding:10px; padding-left: 30px;" >Semesterapparat:</div></a>{/if}
-
-<div style="position: relative; left:0px; top:0px; height:40px;"   >  
-{if  $work.mode == "admin" ||  $work.mode == "staff"} 
- <ul id="nav" style="position:absolute; left:5px;   top:6px; margin-right:60px;"   >
+{if  $user.role_name == "admin" ||  $user.role_name == "staff"} 
+<div style="position:relative;   padding:0px; height:38px; margin:0px;  background-color: #234A89;  margin-left:0px; margin-right: 0px;">
+   
+  <div style="position: relative; left:0px; top:0px; height:40px;"   >  
+  <ul id="nav" style="position:absolute; left:5px;   top:6px; margin-right:60px;"   >
      <li><a title="Semesterapparate der HAW" style="background-color:#234A89;"  href="index.php?categories=1"> ELSE </a>
      </li>
      <li><a title="Semesterapparate der Fakultät DMI" style="background-color:#008B95;" href="index.php?categories=20"> DMI </a>
@@ -75,57 +63,51 @@
              <li><a title="Semesterapparate des Department Soziale Arbeit"                                   style="background-color:#C60C30;" href="index.php?categories=64">Soziale Arbeit</a></li>
          </ul>
      </li> 
-
- {if isset($letter_output)}
+ {if isset($work.categories) AND $work.categories == "1" }
+    <li class="en">   <a class="en" title="Alle Dozenten, über Anfangsbuchstabe" href="#">A</a> 
+       <ul style="width:20px;"> 
    {foreach from=$letter_output key=letter_k item=letter_i}
      {if $letter_i == 1}
        <li><a class="en" title="Alle Dozenten, beginned mit {$letter_k}" href="{$source}?letter={$letter_k}">{$letter_k}</a></li> 
      {/if}
    {/foreach}
+     </li> 
  {/if}
- {/if}
+   </ul>
 </div>   
-
-<a target="help_win" class="modalLink" href="#helpit" title="Weitere Informationen über ELSE"                  ><img src="img/svg/help.svg"        width="32"  height="32" style="position:absolute; right:2px; top:3px;" /></a>
-            
-    
-{if $work.mode == "edit" AND $work.item == "collectionList"}              
-  <a href="action.php?item=collection&action=b_new&user_id={$user.id}" title="Neuer Semesterapparat anlegen" ><img src="img/svg/bookmark-o.svg"  width="32"  height="32" style="position:absolute;right:39px;  top:3px;" /></a>
-{/if}
-
-{if $work.mode == "staff" or $work.mode == "admin"}              
-  <a href="action.php?item=collection&action=showopen&todo=6" title="Gelöschte"           ><img src="img/svg/G.svg"        width="32"  height="32" style="position:absolute;right:39px;  top:3px;" /></a>
-  <a href="action.php?item=collection&action=showopen&todo=3" title="Aktiv"               ><img src="img/svg/A.svg"        width="32"  height="32" style="position:absolute;right:110px;  top:3px;" /></a>
-  <a href="action.php?item=collection&action=showopen&todo=5" title="Inaktiv"             ><img src="img/svg/I.svg"        width="32"  height="32" style="position:absolute;right:145px;  top:3px;" /></a>
-  <a href="action.php?item=collection&action=showopen&todo=9" title="Kaufvorschlag"       ><img src="img/svg/K.svg"        width="32"  height="32" style="position:absolute;right:180px;  top:3px;" /></a>
-  <a href="action.php?item=collection&action=showopen&todo=4" title="Wird Entfernt"       ><img src="img/svg/E.svg"        width="32"  height="32" style="position:absolute;right:215px;  top:3px;" /></a>
-  <a href="action.php?item=collection&action=showopen&todo=2" title="Wird Bearbeitet"     ><img src="img/svg/B.svg"        width="32"  height="32" style="position:absolute;right:250px;  top:3px;" /></a>
-  <a href="action.php?item=collection&action=showopen&todo=1" title="Neu Eingestellt"     ><img src="img/svg/N.svg"        width="32"  height="32" style="position:absolute;right:285px;  top:3px;" /></a>
-
-{/if}
-
-{if  $work.mode == "admin"}
-<!--
-  <a href="#" title="Benutzerverwaltung"                                                                           ><img src="img/svg/users.svg"      width="32"  height="32" style="position:absolute;right:109px;  top:3px;" /></a>
-  <a href="#" title="Statusreport an BIB-Mitabeiter schicken"                                                      ><img src="img/svg/bell.svg"       width="32"  height="32" style="position:absolute;right:144px;  top:3px;" /></a>
-  <a href="#" title="Statusreport an Dozenten schicken"                                                            ><img src="img/svg/bell2.svg"      width="32"  height="32" style="position:absolute;right:213px;  top:58px;" /></a>-->
-{/if}
-
- </div>
-
+{if $user.role_name == "staff" or v == "admin"}              
+    <ul id="nav2" style="position:absolute; right:1px;   top:2px;">
+      <li>         
   
-
-<div style=" padding:2px; padding-left:30px;   margin:0px;  background-color: #FFF;  margin-left:10px; margin-right: 10px;">
-  {if  $work.todo == 1}<h3>Gesamtliste: Neu Eingestellt </h3>{/if}
-  {if  $work.todo == 2}<h3>Gesamtliste: Wird Bearbeitet </h3>{/if}
-  {if  $work.todo == 3}<h3>Gesamtliste: Aktiv  </h3>{/if}
-  {if  $work.todo == 4}<h3>Gesamtliste: Wird Entfernt </h3>{/if}
-  {if  $work.todo == 5}<h3>Gesamtliste: Inaktiv </h3>{/if}
-  {if  $work.todo == 6}<h3>Gesamtliste: Gelöscht </h3>{/if}
-  {if  $work.todo == 9}<h3>Gesamtliste: Kaufvorschlag </h3>{/if}
+  {if      $work.todo == 2}<li><a href="index.php?item=collection&amp;action=showopen&amp;todo=2" title="Wird Bearbeitet"><img src="img/svg/B.svg" width="32" height="32"/></a>  
+  {elseif  $work.todo == 3}<li><a href="index.php?item=collection&amp;action=showopen&amp;todo=3" title="Aktiv"          ><img src="img/svg/A.svg" width="32" height="32"/></a> 
+  {elseif  $work.todo == 4}<li><a href="index.php?item=collection&amp;action=showopen&amp;todo=4" title="Wird Entfernt"  ><img src="img/svg/E.svg" width="32" height="32"/></a> 
+  {elseif  $work.todo == 5}<li><a href="index.php?item=collection&amp;action=showopen&amp;todo=5" title="Inaktiv"        ><img src="img/svg/I.svg" width="32" height="32"/></a> 
+  {elseif  $work.todo == 6}<li><a href="index.php?item=collection&amp;action=showopen&amp;todo=6" title="Gelöschte"      ><img src="img/svg/G.svg" width="32" height="32"/></a> 
+  {elseif  $work.todo == 9}<li><a href="index.php?item=collection&amp;action=showopen&amp;todo=9" title="Kaufvorschlag"  ><img src="img/svg/K.svg" width="32" height="32"/></a> 
+  {else}                   <li><a href="index.php?item=collection&amp;action=showopen&amp;todo=1" title="Neu Eingestellt"><img src="img/svg/N.svg" width="32" height="32"/></a> {/if}
+                       
   
- 
+        
+        <ul>
+          <li><a href="index.php?item=collection&amp;action=showopen&amp;todo=1" title="Neu Eingestellt"><img src="img/svg/N.svg" width="20" height="20"/>Neu Eingestellte</a></li>
+          <li><a href="index.php?item=collection&amp;action=showopen&amp;todo=2" title="Wird Bearbeitet"><img src="img/svg/B.svg" width="20" height="20"/>Zum Bearbeiten</a> </li>
+          <li><a href="index.php?item=collection&amp;action=showopen&amp;todo=9" title="Kaufvorschlag"  ><img src="img/svg/K.svg" width="20" height="20"/>Kaufvorschläge</a></li>
+          <li><a href="index.php?item=collection&amp;action=showopen&amp;todo=4" title="Wird Entfernt"  ><img src="img/svg/E.svg" width="20" height="20"/>Zum Entfernen</a></li>
+          <li><a href="index.php?item=collection&amp;action=showopen&amp;todo=3" title="Aktiv"          ><img src="img/svg/A.svg" width="20" height="20"/>Aktive</a></li>
+          <li><a href="index.php?item=collection&amp;action=showopen&amp;todo=5" title="Inaktiv"        ><img src="img/svg/I.svg" width="20" height="20"/>Inaktive</a></li>
+          <li><a href="index.php?item=collection&amp;action=showopen&amp;todo=6" title="Gelöschte"      ><img src="img/svg/G.svg" width="20" height="20"/>Gelöschte</a></li>
+        </ul>
+      </li>
+    </ul>
+{/if}
 </div>
+ {/if}
+  {if  $work.todo == 1}<div class="todoHeader bgTD{$work.todo}">Gesamtliste: Neu Eingestellt </div>{/if}
+  {if  $work.todo == 2}<div class="todoHeader bgTD{$work.todo}">Gesamtliste: Wird Bearbeitet</div>{/if}
+  {if  $work.todo == 3}<div class="todoHeader bgTD{$work.todo}">Gesamtliste: Aktiv  </div>{/if}
+  {if  $work.todo == 4}<div class="todoHeader bgTD{$work.todo}">Gesamtliste: Wird Entfernt </div>{/if}
+  {if  $work.todo == 5}<div class="todoHeader bgTD{$work.todo}">Gesamtliste: Inaktiv </div>{/if}
+  {if  $work.todo == 6}<div class="todoHeader bgTD{$work.todo}">Gesamtliste: Gelöscht </div>{/if}
+  {if  $work.todo == 9}<div class="todoHeader bgTD{$work.todo}">Gesamtliste: Kaufvorschlag </div>{/if}
 {/if}
-{/if}
-
