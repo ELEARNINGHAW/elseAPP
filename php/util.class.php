@@ -425,11 +425,11 @@ class Util   /// \brief check user input
 	#$message = "DIESE TESTMAIL BITTE (per reply) EINFACH ZURUECKSENDEN. \r\nDAMIT ICH SEHE OB DIE MAIL KORRELT AN ALLE ADRESSATEN VERSEMDET WERDEN \r\n\r\nVIELEN DANK \r\n\r\nWerner Welte\r\n\r\n\r\n ". $message;
     # $to       = 'werner.welte@haw-hamburg.de' ;
     # $to       = 'werner.welte@gmx.de' ;
-    $bcc      = 'Daniela.Mayer@haw-hamburg.de, werner.welte@haw-hamburg.de' ;
+    $bcc      = 'daniela.mayer@haw-hamburg.de, werner.welte@haw-hamburg.de' ;
     $from     = 'ELSE-noreply@haw-hamburg.de' ;
     $rpto     = 'werner.welte@haw-hamburg.de';
 
-    $header  = 'From: '         . $from         . "\r\n" ;
+    $header  = 'From: '         . $from . "\r\n" ;
     $header .= 'Reply-To: '     . $rpto . "\r\n" ;
     $header .= 'Bcc: '          . $bcc  . "\r\n" ;
     $header .= "Mime-Version: 1.0\r\n" ;

@@ -454,20 +454,17 @@ foreach ( $userlist as $u )                                                     
   $SAlistTMP                                            =  $this->sql->getSAlist( $u, $INPUT['work']['mode'], $INPUT['work']['categories'] );
    
   $SAlist = ""; 
-  
+  if ($SAlistTMP)
   foreach ( $SAlistTMP as $SAL)   /* SA die nicht angzeigt werden sollen, werden aus der Liste entfernt */
   {
-	  if (    $SAL[ 'id' ] !=  'ELSE-ADMIN' 
+    if (      $SAL[ 'id' ] !=  'ELSE-ADMIN' 
            && $SAL[ 'id' ] !=  'HIBS ELSE' 
            && $SAL[ 'id' ] !=  'EMIL-Team' 
-		  )
-	  {
-		  $SAlist[] = $SAL; 
-	  }
+	     )
+	     {
+         $SAlist[] = $SAL; 
+       }
   }
- 
- 
- #deb($SAlist); 
  
   if ( isset ( $SAlist[ 0 ][ 'surname' ] ) && $letter_eq != substr ( $SAlist[ 0 ][ 'surname' ] , 0 , 1 ) )                    ## Wenn User mindestens ein Semesterapparat hat
   { $letter = substr ( $SAlist[ 0 ][ 'surname' ] , 0 , 1 );
@@ -477,28 +474,21 @@ foreach ( $userlist as $u )                                                     
   $key  = $this->getKey( $u );
   $tpl_var[ 'collection' ][ $key ] = NULL ;  
   
+  
   $substring = strtolower ( $INPUT['work'][ 'letter' ] ) ;
   
   if ( $substring )                                                                                                             /* FILTER AUF Anfangsbuchstaben von Dozenten gewählt */
-  {
-    if ( strtolower ( substr ( $u[ 'surname' ] , 0 , 1 ) ) == ( $substring ) )
+  { if ( strtolower ( substr ( $u[ 'surname' ] , 0 , 1 ) ) == ( $substring ) )
     {  if ( ! empty ( $SAlist ) )  {  $tpl_var[ 'collection' ][ $key ] = array_merge ( (array) $tpl_var[ 'collection' ][ $key ] , $SAlist ) ;  }
     }
   }
+
   else                                                                                                                          /* KEIN FILTER auf Anfangsbuchstabe  -- ALLE Dozenten gewählt */
   { if ( ! empty ( $SAlist ) )    {  $tpl_var[ 'collection' ][ $key ] = array_merge ( (array) $tpl_var[ 'collection' ][ $key ] , $SAlist ) ;   }
   }
   #------------------------------------------------------------------------------------------------------------------- 
 }
 
-#------------------------------------------------------------------------------------------------------------------- 
-/*
-  foreach ( $tpl_var[ 'collection' ] as $k => $v )  # sort collections
-  {
-  usort( $v, "cmp_coll" );
-  $tpl_var[ 'collection' ][ $k ] = $v;
-  }
-*/
 
 #------------------------------------------------------------------------------------------------------------------- 
 if ( !isset( $_SESSION[ 'user' ] ) ) { $_SESSION['user'] = NULL; }
@@ -509,7 +499,7 @@ $tpl_var[ 'letter_output' ]  = $this->getLetterOutput( $CONST_letter_header, $le
 $tpl_var[ 'source' ]         = 'index.php' ;
 ##------------------------------------------------------------------------------------------------------------------- 
 # deb($_SESSION);
-# deb($tpl_var,1);
+ deb($tpl_var,1);
 $this->renderer -> do_template ( 'index.tpl' , $tpl_var , TRUE ) ;
 }
 
