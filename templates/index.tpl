@@ -1,7 +1,7 @@
 {if $work.mode != "edit"} {* <!-- HEADLINE: DEPARTMENT -->*}
 {if $work.categories == 1}                                                                                      <div class="depName bg{$work.categories}" > Semesterapparate der gesamten HAW</div> 
-{elseif   $work.categories == 20 or $work.categories == 30 or $work.categories == 50 or $work.categories == 60 }<div class="depName bg{$work.categories}" > Semesterapparate der Fakultät: {$html_options.categories[$work.categories]|escape|utf8_encode}   </div>
-{else}                                                                                                          <div class="depName bg{$work.categories}" > Semesterapparate des Department: {$html_options.categories[$work.categories]|escape|utf8_encode}   </div>
+{elseif   $work.categories == 20 or $work.categories == 30 or $work.categories == 50 or $work.categories == 60 }<div class="depName bg{$work.categories}" > Semesterapparate der Fakultät:   {$html_options.fak[$work.categories].FakAbk|escape|utf8_encode}   </div>
+{else}                                                                                                          <div class="depName bg{$work.categories}" > Semesterapparate des Department: {$html_options.dep[$work.categories].DepName|escape|utf8_encode}   </div>
 {/if}{else}                                                                                                     <div class="depName bg{$work.categories}" > Semesterapparate von:  </div>
 {/if}
 
@@ -10,7 +10,7 @@
 
     <div class="dozentName bg bg{$c[0].categories_id|escape}">
     <a  class="dozentLink" href="#">{* <!-- Doz.ID --> *} {$c[0].forename} {$c[0].surname}   </a>   {if not isset($c[0].categories_id)}  {$c[0].categories_id = 0}  {/if}
-    <span style="float:right">{$html_options.categories[$c[0].categories_id]}</span>  {*  <!-- Department -->  <!-- Fak.ID, Dozent Titel,  Vorname, Nachname -->   *}
+    <span style="float:right">{$html_options['dep'][$c[0].categories_id]['DepName']}</span>  {*  <!-- Department -->  <!-- Fak.ID, Dozent Titel,  Vorname, Nachname -->   *}
     </div>  
 
     {section name=j loop=$c} 
@@ -27,10 +27,10 @@
         {include file="action_button_bar.tpl" mode=$work.mode item="collection" state=$c[j].state_name collection_id=$c[j].id  document_id=0 }
         </div>  
       {/if}  
-
+      
     {elseif $c[j].state_name != 'delete'} {* HEADLINE:  SEMAPP -- USER-MODE  *}
       <div class='SAHeadline' style="display: block;" >
-      <a class="name2 semapNameListe"  href="index.php?item=collection&action=show&collection_id={$c[j].id|escape}">{$c[j].title|escape}</a>
+        <a class="name2 semapNameListe"  href="index.php?item=collection&action=show&collection_id={$c[j].id|escape}">{$c[j].title|escape}<span style="float: right; padding-right:5px;">{$c[j].location_id}</span></a>
       </div>
     {/if}
 

@@ -10,7 +10,10 @@ var $conf;
 function SQL ()
 {
   $this->conf = getConf();
-  $this->DB = new mysqli( $this->conf['db_host'], $this->conf['db_user'],  $this->conf['db_pass'],  $this->conf['db_name']);            if (mysqli_connect_errno()) {   printf("Verbindung fehlgeschlagen: %s\n", mysqli_connect_error());   exit(); }
+  $this->DB = new mysqli( $this->conf['db_host'], $this->conf['db_user'],  $this->conf['db_pass'],  $this->conf['db_name']);         
+  if (mysqli_connect_errno()) 
+  {   printf("Verbindung fehlgeschlagen: %s\n", mysqli_connect_error());   exit();
+  }
 }
 
 function initMedia($book)
@@ -41,12 +44,10 @@ function initMedia($book)
  last_modified      = NOW() ,
  last_state_change  = NOW()';     
 
- 
  $res =  mysqli_query ( $this->DB, $SQL);
  
  $res = $this->getDocumentID ( $book );
  
- #deb($res,1);
  return $res;
 }
 
@@ -56,14 +57,11 @@ function getDokumentList( $colID,$doc_type_id = null , $state_id = null  )
   SELECT * 
   FROM `document` 
   WHERE `collection_id` = \"" . $colID  . "\"";  
-
   
   if ( isset($doc_type_id) ) { $SQL .= " AND `doc_type_id` = ". $doc_type_id;}
   if ( isset($state_id   ) ) { $SQL .= " AND `state_id`    = ". $state_id;   }
   
   $ret = NULL;
-  
-  #deb( $SQL);
   
   $res =  mysqli_query ( $this->DB, $SQL);
 
@@ -71,7 +69,6 @@ function getDokumentList( $colID,$doc_type_id = null , $state_id = null  )
   if ($res)
   while ($row = mysqli_fetch_assoc($res)) 
   {
-    #$row['url']  = 'https://kataloge.uni-hamburg.de/CHARSET=ISO-8859-1/DB=2/LNG=DU/CMD?ACT=SRCHA&IKT=12&SRT=YOP&TRM=' .$row['ppn']; 
     $ret[] = $row;
   }     
  
@@ -81,6 +78,7 @@ function getDokumentList( $colID,$doc_type_id = null , $state_id = null  )
 
 function getAdminEmailInfos (   )
 {
+  /*
   $SQL1 = "SELECT * FROM `location`";
 
   $res =  mysqli_query ( $this->DB, $SQL1);
@@ -89,40 +87,40 @@ function getAdminEmailInfos (   )
   {
     $HIBS_location[$row['id']] = $row;
   }
-
+  */
   
-  foreach ($HIBS_location as $HIBS_loc)
+  
+  foreach ($_SESSION['FACHBIB'] as $HIBS_loc)
   {
  
-  $ret[$HIBS_loc['id']] = $HIBS_loc;
+  $ret[$HIBS_loc['BibID']] = $HIBS_loc;
     
   $SQL2 = "
   SELECT COUNT(*)
   FROM document 
   INNER JOIN collection ON document.collection_id = collection.id 
-  WHERE document.state_id = '1' AND collection.location_id = '".$HIBS_loc['id']."'";    /* Status 1 = Neu Angefordert */
+  WHERE document.state_id = '1' AND collection.location_id = '".$HIBS_loc['BibID']."'";    /* Status 1 = Neu Angefordert */
 
   $res =  mysqli_query ( $this->DB, $SQL2);
   $tmp  = mysqli_fetch_assoc($res);
-  $ret[$HIBS_loc['id']][1] = $tmp['COUNT(*)']; 
+  $ret[$HIBS_loc['BibID']][1] = $tmp['COUNT(*)']; 
 
   $SQL2 = "                                                    
   SELECT COUNT(*)
   FROM document 
   INNER JOIN collection ON document.collection_id = collection.id 
-  WHERE document.state_id = '9' AND collection.location_id = '".$HIBS_loc['id']."'";   /* Status 9 = Kaufvorschlag  */
+  WHERE document.state_id = '9' AND collection.location_id = '".$HIBS_loc['BibID']."'";   /* Status 9 = Kaufvorschlag  */
 
   $res =  mysqli_query ( $this->DB, $SQL2);
   $tmp  = mysqli_fetch_assoc($res);
-  $ret[$HIBS_loc['id']][9] = $tmp['COUNT(*)'];  
+  $ret[$HIBS_loc['BibID']][9] = $tmp['COUNT(*)'];  
   }
  
-  
   return $ret;  
 }
 
 
-function getUserAK ( $hawAccount )
+function getUserHSK ( $hawAccount )
 {
   $SQL = "
   SELECT user.*,
@@ -139,7 +137,7 @@ function getUserAK ( $hawAccount )
   return $ret;  
 }
 
-function doUserExist( $hawacc )
+function checkUserExistence( $hawacc )
 {
   $SQL = "
   SELECT * 
@@ -150,7 +148,6 @@ function doUserExist( $hawacc )
   return $ret;  
 }
 
-
 function doCollectionExist( $title_short )
 {
   $SQL = "
@@ -160,11 +157,10 @@ function doCollectionExist( $title_short )
   $res =  mysqli_query ( $this->DB, $SQL);
   $ret = mysqli_fetch_assoc($res);
  
+  #deb($ret,1);
   return $ret;  
 }
-
-
-
+/*
 
 function getUserData( $uid )
 {
@@ -181,7 +177,8 @@ function getUserData( $uid )
   return $ret;  
 }
 
-
+*/
+/*
 function getAllDepartments()
 {
   $SQL = "
@@ -196,6 +193,8 @@ function getAllDepartments()
   }
   return $ret;  
 }
+*/
+
 
 function getAllMedStates()
 {
@@ -212,7 +211,7 @@ function getAllMedStates()
   return $ret;  
 }
 
-
+/*
 function getBibInfos( $style = NULL )
 {
   $SQL = "
@@ -234,6 +233,8 @@ function getBibInfos( $style = NULL )
   }
   return $ret;  
 }
+*/
+
 
 function getRoleInfos( $style = NULL )
 {
@@ -288,7 +289,7 @@ function deleteMedia($IW, $IU)
   }
 }
 
-
+/*
 
 function getCollection($colID)
 {
@@ -305,6 +306,7 @@ function getCollection($colID)
   #deb($ret,1);
   return  $ret;
 }
+*/
 
 
 /* Gibt alle Medien Daten zurück: 
@@ -397,11 +399,8 @@ function updateUser($IU)
 }
 
 
-
-
 function initCollection($IW )
 {
-  
   $SQL = "
   INSERT INTO collection SET
   created          =      NOW()                     , 
@@ -424,7 +423,7 @@ function initCollection($IW )
 
 function updateColMetaData($w)
 {
- 
+  
   $SQL = "
   UPDATE `collection` 
   SET  location_id      = \"" .$w['location_id'     ]. "\" ,";
@@ -453,26 +452,18 @@ function updateMediaMetaData($w)
   if (isset( $w['shelf_remain'    ])) { $SQL .= " shelf_remain     = \"" .$w['shelf_remain'      ]. "\"  ";}
                                         $SQL .= " WHERE id         = \"" .$w['document_id'       ]. "\"  "; 
   $res =  mysqli_query ( $this->DB, $SQL);
-
- #deb($SQL,1);
   return $res;
 }
 
 
 function updateCollectionSortOrder( $collection_id, $sortorder )
 {  
-  
   $SQL = " UPDATE collection SET ";
   $SQL .= " sortorder         = \"" . implode(',' , $sortorder ) . "\"";
   $SQL .= " WHERE id         = \"" . $collection_id. "\"  "; 
   $res =  mysqli_query ( $this->DB, $SQL);
   return $res;
 }
-
-
-
-
-
 
 function getCollectionInfos ($colID = null, $doc_type_id = null , $doc_state_id = null, $short = null  )
 {
@@ -489,20 +480,16 @@ function getCollectionInfos ($colID = null, $doc_type_id = null , $doc_state_id 
   $ret = false;
   $res =  mysqli_query ( $this->DB, $SQL );
   
- 
-  
   if ( $res )
   {  
    while ( $row = mysqli_fetch_assoc( $res ) ) 
    { 
-    
      $sortorder = explode ( ',' , $row['sortorder'] );
 
-     $userInfo = $this-> getUserAK(  $row['user_id'] );
+     $userInfo = $this-> getUserHSK(  $row['user_id'] );
 
       $ret[ $row[ 'id' ] ] = $row;
       $ret[ $row[ 'id' ]][ 'user_info' ] = $userInfo[0] ; 
-
 
       $dl = $this->getDokumentList( $row[ 'id' ], $doc_type_id,  $doc_state_id );  /*  ( $doc_ID, $doc_type_id = null , $doc_state_id = null  ) */
       if( $dl )
@@ -539,12 +526,8 @@ function getCollectionInfos ($colID = null, $doc_type_id = null , $doc_state_id 
         unset ($ret[$row['id']]);
       #  $ret[$row['id']][ 'document_info' ] = null ;
       }
-
     }
   }
-
-   #deb($ret,1);
-
   return $ret ;
 }
 
@@ -590,7 +573,7 @@ function getDocumentID ( $book ) /* Kartesisches Produkt aller Dokumenten mit al
   return $ans ;
 }
 
-
+/*
 function getStatusName ( $statusID   )
 {
   $ans = $this->sql_query ( 'select' , array ( 'tables' => "state" , 'cond' => "id = " . $statusID , )  ) ;       # translate state id to state 
@@ -603,7 +586,7 @@ function getStatusName ( $statusID   )
     return false ;
   }
 }
-
+*/
 
 function getAllDocTypes()  
 {
@@ -632,18 +615,17 @@ function getRoleName( $roleNr )
 }
 
 
-
-
 function getUser( $mode )
 {
-      $param = array (
-        "tables" => "user,role,state" ,
-        "cond" => "user.state_id = state.id  
-          AND user.role_id = role.id
-          AND (role.name != 'edit' OR role.name != 'staff' )", 
+   $param = array 
+   (
+     "tables" => "user,role,state" ,
+     "cond"   => "user.state_id = state.id  
+     AND user.role_id = role.id
+     AND (role.name != 'edit' OR role.name != 'staff' )", 
 
-        "columns" => "user.*" ,
-        "order" => "surname,forename,sex"
+     "columns" => "user.*" ,
+     "order"   => "surname,forename,sex"
     ) ;
 
     if ( $mode == "edit" and isset ( $_SESSION[ 'user' ] ) )
@@ -670,15 +652,15 @@ function getUser( $mode )
   
   return $ret; 
 }
-
+/*
 function getExpiredCollections()
 {
-   $param = array
-   (
-       "tables" => "collection as c,state as s" ,
-        "columns" => "c.id" ,
-        'cond' => "c.state_id = s.id   AND   s.name = 'active'   AND   c.expiry_date <= NOW()" ,
-    ) ;
+  $param = array
+  (
+     "tables" => "collection as c,state as s" ,
+     "columns" => "c.id" ,
+     'cond' => "c.state_id = s.id   AND   s.name = 'active'   AND   c.expiry_date <= NOW()" ,
+  ) ;
   
   $SQL = "SELECT " .$param['columns']. " FROM " .$param['tables']. "  WHERE  ".$param['cond'];
   
@@ -686,17 +668,7 @@ function getExpiredCollections()
 
   return $res; 
 }
-
-function getNumberOfDocsPerState()
-{
-/*  
-SELECT COUNT(*)
-FROM document 
-INNER JOIN collection ON document.collection_id = collection.id 
-WHERE document.state_id = '1' AND collection.location_id = 'TWI1'
-*/  
-}
-
+*/
 
 function getSAlist( $user, $mode, $categories )
 {
@@ -732,4 +704,66 @@ function getSAlist( $user, $mode, $categories )
  }
 
  }
+ 
+class HAW_DB
+{
+	var $db;
+  var $log;
+  var $status;
+	function HAW_DB( )
+	{
+		{	$this->db = new SQLite3( '../DB/HAW-Fak-Dep-SG.s3db' );		
+			if( $this->db )
+			{  $this->log = fopen("../log/HAW-FAK-DEP.log", "a");
+			}
+			else
+			{	die( "<b>KEINE Verbindung zur HAW FAK-DB Datenbank möglich</b>" );
+			}
+		}
+   # $this->status = $conf->status;
+  }
+  
+  function getDEP2BIB()
+	{ 
+		$r = NULL;
+		$SQL =  "SELECT * FROM Department, Fakultaet , HIBS WHERE Department.Dep2Fak = Fakultaet.FakID AND Department.Dep2BIB = HIBS.BibID;";
+
+		$result =  $this->db->query( $SQL );
+		 
+		while ( $tmp = $result->fetchArray() )										// Daten zeilenweise in Array speichern  
+		{	 
+			$r[$tmp['DepID']] = $tmp;
+		}
+   
+		return $r;
+  }
+  
+  function getAllFak()
+  {
+		$r = NULL;
+		$SQL =  "   SELECT * FROM  Fakultaet;";
+
+		$result =  $this->db->query( $SQL );
+		 
+		while ( $tmp = $result->fetchArray() )										// Daten zeilenweise in Array speichern  
+		{	 
+			$r[$tmp['FakID']] = $tmp;
+		}
+		return $r;
+  }
+  
+  function getAllFachBib()
+  {
+		$r = NULL;
+		$SQL =  "   SELECT * FROM  HIBS;";
+
+		$result =  $this->db->query( $SQL );
+		 
+		while ( $tmp = $result->fetchArray() )										// Daten zeilenweise in Array speichern  
+		{	 
+			$r[$tmp['BibID']] = $tmp;
+		}
+		return $r;
+  }
+	}
 ?>

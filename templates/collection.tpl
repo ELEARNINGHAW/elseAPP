@@ -7,15 +7,18 @@
   {if $ci.title_short != "" OR  $work.action == 'showopen'}
   <div class="SAMeta bgDef bg{$ci.location_id}">
   {if ( $staff_mode )}   
-    <span> 
-      <a class="SAdozName" href="index.php?item=collection&amp;action=show&amp;collection_id={$ci.title_short}&amp;ro={$user.role_encode}" title="Bearbeiten der Allgemeinen Infos des Semesterapparats">  
-      {$ci.title}<br/>von: {$ci.user_info.forename|escape} {$ci.user_info.surname|escape}</a>
-    </span>
+     <div style="width:630px; display: inline-block; font-weight: 700; font-size: 14px; color: #FFF;"> 
+        <div style="float:left;">{$ci.title} </div>
+        <div style="float:right;"> FB:{$ci.location_id}</div><br/>
+
+        <div style="float:left;">von: {$ci.user_info.forename|escape} {$ci.user_info.surname|escape}</div> 
+        <div style="float:right;">Dep:{$department[$ci.user_info.department].DepName}</div> 
+    </div>
+    
   {else}
     <div class="SAdozName">ELSE<br />Der elektronische Semesterapparat </div>
   {/if}
-  
-
+ 
   {if ($work.todo != "print" AND ($edit_mode OR $staff_mode)) }
   <a target="help_win" class="modalLink" href="#helpit" title="Weitere Informationen über ELSE"                  ><img src="img/svg/help.svg"        width="32"  height="32" style="position:relative; float:right; padding-right: 2px; margin:2px; margin-right:-1px;"  /></a>
 
@@ -35,9 +38,6 @@
   <a target="_blank" href="#"  onclick="window.print(); return false;">
    <img src="img/svg/print_w.svg"    width="32"  height="32" style="position:relative; float:right; padding-right: 2px; margin:2px; margin-right:-1px;" title="Zum Drucker senden"   /></a>
   {/if}
-
-  
-  
   
   </div>
 {/if}
@@ -65,7 +65,7 @@
   <div class="bibStandort"> 
       {if $di.location_id != "" }
         {if $di.doc_type_id == 1 OR $di.doc_type_id == 3}{* Buch im SA  / LitHinweis Buch / CD Rom *}
-          {if $di.shelf_remain != 1}  {$fachbib[ $ci.location_id ].description|escape},<br/> im Regal "Semesterapparate"   {else} Im Buchbestand der Fachbibliothek<br/> (wie im Online-Katalog angegeben). {/if}
+          {if $di.shelf_remain != 1}  {$fachbib[ $ci.location_id ].BibName|escape},<br/> im Regal "Semesterapparate"   {else} Im Buchbestand der Fachbibliothek<br/> (wie im Online-Katalog angegeben). {/if}
         {/if}
         {if  $di.doc_type_id == 2 }{* LitHinweis Buch  *}
             Im Buchbestand der Fachbibliothek<br/> (wie im Online-Katalog angegeben).  

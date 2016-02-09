@@ -33,26 +33,36 @@ function saveNewCollection(  $IW, $IU)
 
 function editColMetaData(  $IW )
 {
+  foreach( $_SESSION['FACHBIB' ] as $FBI)
+  { $bib_info[$FBI['BibID']] = $FBI['BibName'];
+  } 
+  
+  foreach($_SESSION['DEP2BIB'] as $DEPA  )                                      # Nur Departments mit ID > 1000 kommen in die Liste
+  { if($DEPA['DepID'] < 1000  AND $DEPA['DepName'] != 'XXX'  )
+    { $departments[ $DEPA['DepID'] ] = $DEPA['DepName'];
+    }
+  } 
+  
   $tpl_vars['user']               = $_SESSION['user'];
   $tpl_vars['coll']               = $_SESSION['coll'];
   $tpl_vars['work']               = $IW;
   $tpl_vars['colData']            = $this->sql->getCollectionInfos( $IW[ 'collection_id' ] );
-  $tpl_vars['tpl']['departments'] = $this->sql->getAllDepartments();
-  $tpl_vars['tpl']['bib_info']    = $this->sql->getBibInfos('name');
+  $tpl_vars['tpl']['departments'] = $departments; #$_SESSION['DEP2BIB']; 
+  $tpl_vars['tpl']['bib_info']    = $bib_info;
   $tpl_vars['tpl']['role_info']   = $this->sql->getRoleInfos('name');
-  # deb($tpl_vars,1);
+ 
   $this->renderer->do_template ( 'b_edit_collection.tpl' , $tpl_vars ) ;
   exit(0);
 }
 
 function newCollection( $util,   $IW )
 {
-  $departments = $this->sql->getAllDepartments();
-  $bib_info    = $this->sql->getBibInfos('name');
+  $departments = $_SESSION['DEP2BIB'];  
+  $bib_info    = $_SESSION['FACHBIB' ]; # $ $this->sql->getBibInfos('name');
   $role_info   = $this->sql->getRoleInfos('name');
 
   $colData = array();
-  $colData['categories_id']          = $util->resolveLocationID( $_SESSION['user']['department'] );
+  $colData['categories_id']          = $_SESSION['DEP2BIB'][$_SESSION['user']['department']]['FakAbk'];
   $colData['title']                  = "";
   $colData['notes_to_studies']       = "";
   $colData['expiry_date']            = $util->get_new_expiry_date();        
@@ -68,6 +78,7 @@ function newCollection( $util,   $IW )
   $tpl_vars['tpl']['bib_info']       = $bib_info;
   $tpl_vars['tpl']['role_info']      = $role_info ;
   
+ 
   $this->renderer->do_template ( 'b_edit_collection.tpl' , $tpl_vars ) ;
   exit(0);
 }
@@ -97,20 +108,17 @@ $doc_type_id: 1 = Buch, 3, = CD, 4 = E-Book,
   $tpl_vars[ 'collection_info' ] = $this->sql->getCollectionInfos( null, 1, $IW['todo'] , true ); # ($colID , $doc_type_id, $doc_state_id, $short )
   if( $IW['todo']  == 6 )
   {
-  $ebooks                        = $this->sql->getCollectionInfos( null, 4, $IW['todo'] , true );                      /* In der Liste 'Gelöscht' werden auch E-Books angezeigt */
-  $lh_books                      = $this->sql->getCollectionInfos( null, 2, $IW['todo'] , true );                      /* In der Liste 'Gelöscht' werden auch LH-Books angezeigt */
-  $tpl_vars[ 'collection_info' ] = array_merge($tpl_vars[ 'collection_info' ], $ebooks, $lh_books   );
+    $ebooks                        = $this->sql->getCollectionInfos( null, 4, $IW['todo'] , true );                      /* In der Liste 'Gelöscht' werden auch E-Books angezeigt */
+    $lh_books                      = $this->sql->getCollectionInfos( null, 2, $IW['todo'] , true );                      /* In der Liste 'Gelöscht' werden auch LH-Books angezeigt */
+    $tpl_vars[ 'collection_info' ] = array_merge($tpl_vars[ 'collection_info' ], $ebooks, $lh_books   );
   }
   $tpl_vars[ 'media_state'     ] = $this->sql->getAllMedStates();
-  $tpl_vars[ 'fachbib'         ] = $this->sql->getBibInfos();
-  $tpl_vars[ 'location'        ] = $this->sql->getAllDepartments();
+  $tpl_vars[ 'fachbib'         ] = $_SESSION['FACHBIB' ]; # $ $this->sql->getBibInfos();
+  $tpl_vars[ 'department'      ] = $_SESSION['DEP2BIB'];  
   $tpl_vars[ 'actions_info'    ] = $CONST_actions_info;
-   
- #deb( $tpl_vars,1 );
   
   $this->renderer->do_template( 'collection.tpl', $tpl_vars );
  }
-         
 
 function editCollection(   $IW , $IU)
 { 
@@ -125,16 +133,13 @@ function editCollection(   $IW , $IU)
   $tpl_vars[ 'work'            ]         = $IW; 
   $tpl_vars[ 'collection_info' ]         = $this->sql->getCollectionInfos( $IC['title_short'] );
   $tpl_vars[ 'media_state'     ]         = $this->sql->getAllMedStates();
-  $tpl_vars[ 'fachbib'         ]         = $this->sql->getBibInfos();
-  $tpl_vars[ 'location'        ]         = $this->sql->getAllDepartments();
+  $tpl_vars[ 'fachbib'         ]         = $_SESSION['FACHBIB' ]; # $ $this->sql->getBibInfos();
+  $tpl_vars[ 'department'      ]         = $_SESSION['DEP2BIB'];  
   $tpl_vars[ 'errors_info'     ][]       = '';
   $tpl_vars[ 'actions_info'    ]         = $CONST_actions_info;
- 
- # deb( $tpl_vars,1 );
   
   $this->renderer->do_template( 'collection.tpl', $tpl_vars );
  }
-
  
 function showCollection( $IW , $IU)
 { 
@@ -143,15 +148,13 @@ function showCollection( $IW , $IU)
   $tpl_vars[ 'user'            ] = $IU;                                          
   $tpl_vars[ 'collection_info' ] = $this->sql->getCollectionInfos( $IW['collection_id'] );
   $tpl_vars[ 'collection'      ] = $tpl_vars[ 'collection_info' ][$IW['collection_id']];
-
-  # $tpl_vars[ 'collection_info' ][0][ 'document_info' ] = $this->sql->getDokumentList( $IW['collection_id'] );
   $tpl_vars[ 'doc_type'        ] = $this->sql->getAllDocTypes();
   $tpl_vars[ 'media_state'     ] = $this->sql->getAllMedStates();
-  $tpl_vars[ 'fachbib'         ] = $this->sql->getBibInfos();
-  $tpl_vars[ 'location'        ] = $this->sql->getAllDepartments();
+  $tpl_vars[ 'fachbib'         ] = $_SESSION['FACHBIB' ]; # $$this->sql->getBibInfos();
+  $tpl_vars[ 'department'      ] = $_SESSION['DEP2BIB']; 
   $tpl_vars[ 'errors_info'     ][] = '';
   $tpl_vars[ 'actions_info'    ] = $CONST_actions_info;
-   #  deb($tpl_vars,1);
+
   $this->renderer->do_template( 'collection.tpl', $tpl_vars, ( $IW[ 'action' ] != 'print' ) );
  }
  
@@ -174,46 +177,42 @@ function setCollectionState_6($IW)
   $this->sql->setCollectionState( $IW['collection_id'], 6 );
   $this->renderer->doRedirect( $IW['last_page'] );
 }        
+
 function setCollectionState_3(  $IW)
 {
   $this->sql->setCollectionState( $IW['collection_id'], 3 );
   $this->renderer->doRedirect( $IW['last_page'] );
 }        
+
 function setCollectionState_5(  $IW)
 {
   $this->sql->setCollectionState( $IW['collection_id'], 5 );
   $this->renderer->doRedirect( $IW['last_page'] );
 }        
 
-
 function  saveColMetaData(   $IW, $IU )
 {
-  #$this->sql->saveColMetaData  ($renderer, $sql, $IW);    
   $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&ro=".$IU['role_encode']."&item=collection&action=b_coll_edit";
   $this->renderer->doRedirect( $url );
-  
 }
 
 function updateColMetaData(  $IW, $IU)
 {
-  #deb($IU,1);
   $this->sql-> updateColMetaData($IW);
   $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&ro=".$IU['role_encode']."&item=collection&action=b_coll_edit";
-#  $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&item=collection&action=b_coll_edit";  
-  #  $url = "index.php?collection=0";
   $this->renderer->doRedirect( $url );
 }
 
 function redirToCollection( $IW )
 {
-    $this->renderer->doRedirect( $IW['last_page'] );
-    exit(0);
+  $this->renderer->doRedirect( $IW['last_page'] );
+  exit(0);
 }
 
 function resortCollection( $IW, $IC )
 {
-    $this->sql-> updateCollectionSortOrder( $IC['id'], $IW['sortoder']  );
-    exit(0);
+  $this->sql-> updateCollectionSortOrder( $IC['id'], $IW['sortoder']  );
+  exit(0);
 }
 
 

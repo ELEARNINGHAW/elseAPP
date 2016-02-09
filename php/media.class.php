@@ -175,8 +175,6 @@ function saveNewMedia(  $IW , $IC, $IU)
 
   $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&ro=".$IU['role_encode']."&item=collection&action=b_coll_edit";
   
-
-  
   $this->renderer->doRedirect( $url );
  }       
 
@@ -206,7 +204,6 @@ function saveNewMediaSuggest (  $IW, $IU )
   if (isset ( $IW['notes_to_studies'] )) { $book['notes_to_studies']   = $IW['notes_to_studies'];} 
 
   $_SESSION[ 'work' ][ 'document_id' ] =   $this->sql->initMedia($book);                                                                   /* Metadaten des neuen Mediums speichern */
-                                                                  /* Metadaten des neuen Mediums speichern */
   
   $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&ro=".$IU['role_encode']."&item=collection&action=b_coll_edit";
   
@@ -216,7 +213,6 @@ function saveNewMediaSuggest (  $IW, $IU )
 function annoteNewMediaForm(  $IW, $IU)
 {   
    $book =   $_SESSION['books'][$IW['ppn']];
-  #deb($book,1);
    $tpl_vars['user']                     = $_SESSION['user'];
    $tpl_vars['coll']                     = $_SESSION['coll'];
    
@@ -293,24 +289,23 @@ function showNewBookForm( $IW, $toSearch = NULL, $searchHits = 1 )
 
 function getBooks( $searchQuery )
 {
+
 #--------------------------------
-$cat            = 'opac-de-18-302';  # HIBS 
-$recordSchema   = 'turbomarc';       # turbomarc / mods
-$maxRecords     = 50;
+$conf           = getConf();
+$cat            = $conf['cat'         ]; #'opac-de-18-302';  # HIBS 
+$recordSchema   = $conf['recordSchema']; #'turbomarc';       # turbomarc / mods
+$maxRecords     = $conf['maxRecords'  ]; # 50;
+$catURL         = $conf['catURL'      ]; #'http://sru.gbv.de/';
 #--------------------------------
 
 $query       =  $this->build_sru_query( $searchQuery ) ; 
-#deb($query,1);
-$datasource  = 'http://sru.gbv.de/'.$cat.'?version=1.2&operation=searchRetrieve&query='.$query.'+sortby+year%2Fdescending&maximumRecords='.$maxRecords.'&recordSchema='.$recordSchema;
-#deb($datasource,1);
+
+$datasource  = $catURL.$cat.'?version=1.2&operation=searchRetrieve&query='.$query.'+sortby+year%2Fdescending&maximumRecords='.$maxRecords.'&recordSchema='.$recordSchema;
 $page        = file_get_contents($datasource);
 $sxm         = simplexml_load_string( str_replace( 'zs:', '' , $page ) );
 
-#deb($datasource,1);
-
 $hits        = $sxm->numberOfRecords;  # Anzahl Treffer
 
-#deb($sxm->records->record,1);
 if (isset ($sxm->records->record) )
 foreach ( $sxm->records->record as $rec )
 {  
@@ -376,7 +371,13 @@ foreach ( $sxm->records->record as $rec )
 
 function getSignature($ppn = NULL)
 {
-  $datasource = 'http://sru.gbv.de/opac-de-18-302?version=1.1&operation=searchRetrieve&query=pica.ppn='.$ppn.'&maximumRecords=1&recordSchema=turbomarc';
+  #--------------------------------
+  $conf           = getConf();
+  $cat            = $conf['cat'         ]; #'opac-de-18-302';  # HIBS 
+  $catURL         = $conf['catURL'      ]; #'http://sru.gbv.de/';
+  #--------------------------------
+  
+  $datasource = $catURL.$cat.'?version=1.1&operation=searchRetrieve&query=pica.ppn='.$ppn.'&maximumRecords=1&recordSchema=turbomarc';
   $page        = file_get_contents($datasource);
   $sxm         = simplexml_load_string( str_replace( 'zs:', '' , $page ) );
   $book        = $sxm->records->record->recordData->r ;
@@ -385,7 +386,13 @@ function getSignature($ppn = NULL)
 
 function getPPNBySignature( $signature )
 {
-  $datasource = 'http://sru.gbv.de/opac-de-18-302?version=1.1&operation=searchRetrieve&query=pica.sgn='.$signature.'&maximumRecords=1&recordSchema=turbomarc';
+  #--------------------------------
+  $conf           = getConf();
+  $cat            = $conf['cat'         ]; #'opac-de-18-302';  # HIBS 
+  $catURL         = $conf['catURL'      ]; #'http://sru.gbv.de/';
+  #--------------------------------
+  
+  $datasource = $catURL.$cat.'?version=1.1&operation=searchRetrieve&query=pica.sgn='.$signature.'&maximumRecords=1&recordSchema=turbomarc';
   $page        = file_get_contents($datasource);
   $sxm         = simplexml_load_string( str_replace( 'zs:', '' , $page ) );
   $book        = $sxm->records->record->recordData->r ;
@@ -442,7 +449,8 @@ if ( isset ( $_SESSION['work'][ 'mode'   ] ) )   {  $INPUT['work'][ 'mode'   ] =
 if ( isset ( $_SESSION['work'][ 'letter' ] ) )   {  $INPUT['work'][ 'letter' ] = $_SESSION['work'][ 'letter' ] ;   } # Sortierbuchstabe
 
 $tpl_var = $INPUT ;
-$tpl_var[ 'html_options' ]['categories'] = $this->sql -> getAllDepartments() ;                                                     ## Liste aller Departments (Categories)
+$tpl_var[ 'html_options' ]['dep'] = $_SESSION['DEP2BIB']; #$this->sql -> getAllDepartments() ;                                                     ## Liste aller Departments (Categories)
+$tpl_var[ 'html_options' ]['fak'] = $_SESSION['FAK'];          ## Liste aller Fakultäten
 $tpl_var[ 'collection' ] = array () ;
 
 $userlist = $this->sql->getUser( $INPUT['work']['mode']);                                                                              ## LISTE mit N Einträgen mit Stammdaten aller registrieter Nutzer 
@@ -499,7 +507,7 @@ $tpl_var[ 'letter_output' ]  = $this->getLetterOutput( $CONST_letter_header, $le
 $tpl_var[ 'source' ]         = 'index.php' ;
 ##------------------------------------------------------------------------------------------------------------------- 
 # deb($_SESSION);
- deb($tpl_var,1);
+ #deb($tpl_var,1);
 $this->renderer -> do_template ( 'index.tpl' , $tpl_var , TRUE ) ;
 }
 
@@ -550,6 +558,8 @@ function getLetterOutput ( $letter_header , $letter_exist )
 
     
     $col_info  = $CI[ $doc_info[ 'collection_id' ] ] ;
+    
+   # deb($col_info,1);
     $user_info = $col_info [ 'user_info' ] ;
 
     if ( $user_info[ 'sex' ] == 'w' )
@@ -573,6 +583,7 @@ function getLetterOutput ( $letter_header , $letter_exist )
     $tpl_vars[ 'toEmail'        ] = $user_info[ 'email' ] ;
 
     $tpl_vars[ 'collectionName' ] = $col_info[ 'title' ] ;
+    $tpl_vars[ 'collection_id'  ] = $col_info[ 'id' ] ;
 
     $tpl_vars[ 'documentName'   ] = $doc_info[ 'title' ] ;
     $tpl_vars[ 'doc_info'  ]    = $doc_info ;
@@ -589,13 +600,19 @@ function getLetterOutput ( $letter_header , $letter_exist )
   }
   
   
-  function send_email ( $IW , $IU )
+  function send_email ( $IW , $IU , $IC)
   {
-	#$IW[ 'to' ]   = 'werner.welte@haw-hamburg.de' ;
-    $IW[ 'bcc2' ] = 'Daniela.Mayer@haw-hamburg.de' ;
-	$to       = $IW[ 'to' ] ;
+    $doc_info = $this->sql -> getDocumentInfos ( $IW[ 'document_id' ] ) ;
+    $CI       = $this->sql -> getCollectionInfos ( $doc_info[ 'collection_id' ] ) ;
 
-    $col_info = $this->sql -> getCollection ( $IW[ 'collection_id' ] ) ;
+    
+  	#$IW[ 'to' ]   = 'werner.welte@haw-hamburg.de' ;
+    $IW[ 'bcc2' ] = 'Daniela.Mayer@haw-hamburg.de' ;
+	  $to       = $IW[ 'to' ] ;
+
+    $CI       = $this->sql -> getCollectionInfos ( $doc_info[ 'collection_id' ] ) ;
+    $col_info  = $CI[ $doc_info[ 'collection_id' ] ] ;
+    
     $url      = "index.php?item=collection&collection_id=" . $IW[ 'collection_id' ] . "&ro=".$IU['role_encode']."&action=b_coll_edit" ;
     $subject  = 'Ihr ELSE Semesterapparat' ;
     $message  = $IW[ 'txt' ] ;
@@ -605,11 +622,12 @@ function getLetterOutput ( $letter_header , $letter_exist )
     $header .= 'Bcc: '          . $IW[ 'bcc2' ] . "\r\n" ;
     $header .= "Mime-Version: 1.0\r\n" ;
     $header .= "Content-type: text/plain; charset=iso-8859-1" ;
-    $header .= 'X-Mailer: PHP/' . phpversion () ;
+    $header .= 'X-Mailer: Greetings from ELSE - PHP/' . phpversion () ;
 	
     if ( $IU[ 'role_name' ] == 'staff' OR $IU[ 'role_name' ] == 'admin' OR $IU[ 'role_name' ] == 'edit' )
+    {  
       $sendok = mail ( $to , $subject , $message , $header ) ;
-
+    }
     
     if ( $sendok )
     {
@@ -620,6 +638,9 @@ function getLetterOutput ( $letter_header , $letter_exist )
       $linkTxt = "ERROR: Mail nicht versendet!" ;
     }
 
+    $doc_info = $this->sql -> getDocumentInfos ( $IW[ 'document_id' ] ) ;
+    $tpl_vars['coll']             = $IC;
+    $tpl_vars[ 'documentName'   ] = $doc_info[ 'title' ] ;
     $tpl_vars[ 'linkTxt' ] = $linkTxt ;
     $tpl_vars[ 'url' ]     = $url ;
     $tpl_vars[ 'work' ]    = $IW ;

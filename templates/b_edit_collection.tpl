@@ -38,7 +38,7 @@
   </tr>
   *}     
   <tr>
-    <td  style="vertical-align: top;"><span style="font-weight: bold;">Department:</span></td>
+    <td  style="vertical-align: top;"><span style="font-weight: bold;">Ihr Department:</span></td>
     <td> {html_options name="categories_id" options=$tpl.departments selected=$colData[$work.collection_id].categories_id }</td>
   </tr>
 {if $work.mode == "staff" or $work.mode == "admin" or 1==1 }

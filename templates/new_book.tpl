@@ -1,7 +1,3 @@
-{config_load file='site.conf'}
-{config_load file='site.conf' section='new_book'}
-
-  
   
  <h3 style="margin:10px; padding:10px; color: #FFF; background-color: #800000;">
 {$colData[$coll.title_short].title} : Katalogsuche

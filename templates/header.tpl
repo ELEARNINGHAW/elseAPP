@@ -20,6 +20,7 @@
 {if not isset($user.forename)}           {$user.forename            = ''}  {/if}
 {if not isset($user.surname)}            {$user.surname             = ''}  {/if}
 {if not isset($user.id)}                 {$user.id                  = ''}  {/if}
+{if not isset($user.role_name)}          {$user.role_name           = ''}  {/if}
 {if $work.todo != "print"  }
 {if  $user.role_name == "admin" ||  $user.role_name == "staff"} 
 <div style="position:relative;   padding:0px; height:38px; margin:0px;  background-color: #234A89;  margin-left:0px; margin-right: 0px;">

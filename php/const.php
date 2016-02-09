@@ -3,18 +3,19 @@
 $debug_level  = 1;
 
 $CONST_letter_header = array ( 'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' , 'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' , 'U' , 'V' , 'W' , 'X' , 'Y' , 'Z' ) ;
-
+/*
 $const_FAK['DMI'] = array (20, 21, 22, 23); 
 $const_FAK['LS' ] = array (30,31,32,33,34,35,36,37,39, 430);
 $const_FAK['TI' ] = array (50,51,52,53,54,55);
 $const_FAK['WS' ] = array (60,61,62,63,64);
-
+*/
+/*
 $const_BIB['DMI'   ] = array (21, 22, 23); 
 $const_BIB['LS'    ] = array (31,32,33,34,35,36,37,39 ,430); 
 $const_BIB['TWI2'  ] = array (61,62,63,64,65); 
 $const_BIB['TWI1'  ] = array (61,62); 
 $const_BIB['SP'    ] = array (63,64); 
-
+*/
 if (!isset ($default_role_id)) $default_role_id = 3;
 
 if   ( isset ( $_POST[ 'location_id' ] ) )  { $location_id = $_POST[ 'location_id' ] ; }
@@ -22,7 +23,7 @@ else                                        { $location_id = 1 ;                
 
 ## actions info
 $CONST_actions_info = array
-(   'b_new'                 => array
+(    'b_new'                 => array
     (                                                                           /* Neues Medium anlegen (suchen, annotieren, in SA speichern) ## Buch (- -> 1): [Neu bestellt] ## E-Book (- -> 3): [Ist aktiv]     /   Neuer SA anlegen, annotieren, speichern,  SA ## (- -> 3): [ist aktiv] */
         'button'            => 'b_new' ,
         'button_label'      => 'neu anlegen' ,
@@ -33,7 +34,7 @@ $CONST_actions_info = array
             "collection" => "role=admin,role=edit,role=staff" ,
             "book"       => "role=admin,role=edit,role=staff" ,
             "ebook"      => "role=admin,role=edit,role=staff" ,
-            "lh_book"      => "role=admin,role=edit,role=staff" ,
+            "lh_book"    => "role=admin,role=edit,role=staff" ,
           ) ,
     ) ,
 
@@ -403,5 +404,44 @@ $CONST_validation_info = array (
     "b_cat_ok" => "/^.*$/" ,
 ) ;
 
+function getDocType($book)
+{
+  if (isset ($book['physicaldesc']) AND !isset ($book['state_id'] )  ) 
+  {                                                                                               $book['state_id'   ]  =  1 ;
+    if(      stristr(  $book['physicaldesc']  , 'Online') == TRUE ) { $book['doc_type_id']  = 4;  $book['state_id'   ]  =  3;}  
+    else if( stristr(  $book['physicaldesc']  , 'CD-ROM') == TRUE ) { $book['doc_type_id']  = 3;  $book['state_id'   ]  =  1;}
+  } 
+
+  if (!isset ($book['doc_type_id'])) 
+  {
+    $book['doc_type_id'] = 1;
+  }
+  
+  if( $book['doc_type_id']  == 4 ) 
+  { 
+    $book['doc_type'   ]  = "electronic";   #  E-BOOK            
+    $book['item'       ]  = 'ebook'; 
+  }
+  else if( $book['doc_type_id']  == 3 )     # CD-ROM
+  {
+    $book['doc_type'   ]  = "cd-rom";
+    $book['item'       ]  = 'book'; 
+   /* Status: NEU BESTELLT  */
+  }
+  else if( $book['doc_type_id']  == 2 )      # BUCH als Literaturhinweis
+  {
+    $book['doc_type'   ]  = "print";
+    $book['item'       ]  = 'lh_book'; 
+  }
+  else                                       # BUCH im Semesterapparat
+  {
+    $book['doc_type'   ]  = "print";
+    $book['item'       ]  = 'book'; 
+    $book['doc_type_id']  =  1;               
+  }
+  return $book;
+}
+
+function deb($obj, $kill=false) {   echo "<pre>";  print_r ($obj);  echo "<pre>";  if($kill){die();} }
 
 ?>
