@@ -424,8 +424,6 @@ class Util   /// \brief check user input
     $header .= "Mime-Version: 1.0\r\n" ;
     $header .= "Content-type: text/plain; charset=iso-8859-1" ;
     $header .= 'X-Mailer: PHP/' . phpversion () ;
-	
-    deb ( $to . $subject . $message . $header,1 ) ;
 
     $sendok = mail ( $to , $subject , $message , $header ) ;
     
