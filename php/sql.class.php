@@ -9,11 +9,8 @@ var $conf;
 
 function SQL ()
 {
-  
-  
-  $this->conf = getConf();
-  
-  #deb($this->conf);
+   $this->conf = getConf();
+ 
   $this->DB = new mysqli( $this->conf['db_host'], $this->conf['db_user'],  $this->conf['db_pass'],  $this->conf['db_name']);         
   if (mysqli_connect_errno()) 
   {   printf("Verbindung fehlgeschlagen: %s\n", mysqli_connect_error());   exit();
