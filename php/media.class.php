@@ -274,7 +274,7 @@ function showNewBookForm( $IW, $toSearch = NULL, $searchHits = 1 )
   $tpl_vars['book']['author']       = $toSearch['author'];                                                                 /*   */
   $tpl_vars['book']['signature']    = $toSearch['signature'];                                                                 /*   */
   $tpl_vars['coll']['title_short']  = $IW['collection_id'];  
-
+#deb( $tpl_vars['coll']    );
   $this->renderer->do_template ( 'new_book.tpl' , $tpl_vars ) ;
   exit(0);
 }
@@ -449,15 +449,15 @@ if ( isset ( $_SESSION['work'][ 'mode'   ] ) )   {  $INPUT['work'][ 'mode'   ] =
 if ( isset ( $_SESSION['work'][ 'letter' ] ) )   {  $INPUT['work'][ 'letter' ] = $_SESSION['work'][ 'letter' ] ;   } # Sortierbuchstabe
 
 $tpl_var = $INPUT ;
-$tpl_var[ 'html_options' ]['dep'] = $_SESSION['DEP2BIB']; #$this->sql -> getAllDepartments() ;                                                     ## Liste aller Departments (Categories)
+$tpl_var[ 'html_options' ]['dep'] = $_SESSION['DEP2BIB']; #$this->sql -> getAllDepartments() ;                                               ## Liste aller Departments (Categories)
 $tpl_var[ 'html_options' ]['fak'] = $_SESSION['FAK'];          ## Liste aller Fakultäten
 $tpl_var[ 'collection' ] = array () ;
 
-$userlist = $this->sql->getUser( $INPUT['work']['mode']);                                                                              ## LISTE mit N Einträgen mit Stammdaten aller registrieter Nutzer 
+$userlist = $this->sql->getUser( $INPUT['work']['mode']);                                                                                    ## LISTE mit N Einträgen mit Stammdaten aller registrieter Nutzer 
 
-foreach ( $userlist as $u )                                                                                                      ## Liste wird mit entsprechenden SAs erweitert 
+foreach ( $userlist as $u )                                                                                                                  ## Liste wird mit entsprechenden SAs erweitert 
 {
-  #$tpl_var[ 'html_options' ][ 'user' ][ $u[ 'hawaccount' ] ] =  $this-> getFullUserName($u);                                                 #----- LISTE DER ELSE USER  = $tpl_var[ 'html_options' ][ 'user' ]   
+  #$tpl_var[ 'html_options' ][ 'user' ][ $u[ 'hawaccount' ] ] =  $this-> getFullUserName($u);                                                ## LISTE DER ELSE USER  = $tpl_var[ 'html_options' ][ 'user' ]   
   
   $SAlistTMP                                            =  $this->sql->getSAlist( $u, $INPUT['work']['mode'], $INPUT['work']['categories'] );
    
@@ -467,11 +467,14 @@ foreach ( $userlist as $u )                                                     
   {
     if (      $SAL[ 'id' ] !=  'ELSE-ADMIN' 
            && $SAL[ 'id' ] !=  'HIBS ELSE' 
-           && $SAL[ 'id' ] !=  'EMIL-Team' 
+          # && $SAL[ 'id' ] !=  'LS01' 
+           && $SAL[ 'id' ] !=  'Lebens Stiel2' 
+                    
 	     )
 	     {
          $SAlist[] = $SAL; 
        }
+ 
   }
  
   if ( isset ( $SAlist[ 0 ][ 'surname' ] ) && $letter_eq != substr ( $SAlist[ 0 ][ 'surname' ] , 0 , 1 ) )                    ## Wenn User mindestens ein Semesterapparat hat
@@ -481,7 +484,6 @@ foreach ( $userlist as $u )                                                     
 
   $key  = $this->getKey( $u );
   $tpl_var[ 'collection' ][ $key ] = NULL ;  
-  
   
   $substring = strtolower ( $INPUT['work'][ 'letter' ] ) ;
   

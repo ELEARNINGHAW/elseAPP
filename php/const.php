@@ -3,19 +3,7 @@
 $debug_level  = 1;
 
 $CONST_letter_header = array ( 'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' , 'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' , 'U' , 'V' , 'W' , 'X' , 'Y' , 'Z' ) ;
-/*
-$const_FAK['DMI'] = array (20, 21, 22, 23); 
-$const_FAK['LS' ] = array (30,31,32,33,34,35,36,37,39, 430);
-$const_FAK['TI' ] = array (50,51,52,53,54,55);
-$const_FAK['WS' ] = array (60,61,62,63,64);
-*/
-/*
-$const_BIB['DMI'   ] = array (21, 22, 23); 
-$const_BIB['LS'    ] = array (31,32,33,34,35,36,37,39 ,430); 
-$const_BIB['TWI2'  ] = array (61,62,63,64,65); 
-$const_BIB['TWI1'  ] = array (61,62); 
-$const_BIB['SP'    ] = array (63,64); 
-*/
+
 if (!isset ($default_role_id)) $default_role_id = 3;
 
 if   ( isset ( $_POST[ 'location_id' ] ) )  { $location_id = $_POST[ 'location_id' ] ; }
@@ -61,9 +49,7 @@ $CONST_actions_info = array
         'acl'               => array (  "collection" => "role=admin,owner=true,role=staff" ,  ) ,
     ) ,
     
-    
-    
-     'b_delete'             => array 
+  'b_delete'             => array 
       (                                                                         /*  Medium (E-Book, Buch) oder SA  wird gelöscht  (5 -> 6): Erscheint nicht mehr   */
         'button'            => 'b_delete' ,
         'button_label'      => 'Löschen' ,
@@ -82,8 +68,6 @@ $CONST_actions_info = array
         ) ,
     ) ,
     
-    
-    
     'b_accept'                => array
     (                                                                           /*  Bestellwunsch (oder Kaufvorschlag) wurde akzeptiert und wir von HIBS bearbeitet (1 -> 2): [Wird bearbeitet]   */
         'button'            => 'b_accept' ,
@@ -97,8 +81,6 @@ $CONST_actions_info = array
             "mode"     => array ( "staff" , "admin" ) ,
         ) ,
     ) ,
-
-   
     
     'b_cancel_order'        => array
     (                                                                           /*  Bestellwunsch wurde von HIBS (oder owner) abgelehnt/storniert   (1 -> 5): [Ist inaktiv] */
@@ -113,8 +95,6 @@ $CONST_actions_info = array
             "mode"     => array ( "edit" , "staff" , "admin" ) ,
         ) ,
     ) ,
-        
-    
     
     'b_finished'            => array
     (                                                                           /*  Bestellwunsch wurde erledigt und steht nun (im Bücherregal SA) zur Verfügung  (2 -> 3): [Ist aktiv]   */
@@ -128,7 +108,6 @@ $CONST_actions_info = array
         ) ,
         'acl'               => array ( "book" => "role=admin,role=staff" ,   ) ,
     ) ,
-    
     
     'b_release'             => array
     (                                                                           /* Buch kann zurückgegeben werden  (3 -> 4): [Wird entfernt] */
@@ -144,7 +123,6 @@ $CONST_actions_info = array
         ) ,
     ) ,
     
-    
     'b_return'                => array 
     (                                                                           /* Buch ist zurückgegeben worden   (4 -> 5): [Inaktiv]   */
         'button'            => 'b_return' ,
@@ -158,7 +136,6 @@ $CONST_actions_info = array
             "mode"      => array ( "staff" , "admin" ) ,
         ) ,
     ) ,
-
     
     'b_cancel_release'        => array 
     (                                                                           /* Buch wird doch nicht zurückgegeben (sondern sogar verlängert)  (4 -> 2): [Wird bearbeitet]   */
@@ -177,7 +154,6 @@ $CONST_actions_info = array
         ) ,
     ) ,
 
-
     'b_revive'              => array 
     (                                                                           /*  Bestellwunsch wird erneuert   (5 -> 1): [Neu bestellt]   */
         'button'            => 'b_revive' ,
@@ -195,8 +171,6 @@ $CONST_actions_info = array
             "book"    => "role=admin,owner=true,role=staff" ,
         ) ,
     ) ,
-
- 
     
     'b_deactivate'            => array 
     (                                                                           /*  E-Book wird deaktiviert            (3 -> 5): [Ist inaktiv]     */
@@ -235,8 +209,6 @@ $CONST_actions_info = array
             "lh_book"  => "owner=true,role=admin, role=staff",
         ) ,
     ) ,
-
-    
     
     'b_edit'                => array 
     (                                                                           /* Metadaten des Mediums (Buch, E-Book) wird bearbeiten    (a -> a )State ändert sich nicht */
@@ -256,9 +228,6 @@ $CONST_actions_info = array
         ) ,
     ) ,
     
-
-    
-    
    'new_email'              => array
    (
         'button'            => 'b_new_email' ,
@@ -271,7 +240,6 @@ $CONST_actions_info = array
             "mode" => array ( "staff" , "admin" ) ,
         ) ,
     ) ,
-
     
    'kill'              => array
    (

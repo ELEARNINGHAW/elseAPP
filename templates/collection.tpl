@@ -7,7 +7,7 @@
   {if $ci.title_short != "" OR  $work.action == 'showopen'}
   <div class="SAMeta bgDef bg{$ci.location_id}">
   {if ( $staff_mode )}   
-     <div style="width:630px; display: inline-block; font-weight: 700; font-size: 14px; color: #FFF;"> 
+     <div style="width:630px; display: inline-block; font-weight: 700; font-size: 14px; color: #FFF; padding-top:2px; "> 
         <div style="float:left;">{$ci.title} </div>
         <div style="float:right;"> FB:{$ci.location_id}</div><br/>
 

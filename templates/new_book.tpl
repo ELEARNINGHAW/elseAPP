@@ -1,11 +1,9 @@
-  
- <h3 style="margin:10px; padding:10px; color: #FFF; background-color: #800000;">
+<h3 style="margin:10px; padding:10px; color: #FFF;" class="bgDef bg{$coll.location_id}" >
 {$colData[$coll.title_short].title} : Katalogsuche
    <a style="float:right;" href="index.php?item=collection&action=show&collection_id={$coll.title_short}">
   <img  class="icon" style="margin-top:-4px;" title="Zurück" src="img/svg/chevron-left_w.svg" />
 </a>
 </h3>
-  
 
 {if $page == "1"}                      {* ------- Eingabefelder Titel/Autor/Signatur für die Buch-Suchmaske ----------- *}
 
@@ -22,7 +20,6 @@
   <a style ="text-decoration: none;"  href="index.php?item=book&action=purchase_suggestion&collection_id={$colData[$coll.title_short].id}"><div style="border:1px solid black; font:700 14px; color:#000; background-color: #EFEFEF; padding:3px; " >Zum Erwerbungsvorschlag</div></a>
   </div>
   </div> 
-    
     
   {/if}
   

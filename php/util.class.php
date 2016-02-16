@@ -19,65 +19,6 @@ class Util   /// \brief check user input
        $_SESSION['FACHBIB' ] =  $this->HAWdb->getAllFachBib();
     } 
   }
-/*
-  function check_input ( $user_input , $strict_mode = TRUE )
-  {
-    global $CONST_validation_info ;
-    $debug_level = 10 ;
-    $err_info    = array () ;
-    foreach ( $CONST_validation_info as $k ) 
-    {
-      if ( ! isset ( $user_input[ $k ] ) )
-      {
-        $user_input[ $k ] = "" ;
-      }
-    }
-    if ( $debug_level > 20 )
-    {
-      print "<hr><pre>" ;
-      print "util.php: check_input():\n\n" ;
-    }
-    foreach ( $user_input as $k => $v ) {
-      $type = gettype ( $v ) ;
-      switch ( $type ) {
-        case "string":
-          if ( isset ( $CONST_validation_info[ $k ] ) )
-          {
-            $ok = preg_match ( $CONST_validation_info[ $k ] , $v ) ;
-          }
-          else
-          {
-            $ok = ($strict_mode) ? FALSE : TRUE ;
-          }
-          break ;
-
-        case "array":
-          $ok = TRUE ;
-          break ;
-
-        default:
-          $ok = FALSE ;
-      } if ( $debug_level > 20 )
-      {
-        print "key: $k\n" ;
-        print "value: $v\n" ;
-        print "regexp: " . $CONST_validation_info[ $k ] . "\n" ;
-        print "ok: " ;
-        print (($ok) ? "yes" : "no" ) . "\n\n" ;
-      }
-
-      if ( ! $ok )
-      {
-        $err_info[] = $k ;
-      }
-    }
-    if ( $debug_level > 20 )
-    {
-      print "</pre></hr>" ;
-    }
-    return $err_info ;
-  }
-*/
   
   function get_item_owner ( $item , $id )
   {
@@ -192,26 +133,8 @@ class Util   /// \brief check user input
     }
     return ( $ok_ower || $ok_role || $ok_any ) ;
   }
-
-// set a random password 
-
-  /*
-  function resolveLocationID ( $dep )
-  {
-    global $const_BIB ;
+ 
   
-    if      ( in_array ( $dep , $const_BIB['DMI'   ]  ) )  {  $bibLoc = 'DMI' ;  }
-    else if ( in_array ( $dep , $const_BIB['LS'    ]  ) )  {  $bibLoc = 'LS' ;  }
-    else if ( in_array ( $dep , $const_BIB['TWI1'  ]  ) )  {  $bibLoc = 'TWI1' ;  }
-    else if ( in_array ( $dep , $const_BIB['TWI2'  ]  ) )  {  $bibLoc = 'TWI2' ;  }
-    else if ( in_array ( $dep , $const_BIB['SP'    ]  ) )  {  $bibLoc = 'TWI2' ;  }
-    else                                                   {  $bibLoc = 'XX' ;  }
-    return $bibLoc ;
-  }
-*/
-  
-  
-####################### --- MAIL --- #######################
 
 ####################### --- TOOLS --- #######################
 
@@ -251,8 +174,6 @@ class Util   /// \brief check user input
     {
       $INPUT[ 'work' ] = array_merge ( $INPUT[ 'work' ] , $CONST_actions_info[ $INPUT[ 'work' ][ 'action' ] ] [ 'input' ] ) ;   /* get mode */
     }
-
-   #  deb( $INPUT[ 'work' ][ 'collection_id' ]);
     
     
     if (            $INPUT[ 'work' ][ 'item'          ] == '' ) { $INPUT[ 'work' ][ 'item'        ] = 'collection'  ;   }                     ## Standard work.item ist 'collection'
@@ -314,26 +235,7 @@ class Util   /// \brief check user input
       $_SESSION[ 'coll' ] = $IC ;
     }
   }
-/*
-  function getLTIValues ( $I )
-  {
-    if ( isset ( $IW[ 'work' ][ 'lti_version' ] ) )
-    {
-      if      ( stristr ( $IW[ 'work' ][ 'roles' ] , 'Instructor' ) )  {  $IW[ 'user' ][ 'role_id' ] = 3 ;   }
-      else if ( stristr ( $IW[ 'work' ][ 'roles' ] , 'Learner'    ) )  {  $IW[ 'user' ][ 'role_id' ] = 4 ;   }
 
-      $IW[ 'work' ][ 'roles'                              ] ; # => Instructor,urn:lti:sysrole:ims/lis/Administrator,urn:lti:instrole:ims/lis/Administrator
-      $IW[ 'work' ][ 'context_id'                         ] ; # => 2
-      $IW[ 'work' ][ 'context_label'                      ] ; # => LS01
-      $IW[ 'work' ][ 'context_title'                      ] ; # => Lebens Stiel
-      $IW[ 'work' ][ 'lis_person_name_given'              ] ; # => Admin
-      $IW[ 'work' ][ 'lis_person_name_family'             ] ; # => User
-      $IW[ 'work' ][ 'lis_person_name_full'               ] ; # => Admin User
-      $IW[ 'work' ][ 'ext_user_username'                  ] ; # => admin
-      $IW[ 'work' ][ 'lis_person_contact_email_primary'   ] ; # => werner.welte@haw-hamburg.de
-    }
-  }
-*/
   function initUpdateUser ( $IDMuser )    # EMIL Nutzer ist schon ELSE Nutzer 
   {
     if    ( $this->sql -> checkUserExistence ( $IDMuser[ 'akennung' ] ) ) { $this->sql -> updateUser ( $IDMuser ) ; }  # echo "- Bestehender USER (UPDATE DB )-";
@@ -435,41 +337,6 @@ class Util   /// \brief check user input
     }
 	  echo date("d.m.Y")." ".$linkTxt."\r\n";
   }
-  
-  /*
-    function expire ()
-    {
-
-    $input = array ( "item" => "collection" , "state" => "obsolete" ) ;
-
-    $colls = $this -> sql -> getExpiredCollections () ;                         #  ALLE Semesterapparate, die *aktiv* UND deren Zeit inzwischen abgelaufen sind #
-    #deb ( $colls , 1 ) ;
-    foreach ( $colls as $c ) {
-    $input[ 'id' ] = $c[ 'id' ] ;                                               #  werden auf neuen Status *obsolete* gesetzt  #
-    $this -> set_item_state ( $input ) ;
-    }
-
-    $param = array (
-    "tables" => "collection AS c,state AS s" ,
-    "columns" => "c.id AS id" ,
-    'cond' => "(c.state_id = s.id)      AND      (s.name = 'obsolete')     AND     DATE_ADD(c.expiry_date, INTERVAL 14 DAY) <= NOW()"
-    ) ;
-
-    $colls = $this -> sql -> sql_query ( 'select' , $param ) ;                   #  ALLE Semesterapparate, die *obsolete* UND deren Zeit inzwischenn *SEIT  min. 14 TAGEN* abgelaufen sind#
-    $input = array ( "item" => "collection" , "state" => "inactive" ) ;
-
-    foreach ( $colls as $c )                                                    # werden auf neuen Status *inactive* gesetzt  #
-    {
-
-
-    $input[ 'id' ] = $c[ 'id' ] ;
-    $this -> set_item_state ( $input ) ;
-    }
-
-    }
-   */
-  
-  
 }
 
 ?>

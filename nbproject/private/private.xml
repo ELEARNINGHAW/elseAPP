@@ -3,8 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/X:/htdocs/ELSE/php/config.php</file>
-            <file>file:/X:/htdocs/ELSE/php/config-dist.php</file>
+            <file>file:/X:/htdocs/ELSE/templates/new_book.tpl</file>
+            <file>file:/X:/htdocs/ELSE/templates/header.tpl</file>
+            <file>file:/X:/htdocs/ELSE/htdocs/index.php</file>
+            <file>file:/X:/htdocs/ELSE/templates/collection.tpl</file>
+            <file>file:/X:/htdocs/ELSE/php/media.class.php</file>
+            <file>file:/X:/htdocs/ELSE/php/sql.class.php</file>
+            <file>file:/X:/htdocs/ELSE/php/collection.class.php</file>
         </group>
     </open-files>
 </project-private>

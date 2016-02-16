@@ -9,7 +9,11 @@ var $conf;
 
 function SQL ()
 {
+  
+  
   $this->conf = getConf();
+  
+  #deb($this->conf);
   $this->DB = new mysqli( $this->conf['db_host'], $this->conf['db_user'],  $this->conf['db_pass'],  $this->conf['db_name']);         
   if (mysqli_connect_errno()) 
   {   printf("Verbindung fehlgeschlagen: %s\n", mysqli_connect_error());   exit();
@@ -45,14 +49,15 @@ function initMedia($book)
  last_state_change  = NOW()';     
 
  $res =  mysqli_query ( $this->DB, $SQL);
- 
  $res = $this->getDocumentID ( $book );
- 
  return $res;
 }
 
+
 function getDokumentList( $colID,$doc_type_id = null , $state_id = null  )
 {
+  $ret = NULL;
+  
   $SQL = " 
   SELECT * 
   FROM `document` 
@@ -61,15 +66,11 @@ function getDokumentList( $colID,$doc_type_id = null , $state_id = null  )
   if ( isset($doc_type_id) ) { $SQL .= " AND `doc_type_id` = ". $doc_type_id;}
   if ( isset($state_id   ) ) { $SQL .= " AND `state_id`    = ". $state_id;   }
   
-  $ret = NULL;
-  
   $res =  mysqli_query ( $this->DB, $SQL);
-
 
   if ($res)
   while ($row = mysqli_fetch_assoc($res)) 
-  {
-    $ret[] = $row;
+  { $ret[] = $row;
   }     
  
   return $ret; 
@@ -78,44 +79,28 @@ function getDokumentList( $colID,$doc_type_id = null , $state_id = null  )
 
 function getAdminEmailInfos (   )
 {
-  /*
-  $SQL1 = "SELECT * FROM `location`";
-
-  $res =  mysqli_query ( $this->DB, $SQL1);
-
-  while ($row = mysqli_fetch_assoc($res)) 
-  {
-    $HIBS_location[$row['id']] = $row;
-  }
-  */
-  
-  
   foreach ($_SESSION['FACHBIB'] as $HIBS_loc)
-  {
- 
-  $ret[$HIBS_loc['BibID']] = $HIBS_loc;
-    
-  $SQL2 = "
-  SELECT COUNT(*)
-  FROM document 
-  INNER JOIN collection ON document.collection_id = collection.id 
-  WHERE document.state_id = '1' AND collection.location_id = '".$HIBS_loc['BibID']."'";    /* Status 1 = Neu Angefordert */
-
-  $res =  mysqli_query ( $this->DB, $SQL2);
-  $tmp  = mysqli_fetch_assoc($res);
-  $ret[$HIBS_loc['BibID']][1] = $tmp['COUNT(*)']; 
-
-  $SQL2 = "                                                    
-  SELECT COUNT(*)
-  FROM document 
-  INNER JOIN collection ON document.collection_id = collection.id 
-  WHERE document.state_id = '9' AND collection.location_id = '".$HIBS_loc['BibID']."'";   /* Status 9 = Kaufvorschlag  */
-
-  $res =  mysqli_query ( $this->DB, $SQL2);
-  $tmp  = mysqli_fetch_assoc($res);
-  $ret[$HIBS_loc['BibID']][9] = $tmp['COUNT(*)'];  
+  { $ret[$HIBS_loc['BibID']] = $HIBS_loc;
+    $SQL2 = "
+    SELECT COUNT(*)
+    FROM document 
+    INNER JOIN collection ON document.collection_id = collection.id 
+    WHERE document.state_id = '1' AND collection.location_id = '".$HIBS_loc['BibID']."'";    /* Status 1 = Neu Angefordert */
+  
+    $res =  mysqli_query ( $this->DB, $SQL2);
+    $tmp  = mysqli_fetch_assoc($res);
+    $ret[$HIBS_loc['BibID']][1] = $tmp['COUNT(*)']; 
+  
+    $SQL2 = "                                                    
+    SELECT COUNT(*)
+    FROM document 
+    INNER JOIN collection ON document.collection_id = collection.id 
+    WHERE document.state_id = '9' AND collection.location_id = '".$HIBS_loc['BibID']."'";   /* Status 9 = Kaufvorschlag  */
+  
+    $res =  mysqli_query ( $this->DB, $SQL2);
+    $tmp  = mysqli_fetch_assoc($res);
+    $ret[$HIBS_loc['BibID']][9] = $tmp['COUNT(*)'];  
   }
- 
   return $ret;  
 }
 
@@ -131,11 +116,11 @@ function getUserHSK ( $hawAccount )
   AND user.hawaccount = \"".$hawAccount."\" 
   AND user.role_id = role.id LIMIT 1";
 
-  #print_r($SQL);
   $res =  mysqli_query ( $this->DB, $SQL);
   $ret[] = mysqli_fetch_assoc($res);
   return $ret;  
 }
+
 
 function checkUserExistence( $hawacc )
 {
@@ -148,6 +133,7 @@ function checkUserExistence( $hawacc )
   return $ret;  
 }
 
+
 function doCollectionExist( $title_short )
 {
   $SQL = "
@@ -156,45 +142,8 @@ function doCollectionExist( $title_short )
   WHERE `title_short` = \"". $title_short ."\"" ;
   $res =  mysqli_query ( $this->DB, $SQL);
   $ret = mysqli_fetch_assoc($res);
- 
-  #deb($ret,1);
   return $ret;  
 }
-/*
-
-function getUserData( $uid )
-{
-  $SQL = "
-  SELECT user.*, 
-  role.name AS role_name 
-  FROM user,state,role 
-  WHERE user.state_id = state.id 
-  AND user.id = \"". $uid ."\" 
-  AND user.role_id = role.id LIMIT 1";
-  
-  $res =  mysqli_query ( $this->DB, $SQL);
-  $ret = mysqli_fetch_assoc($res);
-  return $ret;  
-}
-
-*/
-/*
-function getAllDepartments()
-{
-  $SQL = "
-  SELECT * 
-  FROM `categories` 
-  ORDER BY `id` ASC";
-  
-  $res =  mysqli_query ( $this->DB, $SQL);
-  while ($row = mysqli_fetch_assoc($res)) 
-  {
-    $ret[$row['id']] = $row['description'];
-  }
-  return $ret;  
-}
-*/
-
 
 function getAllMedStates()
 {
@@ -205,36 +154,10 @@ function getAllMedStates()
   
   $res =  mysqli_query ( $this->DB, $SQL);
   while ($row = mysqli_fetch_assoc($res)) 
-  {
-    $ret[$row['id']] = $row;
+  { $ret[$row['id']] = $row;
   }
   return $ret;  
 }
-
-/*
-function getBibInfos( $style = NULL )
-{
-  $SQL = "
-  SELECT * 
-  FROM `location` 
-  ORDER BY `id` ASC";
-  
-  $res =  mysqli_query ( $this->DB, $SQL);
-  while ($row = mysqli_fetch_assoc($res)) 
-  {
-    if ( $style == 'name')
-    {
-      $ret[$row['id']] = $row['description'];
-    }       
-    else
-    {
-       $ret[$row['id']] = $row;
-    }
-  }
-  return $ret;  
-}
-*/
-
 
 function getRoleInfos( $style = NULL )
 {
@@ -245,14 +168,11 @@ function getRoleInfos( $style = NULL )
   
   $res =  mysqli_query ( $this->DB, $SQL);
   while ($row = mysqli_fetch_assoc($res)) 
-  {
-    if ( $style == 'name')
-    {
-      $ret[$row['id']] = $row['description'];
+  { if ( $style == 'name')
+    { $ret[$row['id']] = $row['description'];
     }       
     else
-    {
-       $ret[$row['id']] = $row;
+    { $ret[$row['id']] = $row;
     }
   }
   return $ret;  
@@ -262,8 +182,7 @@ function getRoleInfos( $style = NULL )
 function deleteCollection($IW, $IU)
 {
   if( $IU['role_name'] == 'staff' || $IU['role_name'] == 'admin'  )
-  {
-    $SQL = "
+  { $SQL = "
     DELETE 
     FROM  `collection` 
     WHERE `collection`.`id` = ".$IW['collection_id'];     
@@ -277,10 +196,8 @@ function deleteCollection($IW, $IU)
 
 function deleteMedia($IW, $IU)
 {
-
   if( $IU['role_name'] == 'staff' || $IU['role_name'] == 'admin'  )
-  {
-    $SQL = "
+  { $SQL = "
     DELETE
     FROM `document` 
     WHERE `document`.`id` = ".$IW['document'];     
@@ -288,25 +205,6 @@ function deleteMedia($IW, $IU)
     return  mysqli_fetch_assoc( $res );
   }
 }
-
-/*
-
-function getCollection($colID)
-{
-  $SQL = "
-  SELECT * 
-  FROM `collection` 
-  WHERE `id`  = \"" .$colID  . "\"";
-
-
-
-  $res =  mysqli_query ( $this->DB, $SQL);
-  
-  $ret = mysqli_fetch_assoc( $res );
-  #deb($ret,1);
-  return  $ret;
-}
-*/
 
 
 /* Gibt alle Medien Daten zurück: 
@@ -347,7 +245,6 @@ function setMediaState( $mediaID, $state )
   SET `state_id` = '". $state ."' WHERE `document`.`id` = ". $mediaID;
  
   $res =  mysqli_query ( $this->DB, $SQL);
- #deb($SQL,1);
   return $res;
 }
 
@@ -369,10 +266,6 @@ function initUser($IU)
     department        = \"" . $IU['department']  . "\" ,
     `hawaccount`      = \"" . $IU['akennung'  ]  . "\"";
  
-/*
-=$IU['shortname'   ]
-=$IU['fullname'    ]
-*/
   $res =  mysqli_query ( $this->DB, $SQL);
   return $res;
 }
@@ -392,7 +285,6 @@ function updateUser($IU)
     department        = \"" . $IU['department']  . "\" 
   WHERE 
     `hawaccount`     = \"" . $IU['akennung'  ]  . "\"";
- #   deb($SQL,1);
 	$res =  mysqli_query ( $this->DB, $SQL);
   return $res;
   
@@ -573,20 +465,6 @@ function getDocumentID ( $book ) /* Kartesisches Produkt aller Dokumenten mit al
   return $ans ;
 }
 
-/*
-function getStatusName ( $statusID   )
-{
-  $ans = $this->sql_query ( 'select' , array ( 'tables' => "state" , 'cond' => "id = " . $statusID , )  ) ;       # translate state id to state 
-  if ( isset ( $ans[ 0 ][ 'name' ] ) )
-  {
-    return $ans[ 0 ][ 'name' ] ;
-  }
-  else
-  {
-    return false ;
-  }
-}
-*/
 
 function getAllDocTypes()  
 {
@@ -605,7 +483,6 @@ function getRoleName( $roleNr )
 {
   $SQL = "SELECT name FROM `role` WHERE id = $roleNr" ;
   
-  #deb( $SQL,1 );
   $res =  mysqli_query ( $this->DB, $SQL);
   while ($row = mysqli_fetch_assoc($res)) 
   {
@@ -652,23 +529,6 @@ function getUser( $mode )
   
   return $ret; 
 }
-/*
-function getExpiredCollections()
-{
-  $param = array
-  (
-     "tables" => "collection as c,state as s" ,
-     "columns" => "c.id" ,
-     'cond' => "c.state_id = s.id   AND   s.name = 'active'   AND   c.expiry_date <= NOW()" ,
-  ) ;
-  
-  $SQL = "SELECT " .$param['columns']. " FROM " .$param['tables']. "  WHERE  ".$param['cond'];
-  
-  $res =  mysqli_query ( $this->DB, $SQL);
-
-  return $res; 
-}
-*/
 
 function getSAlist( $user, $mode, $categories )
 {
@@ -678,7 +538,7 @@ function getSAlist( $user, $mode, $categories )
  if($categories == 30) { $categories = "31 OR u.categories_id = 32 OR u.categories_id = 33 OR u.categories_id = 34 OR u.categories_id = 35 OR u.categories_id = 36 OR u.categories_id = 37 OR u.categories_id = 430"; }  
  if($categories == 50) { $categories = "51 OR u.categories_id = 52 OR u.categories_id = 53 OR u.categories_id = 54 OR u.categories_id = 55"; }  
  if($categories == 60) { $categories = "61 OR u.categories_id = 62 OR u.categories_id = 63 OR u.categories_id = 64 OR u.categories_id = 65"; }  
- 
+ if($categories == 1 ) { $categories != "21 AND u.categories_id != 22 AND u.categories_id != 23 AND u.categories_id != 24 AND u.categories != 31 AND u.categories_id != 32 AND u.categories_id != 33 AND u.categories_id != 34 AND u.categories_id != 35 AND u.categories_id != 36 AND u.categories_id != 37  AND u.categories != 51 AND u.categories_id != 52 AND u.categories_id != 53 AND u.categories_id != 54 AND u.categories_id != 55 AND u.categories != 61 AND u.categories_id != 62 AND u.categories_id != 63 AND u.categories_id != 64 AND u.categories_id != 65 "; } 
  $SQL  =  " SELECT c.*, u.surname, u.forename, s.name AS state_name, s.description AS state_description"; 
  $SQL .=  " FROM collection c "; 
  $SQL .=  " LEFT JOIN  user u"; 
@@ -687,11 +547,9 @@ function getSAlist( $user, $mode, $categories )
  $SQL .=  "  ON s.id = c.state_id"; 
  $SQL .=  " WHERE user_id = \"" .$user[ 'hawaccount' ]."\""; 
  if ( $mode       == "view" )  {  $SQL .= " AND c.state_id = 3";                    }                  /* Zustand 3 = aktiv */  
- if ( $categories != 1      )  {  $SQL .= " AND ( u.categories_id =". $categories .")" ;   }//Filter for category/department
+ if ( $categories == 1 OR $categories == 20 OR $categories == 30 OR$categories == 50 OR $categories == 60 )  {  $SQL .= " AND ( u.categories_id =". $categories .")" ;   }//Filter for category/department
  $SQL .=  " ORDER BY `id` "; 
  $SQL .=  " DESC "; 
-
- #deb( $SQL ,1);
  
  $res =  mysqli_query ( $this->DB, $SQL);
  $ret = NULL;
@@ -720,7 +578,6 @@ class HAW_DB
 			{	die( "<b>KEINE Verbindung zur HAW FAK-DB Datenbank möglich</b>" );
 			}
 		}
-   # $this->status = $conf->status;
   }
   
   function getDEP2BIB()
@@ -734,7 +591,6 @@ class HAW_DB
 		{	 
 			$r[$tmp['DepID']] = $tmp;
 		}
-   
 		return $r;
   }
   

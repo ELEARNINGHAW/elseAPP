@@ -1,7 +1,7 @@
 {if $work.mode == "edit"}   {assign var="restricted_edit"  value="disabled=\"yes\""} {else} {assign var="restricted_edit" value=""} {/if}
 {if $work.mode == "staff"}  {assign var="restricted_staff" value="disabled=\"yes\""} {else} {assign var="restricted_staff" value=""}{/if}
 
-<h3 style="margin:20px; padding:10px; color: #FFF; background-color: #800000;">
+<h3 style="margin:20px; padding:10px; color: #FFF; "  class="bgDef bg{$coll.location_id}"  >
 {if    $work.mode == "new"}   Neuen Semesterapparat anlegen für: {$colData[$work.collection_id].title}
 {else}                        Semesterapparat bearbeiten : {$colData[$work.collection_id].title}
 {/if}
@@ -37,10 +37,6 @@
     <td><input value="{$colData[$coll.title_short].title|escape}" {$restricted_staff} size="80" name="title"></td>
   </tr>
   *}     
-  <tr>
-    <td  style="vertical-align: top;"><span style="font-weight: bold;">Ihr Department:</span></td>
-    <td> {html_options name="categories_id" options=$tpl.departments selected=$colData[$work.collection_id].categories_id }</td>
-  </tr>
 {if $work.mode == "staff" or $work.mode == "admin" or 1==1 }
   <tr>
     <td style="vertical-align: top;"><span style="font-weight: bold;">Standort des Semesterapparats:</span></td>
@@ -52,7 +48,13 @@
     <td style="vertical-align: top;"><span style="font-weight: bold;">(Optional)<br/>Bemerkungen für die Studierende zum Semesterapparat:</span></td>
     <td> <textarea cols="60" rows="5" name="notes_to_studies">{$colData[$work.collection_id].notes_to_studies|escape}</textarea> </td>
   </tr>
- </tbody>
+  <tr>
+    <td  style="vertical-align: top;"><span style="font-weight: bold;">Ihr Department:</span></td>
+    <td> {html_options name="categories_id" options=$tpl.departments selected=$colData[$work.collection_id].categories_id }</td>
+  </tr>
+
+
+</tbody>
 </table>
 
   <input style="float: right;" name="b_ok" value="&nbsp;&nbsp;&nbsp;SPEICHERN&nbsp;&nbsp;&nbsp;" type="submit">

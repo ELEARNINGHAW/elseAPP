@@ -17,6 +17,7 @@ fieldset
   font-size: 10px; 
   padding:1px
 }
+
 ._head, .admin_head, .edit_head,  .staff_head  ,  .view_head  
 {
   padding:4px;
@@ -25,7 +26,6 @@ fieldset
   top:0px;
   margin:0px; 
   background-color: #FFFFFF; 
-
 }
 
 .admin_head 
@@ -44,6 +44,15 @@ fieldset
 }
 
 
+.fachbib
+{ 
+ color:#FFFFFF; 
+ font-size: 13px; 
+ border: 1px solid white;
+ padding:3px;
+ margin:3px;
+}
+
 .currentDoc
 {
  /* background-color:#A33  !important;
@@ -52,8 +61,8 @@ fieldset
  box-shadow:2px 2px 2px 2px #0099ff !important;
 }
 
-
-#nav, #nav ul{
+#nav, #nav ul
+{
 margin:0;
 padding:0;
 list-style-type:none;
@@ -62,7 +71,8 @@ position:relative;
 line-height:1.5em; 
 }
 
-#nav a{
+#nav a
+{
 display:block;
 padding:0px 5px;
 border:1px solid #333;
@@ -71,7 +81,8 @@ text-decoration:none;
 background-color:#333;
 }
 
-#nav a.en{
+#nav a.en
+{
 display:block;
 padding:0px 5px;
 border:1px solid #333;
@@ -80,7 +91,8 @@ text-decoration:none;
 background-color:#333;
 }
 
-#nav a.dis{
+#nav a.dis
+{
 display:block;
 padding:0px 5px;
 border:1px solid #333;
@@ -89,43 +101,47 @@ text-decoration:none;
 background-color:#FFF;
 }
 
-#nav a:hover{
+#nav a:hover
+{
 background-color:#fff;
 color:#333;
 }
 
-#nav li{
+#nav li
+{
 float:left;
 position:relative;
 }
 
-#nav ul {
+#nav ul 
+{
 position:absolute;
 display:none;
 width:12em;
 top:1.5em;
 }
 
-#nav li ul a{
+#nav li ul a
+{
 width:12em;
 height:auto;
 float:left;
 }
 
-#nav ul ul{
+#nav ul ul
+{
 top:auto;
 }	
 
-#nav li ul ul {
+#nav li ul ul 
+{
 left:12em;
 margin:0px 0 0 10px;
 }
 
-
-
-
 /*------------------------*/
- a.en{
+ a.en
+{
 display:inline;
 padding:0px 5px;
 border:1px solid #333;
@@ -133,10 +149,10 @@ color:#fff;
 width:10px;
 text-decoration:none;
 background-color:#333;
-
 }
 
-#nav a.dis{
+#nav a.dis
+{
 display:block;
 padding:0px 5px;
 border:1px solid #333;
@@ -152,8 +168,7 @@ padding:0;
 list-style-type:none;
 list-style-position:outside;
 position:relative;
-line-height:1em; 
-background-color:none;
+line-height:0em; 
 z-index:10;
 }
 
@@ -846,9 +861,10 @@ td{
 .erwebungsvorschlag
 {
   text-decoration: none ; 
-  font:700 13px; 
+  font-weight: 700;
+  font-size: 13px; 
   color:#000;
- padding:3px;
+  padding:3px;
 }
 
 .erwebungsvorschlag:hover
@@ -998,7 +1014,8 @@ li a, a {
   
 }
 
-ul {
+ul 
+{
 	list-style-image: url('img/right.jpg');
 }
 
