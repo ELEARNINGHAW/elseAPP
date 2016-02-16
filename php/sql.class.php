@@ -1,5 +1,4 @@
 <?php
-
 require_once('../php/config.php');
 
 class SQL
@@ -9,7 +8,7 @@ var $conf;
 
 function SQL ()
 {
-   $this->conf = getConf();
+  $this->conf = getConf();
  
   $this->DB = new mysqli( $this->conf['db_host'], $this->conf['db_user'],  $this->conf['db_pass'],  $this->conf['db_name']);         
   if (mysqli_connect_errno()) 
