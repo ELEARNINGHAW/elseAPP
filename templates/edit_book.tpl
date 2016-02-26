@@ -11,7 +11,7 @@
 {/if}
 
 {if $work.mode == 'suggest' }
-<h3 style="margin:10px; margin-bottom:0px; margin-top:0px; padding:10px; color: #FFF;" class="bgDef bg{$coll.location_id}">Erwerbungsvorschlag für: {$colData[$work.collection_id].title}
+<h3 style="margin:10px; margin-bottom:0px; margin-top:0px; padding:10px; color: #FFF;" class="bgDef bg{$coll.bib_id}">Erwerbungsvorschlag für: {$colData[$work.collection_id].title}
 <a style="float:right;" href="index.php?item=collection&action=show&collection_id={$coll.title_short}">
   <img  class="icon" style="margin-top:-4px;" title="Zurück" src="img/svg/chevron-left_w.svg" />
 </a>
@@ -24,7 +24,7 @@ Wir geben Ihnen eine Rückmeldung, ob wir Ihnen das Buch beschaffen k&ouml;nnen.
 {else} 
 
   
- <h3 style="margin:10px; padding:10px; color: #FFF"  class="bgDef bg{$coll.location_id}"  >
+ <h3 style="margin:10px; padding:10px; color: #FFF"  class="bgDef bg{$coll.bib_id}"  >
 {$colData[$work.collection_id].title} : {$itemtxt} bearbeiten
    <a style="float:right;" href="index.php?item=collection&action=show&collection_id={$coll.title_short}">
   <img  class="icon" style="margin-top:-4px;" title="Zurück" src="img/svg/chevron-left_w.svg" />

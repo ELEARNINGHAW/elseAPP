@@ -1,17 +1,16 @@
 {assign var="edit_mode"   value="0"} 
 {assign var="staff_mode"  value="0"}
-{if $user.role_name == "edit"  OR  $user.role_name == "staff"  OR  $user.role_name == "admin" } {assign var="edit_mode"  value="1"} {/if}
-{if $user.role_name == "staff" OR  $user.role_name == "admin"                                 } {assign var="staff_mode" value="1"} {/if}
+{if $user.role_name == "admin"  OR  $user.role_name == "staff" OR  $user.role_name == "edit"  } {assign var="edit_mode"  value="1"} {/if}
+{if $user.role_name == "admin"  OR  $user.role_name == "staff"                                } {assign var="staff_mode" value="1"} {/if}
 <div class="column">
 {foreach key=cid item=ci from=$collection_info}
   {if $ci.title_short != "" OR  $work.action == 'showopen'}
-  <div class="SAMeta bgDef bg{$ci.location_id}">
+  <div class="SAMeta bgDef bg{$ci.coll_bib_id}">
   {if ( $staff_mode )}   
      <div style="width:630px; display: inline-block; font-weight: 700; font-size: 14px; color: #FFF; padding-top:2px; "> 
-        <div style="float:left;">{$ci.title} </div>
-        <div style="float:right;"> FB:{$ci.location_id}</div><br/>
-
-        <div style="float:left;">von: {$ci.user_info.forename|escape} {$ci.user_info.surname|escape}</div> 
+        <div style="float:left;">{$ci.title} </div> 
+        <div style="float:right;"> FB:{$ci.bib_id}</div><br/>
+        <div style="float:left;">von: {$ci.user_info.vorname|escape} {$ci.user_info.nachname|escape}</div> 
         <div style="float:right;">Dep:{$department[$ci.user_info.department].DepName}</div> 
     </div>
     
@@ -63,9 +62,9 @@
   </a>
     {if $di.notes_to_studies != "" }   <div class="medhint">Zur Beachtung: {$di.notes_to_studies|nl2br}  </div> {/if}
   <div class="bibStandort"> 
-      {if $di.location_id != "" }
+      {if $ci.bib_id != "" }
         {if $di.doc_type_id == 1 OR $di.doc_type_id == 3}{* Buch im SA  / LitHinweis Buch / CD Rom *}
-          {if $di.shelf_remain != 1}  {$fachbib[ $ci.location_id ].BibName|escape},<br/> im Regal "Semesterapparate"   {else} Im Buchbestand der Fachbibliothek<br/> (wie im Online-Katalog angegeben). {/if}
+          {if $di.shelf_remain != 1}  {$fachbib[ $ci.coll_bib_id ].BibName|escape},<br/> im Regal "Semesterapparate"   {else} Im Buchbestand der Fachbibliothek<br/> (wie im Online-Katalog angegeben). {/if}
         {/if}
         {if  $di.doc_type_id == 2 }{* LitHinweis Buch  *}
             Im Buchbestand der Fachbibliothek<br/> (wie im Online-Katalog angegeben).  
@@ -76,16 +75,20 @@
        {/if}
       {/if}
     </div>
-    
+
+          {$work.todo} 
     {if ($staff_mode or $edit_mode) and ($work.todo != "print") }  
-    <div class="status s_{$di.state_id}" />{$media_state[$di.state_id].description}</div>
+ 
+   
+      <div class="status s_{$di.state_id}" />{$media_state[$di.state_id].description}</div>
+
     <div class="iconlist"> 
       {include file="action_button_bar.tpl" 
+    state          = $media_state[$di.state_id].name
     role_encode    = $user.role_encode 
     mode           = $user.role_name 
-    item           = $di.item
-    state          = $media_state[$di.state_id].name
     collection_id  = $ci.title_short 
+    item           = $di.item
     document_id    = $di.id
     url            = $di.url
     protected      = $di.protected

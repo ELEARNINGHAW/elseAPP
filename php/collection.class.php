@@ -1,22 +1,18 @@
 <?php
-
-require_once('../php/sql.class.php'         );
-require_once('../php/renderer.class.php'    );
-
 class Collection
 {
-
+var $CFG;   
 var $renderer;   
 var $sql;
   
-function Collection()
+function Collection(  $CONFIG, $SQL, $renderer  )
 {
-   $this->sql        = new SQL();
-   $this->renderer   = new Renderer();
+   $this->CFG        = $CONFIG;
+   $this->sql        = $SQL;
+   $this->renderer   = $renderer;
 }  
   
 ####################### --- COLLECTION --- #######################
-
 function ereaseCollection( $IW, $IU)
 {
   $this->sql->deleteCollection($IW, $IU);
@@ -50,6 +46,8 @@ function editColMetaData(  $IW )
   $tpl_vars['tpl']['departments'] = $departments; #$_SESSION['DEP2BIB']; 
   $tpl_vars['tpl']['bib_info']    = $bib_info;
   $tpl_vars['tpl']['role_info']   = $this->sql->getRoleInfos('name');
+    
+ #$this->CFG->C->deb($tpl_vars ,1); 
  
   $this->renderer->do_template ( 'b_edit_collection.tpl' , $tpl_vars ) ;
   exit(0);
@@ -66,8 +64,8 @@ function newCollection( $util,   $IW )
   $colData['title']                  = "";
   $colData['notes_to_studies']       = "";
   $colData['expiry_date']            = $util->get_new_expiry_date();        
-  $colData['location_id']            = 2;         /* TODO Standard Vorgabenwert ermitteln */
-  $colData['state_id'   ]            = 3;         /* Standard Vorgabenwert ermitteln */
+  $colData['bib_id']                 = 'HAW';         /* TODO Standard Vorgabenwert ermitteln */
+  $colData['state_id'   ]            = 3;             /* Standard Vorgabenwert ermitteln */
   
   $tpl_vars['user']                  = $_SESSION['user'];
   $tpl_vars['work']                  = $IW;
@@ -85,8 +83,6 @@ function newCollection( $util,   $IW )
 
 function  showCollectionLists(  $IW , $IU)
 { 
-  global  $CONST_actions_info;
-
   $docType  =  $this->sql->getAllDocTypes();
  
 /* getAllMediaFromCollection - Liefert alle Medien Daten: 
@@ -115,15 +111,14 @@ $doc_type_id: 1 = Buch, 3, = CD, 4 = E-Book,
   $tpl_vars[ 'media_state'     ] = $this->sql->getAllMedStates();
   $tpl_vars[ 'fachbib'         ] = $_SESSION['FACHBIB' ]; # $ $this->sql->getBibInfos();
   $tpl_vars[ 'department'      ] = $_SESSION['DEP2BIB'];  
-  $tpl_vars[ 'actions_info'    ] = $CONST_actions_info;
-  
+  $tpl_vars[ 'actions_info'    ] =  $this->CFG->C->CONST_actions_info;
+ 
+
   $this->renderer->do_template( 'collection.tpl', $tpl_vars );
  }
 
 function editCollection(   $IW , $IU)
 { 
-  global  $CONST_actions_info;
-
   $tpl_vars =  $this->sql->getAllDocTypes();
 
   $IC = $_SESSION['coll'];
@@ -136,25 +131,28 @@ function editCollection(   $IW , $IU)
   $tpl_vars[ 'fachbib'         ]         = $_SESSION['FACHBIB' ]; # $ $this->sql->getBibInfos();
   $tpl_vars[ 'department'      ]         = $_SESSION['DEP2BIB'];  
   $tpl_vars[ 'errors_info'     ][]       = '';
-  $tpl_vars[ 'actions_info'    ]         = $CONST_actions_info;
+  $tpl_vars[ 'actions_info'    ]         = $this->CFG->C->CONST_actions_info;
+
   
   $this->renderer->do_template( 'collection.tpl', $tpl_vars );
  }
  
 function showCollection( $IW , $IU)
 { 
-  global  $CONST_actions_info;
   $tpl_vars[ 'work'            ] = $IW; 
   $tpl_vars[ 'user'            ] = $IU;                                          
   $tpl_vars[ 'collection_info' ] = $this->sql->getCollectionInfos( $IW['collection_id'] );
+
   $tpl_vars[ 'collection'      ] = $tpl_vars[ 'collection_info' ][$IW['collection_id']];
   $tpl_vars[ 'doc_type'        ] = $this->sql->getAllDocTypes();
   $tpl_vars[ 'media_state'     ] = $this->sql->getAllMedStates();
   $tpl_vars[ 'fachbib'         ] = $_SESSION['FACHBIB' ]; # $$this->sql->getBibInfos();
   $tpl_vars[ 'department'      ] = $_SESSION['DEP2BIB']; 
   $tpl_vars[ 'errors_info'     ][] = '';
-  $tpl_vars[ 'actions_info'    ] = $CONST_actions_info;
-
+  $tpl_vars[ 'actions_info'    ] =  $this->CFG->C->CONST_actions_info;
+ 
+   #$this->CFG->C->deb( $tpl_vars,1 );
+  
   $this->renderer->do_template( 'collection.tpl', $tpl_vars, ( $IW[ 'action' ] != 'print' ) );
  }
  
@@ -198,7 +196,24 @@ function  saveColMetaData(   $IW, $IU )
 
 function updateColMetaData(  $IW, $IU)
 {
-  $this->sql-> updateColMetaData($IW);
+   $this->CFG->C->deb($IU);
+  # Semesterapparat: Update des dem SA zugeordneten Fachbib  
+  #$this->CFG->C->deb( $IW,1 );
+  $this->sql-> updateColMetaData($IW, $IU);
+ 
+  # User (des SA):  Update des Departments des SA Owners 
+  unset( $IW['bib_id']);
+  $IUtmp = $this->sql->getUserHSK ( $IW['user_id'] );
+  $IU = $IUtmp[0];
+
+ # $this->CFG->C->deb($IU);
+ # $this->CFG->C->deb($IW);
+
+   
+  $this->sql-> updateUser($IU, $IW );
+  
+
+  
   $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&ro=".$IU['role_encode']."&item=collection&action=b_coll_edit";
   $this->renderer->doRedirect( $url );
 }
@@ -214,6 +229,4 @@ function resortCollection( $IW, $IC )
   $this->sql-> updateCollectionSortOrder( $IC['id'], $IW['sortoder']  );
   exit(0);
 }
-
-
 }

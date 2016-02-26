@@ -1,16 +1,21 @@
 <?php
+class CONSTANT
+{
+var $default_role_id;
+var $debug_level  = 1;
+var $bib_id ;
+var $CONST_letter_header = array ( 'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' , 'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' , 'U' , 'V' , 'W' , 'X' , 'Y' , 'Z' ) ;
+var $CONST_actions_info ; 
 
-$debug_level  = 1;
+function CONSTANT()
+{
+  if ( !isset ($default_role_id)) $default_role_id = 3;
 
-$CONST_letter_header = array ( 'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' , 'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' , 'U' , 'V' , 'W' , 'X' , 'Y' , 'Z' ) ;
-
-if (!isset ($default_role_id)) $default_role_id = 3;
-
-if   ( isset ( $_POST[ 'location_id' ] ) )  { $location_id = $_POST[ 'location_id' ] ; }
-else                                        { $location_id = 1 ;                       }
+if   ( isset ( $_POST[ 'bib_id' ] ) )  { $bib_id = $_POST[ 'bib_id' ] ; }
+else                                        { $bib_id = 'HAW' ;                       }
 
 ## actions info
-$CONST_actions_info = array
+$this->CONST_actions_info = array
 (    'b_new'                 => array
     (                                                                           /* Neues Medium anlegen (suchen, annotieren, in SA speichern) ## Buch (- -> 1): [Neu bestellt] ## E-Book (- -> 3): [Ist aktiv]     /   Neuer SA anlegen, annotieren, speichern,  SA ## (- -> 3): [ist aktiv] */
         'button'            => 'b_new' ,
@@ -257,120 +262,7 @@ $CONST_actions_info = array
     
 ) ;
 
-# end of actions info
-
-
-## validation info
-$CONST_validation_info = array (
-    "action" => "/^[a-z_]*$/" ,
-    "alias_degree_id" => "/^[0-9]*$/" ,
-    "alias_surname" => "/^.*$/" ,
-    "alias_forename" => "/^.*$/" ,
-    "alias_sex" => "/^[mf]?$/" ,
-    "author" => "/^.*$/" ,
-    "b_cancel" => "/^.*$/" ,
-    "b_ok" => "/^.*$/" ,
-    "b_ok_x" => "/^.*$/" ,
-    "b_ok_y" => "/^.*$/" ,
-    "b_prio_down" => "/^.*$/" ,
-    "b_prio_up" => "/^.*$/" ,
-    "b_report" => "/^.*$/" ,
-    "b_report_admin" => "/^.*$/" ,
-    "b_report_dozent" => "/^.*$/" ,
-    "b_del_inact" => "/^.*$/" ,
-    'b_accept' => "//" ,
-    'b_activate' => "//" ,
-    'b_cancel' => "//" ,
-    'b_cancel_order' => "//" ,
-    'b_cancel_order_2' => "//" ,
-    'b_cancel_release' => "//" ,
-    'b_coll_edit' => "//" ,
-    'b_coll_release' => "//" ,
-    'b_coll_revive' => "//" ,
-    'b_deactivate' => "//" ,
-    'b_delete' => "//" ,
-    'b_delete_url' => "//" ,
-    'b_delete_ebook' => "//" ,
-    'b_directory' => "//" ,
-    'b_edit' => "//" ,
-    'b_extend_loan' => "//" ,
-    'b_finished' => "//" ,
-    'b_new' => "//" ,
-    'b_new_email' => "//" ,
-    'b_opac' => "//" ,
-    'b_reject' => "//" ,
-    'b_release' => "//" ,
-    'b_return' => "//" ,
-    'b_revive' => "//" ,
-    'b_setpw' => "//" ,
-    'b_user_accept' => "//" ,
-    'b_user_reject' => "//" ,
-    'b_user_disable' => "//" ,
-    'b_user_enable' => "//" ,
-    'b_view' => "//" ,
-    'b_view_email' => "//" ,
-    "c_dontask" => "/^.*$/" ,
-    "c_order_toc" => "/^.*$/" ,
-    "degree_id" => "/^[0-9]*$/" ,
-    "document_id" => "/^[0-9]*$/" ,
-    "edition" => "/^.*$/" ,
-    "expiry_date_Day" => "/^[0-9]*$/" ,
-    "expiry_date_Month" => "/^[0-9]*$/" ,
-    "expiry_date_Year" => "/^[0-9]*$/" ,
-    "email" => "/^.*$/" ,
-    #"email"    => "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[A-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)\b",
-    #"email"    => "/[\.a-z0-9_-]+@[a-z0-9-]{2,}\.[a-z]{2,4}$/i", 
-    "file" => "/^[^\/]*$/" ,
-    "forename" => "/^.*$/" ,
-    "id" => "/^[0-9]*$/" ,
-    "item" => "/^[a-z]*$/" ,
-    "journal" => "/^.*$/" ,
-    "collection_id" => "/^[0-9]*$/" ,
-    #"collection_no"  => "/^.*$/",
-    "collection_no" => "//" ,
-    "lecture_no" => "/^.*$/" ,
-    "doc_type_id" => "/^[0-9]*$/" ,
-    "letter" => "/^.*$/" ,
-    "location_id" => "/^[0-9]*$/" ,
-    "login" => "/^.*$/" ,
-    "mode" => "/^(new|edit|staff|admin|view|opac|file|print|)$/" ,
-    "moodle_url" => "/^.*$/" ,
-    "notes_to_staff" => "//" ,
-    "notes_to_staff" => "//" ,
-    "page" => "/^[0-9]*$/" ,
-    "pages" => "/^.*$/" ,
-    "password" => "/^.*$/" ,
-    "pw1" => "/^.*$/" ,
-    "pw2" => "/^.*$/" ,
-    "userfile1" => "/^.*$/" ,
-    "userfile2" => "/^.*$/" ,
-    "userfile3" => "/^.*$/" ,
-    "phone" => "/^.*$/" ,
-    "protected" => "/^.*$/" ,
-    "publisher" => "/^.*$/" ,
-    "ppn" => "//" ,
-    "redirect" => "/^.*$/" ,
-    "relevance" => "/^[0-5]?$/" ,
-    "role_id" => "/^[0-9]*$/" ,
-    "sex" => "/^[mf]?$/" ,
-    "shelf_remain" => "/^.*$/" ,
-    "signature" => "/^.*$/" ,
-    "state" => "/^[a-z]*$/" ,
-    "sort_crit" => "/^(author asc|title asc|relevance desc|signature asc|surname asc|)$/" ,
-    "surname" => "/^.*$/" ,
-    "text" => "//" ,
-    "title" => "/^.*$/" ,
-    "type" => "/^[a-z]*$/" ,
-    "user_id" => "/^[0-9]*$/" ,
-    "url" => "/^.*$/" ,
-    "url_type_id" => "/^[0-9]*$/" ,
-    "use_alias" => "//" ,
-    "volume" => "/^.*$/" ,
-    "year" => "/^.*$/" ,
-    "categories_id" => "/^[0-9]*$/" ,
-    "categories" => "/^[0-9]*$/" ,
-    "b_cat_ok" => "/^.*$/" ,
-) ;
+}
 
 function getDocType($book)
 {
@@ -412,4 +304,5 @@ function getDocType($book)
 
 function deb($obj, $kill=false) {   echo "<pre>";  print_r ($obj);  echo "<pre>";  if($kill){die();} }
 
+}
 ?>

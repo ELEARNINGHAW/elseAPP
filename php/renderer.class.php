@@ -7,11 +7,11 @@ class Renderer
 
 var $smarty;  
 
-function   Renderer()
+function   Renderer( $CONFIG )
 {
   $this->smarty = new Smarty;
 
-  $conf = getConf();
+  $conf = $CONFIG->getConf();
   $this->smarty->compile_dir  = $conf['templates_compile_dir'];
   $this->smarty->template_dir = "../templates";
   $this->smarty->config_dir   = "../configs";

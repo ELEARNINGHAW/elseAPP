@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `collection` (
   `last_state_change` datetime DEFAULT NULL,
   `expiry_date` date DEFAULT NULL,
   `notes_to_studies` text,
-  `categories_id` int(10) unsigned DEFAULT '1',
+  `bib_id` int(10) unsigned DEFAULT '1',
   `sortorder` varchar(1000) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `created` datetime DEFAULT NULL,
   `last_modified` datetime DEFAULT NULL,
   `last_state_change` datetime DEFAULT NULL,
-  `categories_id` int(10) unsigned DEFAULT '1',
+  `bib_id` int(10) unsigned DEFAULT '1',
   `department` int(10) unsigned NOT NULL,
   `hawaccount` varchar(6) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

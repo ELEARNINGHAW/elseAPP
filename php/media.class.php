@@ -1,18 +1,15 @@
 <?php
-
-require_once('../php/sql.class.php'         );
-require_once('../php/renderer.class.php'    );
-
 class Media
 {
 
 var $renderer;   
 var $sql;
   
-function Media()
+function Media( $CFG , $SQL, $renderer  )
 {
-   $this->sql        = new SQL();
-   $this->renderer   = new Renderer();
+   $this->CFG        = $CFG;
+   $this->sql        = $SQL;
+   $this->renderer   = $renderer;
 }  
   
 ####################### --- MEDIA  --- #######################
@@ -43,7 +40,7 @@ function editMediaMetaData( $IW,  $IC )
    if (  isset( $book[ 'notes_to_staff'   ] ) ) {$tpl_vars['work']['notes_to_staff'  ] =  $book[ 'notes_to_staff'   ]; }
    if (! isset( $book[ 'signature'        ] ) ) {$tpl_vars['work']['signature'       ] =  getSignature( $book[ 'ppn' ] ); }
  
-   #deb($tpl_vars,1);
+   #$this->CFG->deb($tpl_vars,1);
    
    $this->renderer->do_template ( 'edit_book.tpl' , $tpl_vars ) ;
    exit(0);
@@ -69,7 +66,11 @@ function purchase_suggestion( $IW,  $IU )
     $tpl_vars['colData']                       = $this->sql->getCollectionInfos ( $IW['collection_id'] );
     $tpl_vars['work']['mode']                  = "suggest";    
     $tpl_vars['work']['document_id']           = 0 ; 
- 
+   
+   # $this->CFG->C->deb($tpl_vars,1);
+
+    
+   
     $this->renderer->do_template ( 'edit_book.tpl' , $tpl_vars ) ;
     exit(0);
 }
@@ -225,7 +226,10 @@ function annoteNewMediaForm(  $IW, $IU)
    $tpl_vars['book']['shelf_remain']     = 0;
    $tpl_vars['book']['notes_to_studies'] = "";    
    $tpl_vars['book']['notes_to_staff']   = "";    
-    
+
+ #  $this->CFG->C->deb($tpl_vars['work']); 
+  # $this->CFG->C->deb($tpl_vars ,1); 
+   
    $this->renderer->do_template ( 'edit_book.tpl' , $tpl_vars ) ;
    exit(0);
 }
@@ -274,7 +278,7 @@ function showNewBookForm( $IW, $toSearch = NULL, $searchHits = 1 )
   $tpl_vars['book']['author']       = $toSearch['author'];                                                                 /*   */
   $tpl_vars['book']['signature']    = $toSearch['signature'];                                                                 /*   */
   $tpl_vars['coll']['title_short']  = $IW['collection_id'];  
-#deb( $tpl_vars['coll']    );
+#$this->CFG->C->deb( $tpl_vars  );
   $this->renderer->do_template ( 'new_book.tpl' , $tpl_vars ) ;
   exit(0);
 }
@@ -291,7 +295,7 @@ function getBooks( $searchQuery )
 {
 
 #--------------------------------
-$conf           = getConf();
+$conf           = $this->CFG->getConf();
 $cat            = $conf['cat'         ]; #'opac-de-18-302';  # HIBS 
 $recordSchema   = $conf['recordSchema']; #'turbomarc';       # turbomarc / mods
 $maxRecords     = $conf['maxRecords'  ]; # 50;
@@ -324,7 +328,7 @@ foreach ( $sxm->records->record as $rec )
      $book[ 'directory'        ]  =   $r->d856->su .'';
      $book[ 'physicaldesc'     ]  =   $r->d300->sa .''; 
 
-     $bookX                        =   array_merge ( $book, getDocType($book) );
+     $bookX                        =   array_merge ( $book,  $this->CFG->C->getDocType($book) );
      
      
      $ret[ $book[ 'ppn' ] ]= $bookX;     
@@ -445,38 +449,38 @@ $default = array
 
 $INPUT['work']  = array_merge($default, $_GET, $_POST   ); 
 
-if ( isset ( $_SESSION['work'][ 'mode'   ] ) )   {  $INPUT['work'][ 'mode'   ] = $_SESSION['work'][ 'mode'   ] ;   } 
-if ( isset ( $_SESSION['work'][ 'letter' ] ) )   {  $INPUT['work'][ 'letter' ] = $_SESSION['work'][ 'letter' ] ;   } # Sortierbuchstabe
+if ( isset ( $_SESSION[ 'work' ][ 'mode'   ] ) )   {  $INPUT[ 'work' ][ 'mode'   ] = $_SESSION[ 'work' ][ 'mode'   ] ; } 
+if ( isset ( $_SESSION[ 'work' ][ 'letter' ] ) )   {  $INPUT[ 'work' ][ 'letter' ] = $_SESSION[ 'work' ][ 'letter' ] ; } # Sortierbuchstabe
 
 $tpl_var = $INPUT ;
-$tpl_var[ 'html_options' ]['dep'] = $_SESSION['DEP2BIB']; #$this->sql -> getAllDepartments() ;                                               ## Liste aller Departments (Categories)
-$tpl_var[ 'html_options' ]['fak'] = $_SESSION['FAK'];          ## Liste aller Fakultäten
-$tpl_var[ 'collection' ] = array () ;
+$tpl_var[ 'html_options' ][ 'dep' ] = $_SESSION[ 'DEP2BIB' ]; #$this->sql -> getAllDepartments() ;                                               ## Liste aller Departments (Categories)
+$tpl_var[ 'html_options' ][ 'fak' ] = $_SESSION[ 'FAK'     ]; ## Liste aller Fakultäten
+$tpl_var[ 'collection'   ]        = array () ;
 
 $userlist = $this->sql->getUser( $INPUT['work']['mode']);                                                                                    ## LISTE mit N Einträgen mit Stammdaten aller registrieter Nutzer 
 
+if (isset($userlist))
 foreach ( $userlist as $u )                                                                                                                  ## Liste wird mit entsprechenden SAs erweitert 
 {
-  #$tpl_var[ 'html_options' ][ 'user' ][ $u[ 'hawaccount' ] ] =  $this-> getFullUserName($u);                                                ## LISTE DER ELSE USER  = $tpl_var[ 'html_options' ][ 'user' ]   
-  
   $SAlistTMP                                            =  $this->sql->getSAlist( $u, $INPUT['work']['mode'], $INPUT['work']['categories'] );
-   
+  
+
+  
   $SAlist = ""; 
   if ($SAlistTMP)
   foreach ( $SAlistTMP as $SAL)   /* SA die nicht angzeigt werden sollen, werden aus der Liste entfernt */
   {
     if (      $SAL[ 'id' ] !=  'ELSE-ADMIN' 
            && $SAL[ 'id' ] !=  'HIBS ELSE' 
-          # && $SAL[ 'id' ] !=  'LS01' 
            && $SAL[ 'id' ] !=  'Lebens Stiel2' 
-                    
 	     )
 	     {
          $SAlist[] = $SAL; 
        }
  
   }
- 
+  # $this->CFG->C->deb( $SAlist ,1); 
+  
   if ( isset ( $SAlist[ 0 ][ 'surname' ] ) && $letter_eq != substr ( $SAlist[ 0 ][ 'surname' ] , 0 , 1 ) )                    ## Wenn User mindestens ein Semesterapparat hat
   { $letter = substr ( $SAlist[ 0 ][ 'surname' ] , 0 , 1 );
     $letter_exist[$letter] = $letter;                                                                                         ## Wird sein Anfangsbuchstabe gespeichert
@@ -509,8 +513,9 @@ $tpl_var[ 'letter_output' ]  = $this->getLetterOutput( $CONST_letter_header, $le
 $tpl_var[ 'source' ]         = 'index.php' ;
 ##------------------------------------------------------------------------------------------------------------------- 
 # deb($_SESSION);
- #deb($tpl_var,1);
-$this->renderer -> do_template ( 'index.tpl' , $tpl_var , TRUE ) ;
+ #$this->CFG->C->deb( $tpl_var ,1); 
+  
+ $this->renderer -> do_template ( 'index.tpl' , $tpl_var , TRUE ) ;
 }
 
 function getFullUserName($u)
@@ -538,7 +543,8 @@ function getLetterOutput ( $letter_header , $letter_exist )
     $letter_activ  = "0" ;
     $letter_output = array () ;
 
-    foreach ( $letter_header as $let ) {                                                                                      # aus const.php
+ 
+    foreach ( $this->CFG->C->CONST_letter_header as $let ) {                                                                                      # aus const.php
       foreach ( $letter_exist as $val1 ) {
         if ( strtolower ( $let ) == strtolower ( $val1 ) )
         {

@@ -1,7 +1,7 @@
 {if $work.mode == "edit"}   {assign var="restricted_edit"  value="disabled=\"yes\""} {else} {assign var="restricted_edit" value=""} {/if}
 {if $work.mode == "staff"}  {assign var="restricted_staff" value="disabled=\"yes\""} {else} {assign var="restricted_staff" value=""}{/if}
 
-<h3 style="margin:20px; padding:10px; color: #FFF; "  class="bgDef bg{$coll.location_id}"  >
+<h3 style="margin:20px; padding:10px; color: #FFF; "  class="bgDef bg{$colData[$work.collection_id].coll_bib_id}"  >
 {if    $work.mode == "new"}   Neuen Semesterapparat anlegen für: {$colData[$work.collection_id].title}
 {else}                        Semesterapparat bearbeiten : {$colData[$work.collection_id].title}
 {/if}
@@ -21,7 +21,8 @@
 <input type="hidden" name="todo"           value="init"  >
 {else}
 <input type="hidden" name="action"         value="b_coll_meta_edit">
-<input type="hidden" name="id"             value="{$colData[$coll.title_short].id|escape}" >
+<input type="hidden" name="collection_id"             value="{$colData[$coll.title_short].collID|escape}" >
+<input type="hidden" name="user_id"        value="{$colData[$coll.title_short].user_info.hawaccount|escape}" >
 <input type="hidden" name="todo"           value="save"  >
 {/if}
 
@@ -30,17 +31,11 @@
 <input type="hidden"  name="collection_no"  value="{$colData[$coll.title_short].collection_no|escape}">
 {/if}
 
-<table style="text-align: left; width: 100%;" border="0"
-  {* 
-   <tr>
-    <td width="30%" ><span style="font-weight: bold;">Titel der Vorlesung: </span></td>
-    <td><input value="{$colData[$coll.title_short].title|escape}" {$restricted_staff} size="80" name="title"></td>
-  </tr>
-  *}     
+<table style="text-align: left; width: 100%;" border="0">
 {if $work.mode == "staff" or $work.mode == "admin" or 1==1 }
   <tr>
     <td style="vertical-align: top;"><span style="font-weight: bold;">Standort des Semesterapparats:</span></td>
-    <td>{html_options name="location_id" options=$tpl.bib_info selected=$colData[$work.collection_id].location_id } im Regal &quot;Semesterapparate&quot;</td>
+    <td>{html_options name="bib_id" options=$tpl.bib_info selected=$colData[$work.collection_id].coll_bib_id } im Regal &quot;Semesterapparate&quot;</td>
   </tr>
 {/if}
 
@@ -50,7 +45,7 @@
   </tr>
   <tr>
     <td  style="vertical-align: top;"><span style="font-weight: bold;">Ihr Department:</span></td>
-    <td> {html_options name="categories_id" options=$tpl.departments selected=$colData[$work.collection_id].categories_id }</td>
+    <td> {html_options name="department" options=$tpl.departments selected=$colData[$work.collection_id].department }</td>
   </tr>
 
 

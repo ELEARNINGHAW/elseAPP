@@ -5,27 +5,36 @@ session_start();
 /* --- TODO --- */
 #  --- CHECK PERMISSIONS ---
 # check_permission($INPUT)
+require_once( '../php/const.class.php'             );
+require_once( '../php/config.class.php'            );
+require_once( '../php/sql.class.php'         );
+require_once( '../php/util.class.php'        );
+require_once( '../php/collection.class.php'  );
+require_once( '../php/media.class.php'       );
+require_once( '../php/renderer.class.php'    ); 
 
-require_once('../php/config.php'            );
-require_once('../php/util.class.php'        );
-require_once('../php/collection.class.php'  );
-require_once('../php/media.class.php'       );
-
-$util       = new Util( );
-$collection = new Collection( );
-$media      = new Media();
+$CST        = new CONSTANT();
+$CFG        = new Config( $CST );
+$SQL        = new SQL( $CFG );
+$util       = new Util( $CFG, $SQL  );
+$renderer   = new Renderer( $CFG );
+$collection = new Collection( $CFG, $SQL, $renderer );
+$media      = new Media( $CFG, $SQL, $renderer );
 
 # syntax    # index.php?action=xxx&item=yyy&id=zz
 
 $INPUT = $util->getInput() ;                                #--- GET ALL INPUT (POST/GET) ---
+
+
 if ( isset ( $_SESSION[ 'work'  ] ) ) { $IW = $_SESSION[ 'work' ]; }
 if ( isset ( $_SESSION[ 'user'  ] ) ) { $IU = $_SESSION[ 'user' ]; }
 if ( isset ( $_SESSION[ 'coll'  ] ) ) { $IC = $_SESSION[ 'coll' ]; }
 
+#$CFG->C->deb( $IW,1);
+#$CFG->C->deb( $_SESSION['user'],1);
+
 $issetCategories = isset( $IW[ 'categories'] );
 $issetLetter     = isset( $IW[ 'letter'    ] );
-
-#deb(  $IC,1);
 
 if ( isset ( $IW['b_cancel'] ) )
 { $IW['last_page'] = 'index.php?categories=1';
@@ -35,9 +44,11 @@ else if ( $issetCategories OR $issetLetter  )
 { $media ->  getFilterHeader ();
 }
 
+
+
+
 else if ( $IW['item'] == 'collection' )
-{# 
-  if      ( $IW['action'] == 'b_coll_release'      )  { $collection->setCollectionState_5      ( $IW           );    } /* Zustand 5 = 'AUFGELÖST'                                    */
+{ if      ( $IW['action'] == 'b_coll_release'      )  { $collection->setCollectionState_5      ( $IW           );    } /* Zustand 5 = 'AUFGELÖST'                                    */
   else if ( $IW['action'] == 'b_coll_revive'       )  { $collection->setCollectionState_3      ( $IW           );    } /* Zustand 3 = 'AKTIV'                                        */
   else if ( $IW['action'] == 'b_delete'            )  { $collection->setCollectionState_6      ( $IW           );    } /* Zustand 6 = 'GELÖSCHT'/Mülleimer                           */
   else if ( $IW['action'] == 'b_coll_meta_edit' 
@@ -55,12 +66,11 @@ else if ( $IW['item'] == 'collection' )
 }
 
 else if ( $IW['item'] == 'book' )
-{
-       if ( $IW['action'] == 'b_new'               )  {  $media->showNewBookForm    ( $IW              ); } /* Eingabemaske für Mediensuche anzeigen                           */
+{      if ( $IW['action'] == 'b_new'               )  {  $media->showNewBookForm    ( $IW              ); } /* Eingabemaske für Mediensuche anzeigen                           */
   else if ( $IW['action'] == 'search'              )  {  $media->searchMedia        ( $IW              ); } /* Suchprozess des Mediums wird gestartet                          */
   else if ( $IW['action'] == 'annoteNewMedia'      )  {  $media->annoteNewMediaForm ( $IW, $IU         ); } /* Eingabemaske Metadaten für Buch Annotation anzeigen             */
-  else if ( $IW['action'] == 'init'                )  {  $media->saveNewMedia       ( $IW, $IC , $IU   ); } /* Metadaten eines neues Buch speichern                            */
-  else if ( $IW['action'] == 'suggest'             )  {  $media->saveNewMediaSuggest( $IW , $IU        ); } /* Metadaten eines Literaturvoschlag speichern                     */
+  else if ( $IW['action'] == 'init'                )  {  $media->saveNewMedia       ( $IW, $IC, $IU    ); } /* Metadaten eines neues Buch speichern                            */
+  else if ( $IW['action'] == 'suggest'             )  {  $media->saveNewMediaSuggest( $IW, $IU         ); } /* Metadaten eines Literaturvoschlag speichern                     */
   else if ( $IW['action'] == 'b_edit'              )  {  $media->editMediaMetaData  ( $IW, $IC         ); } /* Formular zur Bearbeitung der Metadaten des Buchs wird gezeigt   */
   else if ( $IW['action'] == 'save'                )  {  $media->updateMediaMetaData( $IW, $IU         ); } /* Update der Metadaten des Buchs                                  */
   else if ( $IW['action'] == 'b_accept'            )  {  $media->acceptMedia        ( $IW              ); } /* angefordertes Buch wird akzeptiert zur Bearbeitung              */
@@ -77,21 +87,19 @@ else if ( $IW['item'] == 'book' )
 }
 
 else if ( $IW['item'] == 'ebook' OR $IW['item'] == 'lh_book' )
-{
-  if      ( $IW['action'] == 'b_edit'              )  {  $media->editMediaMetaData  ( $IW, $IC      ); } /* Metadaten des SA bearbeiten                                     */
-  else if ( $IW['action'] == 'annoteNewMedia'      )  {  $media->annoteNewMediaForm ( $IW, $IU      ); } /* Eingabemaske Metadaten für Buch Annotation anzeigen             */
-  else if ( $IW['action'] == 'save'                )  {  $media->updateMediaMetaData( $IW, $IU      ); } /* Update der Metadaten des Buchs                                  */
-  else if ( $IW['action'] == 'init'                )  {  $media->saveNewMedia       ( $IW, $IC, $IU ); } /* Update der Metadaten des Buchs                                  */
-  else if ( $IW['action'] == 'b_deactivate'        )  {  $media->deactivateMedia    ( $IW           ); } /* Medium Deaktivieren                                             */
-  else if ( $IW['action'] == 'b_activate'          )  {  $media->activateMedia      ( $IW           ); } /* Medium Aktivieren                                               */
-  else if ( $IW['action'] == 'b_delete_ebook'      )  {  $media->deleteMedia        ( $IW           ); } /* Medium wird aus SA gelöscht                                     */
-  else if ( $IW['action'] == 'b_delete'            )  {  $media->deleteMedia        ( $IW           ); } /* Medium wird aus SA gelöscht                                     */
-  else if ( $IW['action'] == 'b_new_email'         )  {  $media->showMailForm       ( $IW, $IU, $IC ); } /* Erwebungsvorschlag (nach 0 Suchtreffern)                        */
+{ if      ( $IW['action'] == 'b_edit'              )  {  $media->editMediaMetaData  ( $IW, $IC       ); } /* Metadaten des SA bearbeiten                                     */
+  else if ( $IW['action'] == 'annoteNewMedia'      )  {  $media->annoteNewMediaForm ( $IW, $IU       ); } /* Eingabemaske Metadaten für Buch Annotation anzeigen             */
+  else if ( $IW['action'] == 'save'                )  {  $media->updateMediaMetaData( $IW, $IU       ); } /* Update der Metadaten des Buchs                                  */
+  else if ( $IW['action'] == 'init'                )  {  $media->saveNewMedia       ( $IW, $IC, $IU  ); } /* Update der Metadaten des Buchs                                  */
+  else if ( $IW['action'] == 'b_deactivate'        )  {  $media->deactivateMedia    ( $IW            ); } /* Medium Deaktivieren                                             */
+  else if ( $IW['action'] == 'b_activate'          )  {  $media->activateMedia      ( $IW            ); } /* Medium Aktivieren                                               */
+  else if ( $IW['action'] == 'b_delete_ebook'      )  {  $media->deleteMedia        ( $IW            ); } /* Medium wird aus SA gelöscht                                     */
+  else if ( $IW['action'] == 'b_delete'            )  {  $media->deleteMedia        ( $IW            ); } /* Medium wird aus SA gelöscht                                     */
+  else if ( $IW['action'] == 'b_new_email'         )  {  $media->showMailForm       ( $IW, $IU, $IC  ); } /* Erwebungsvorschlag (nach 0 Suchtreffern)                        */
 }
 
 else if ( $IW['item'] == 'email' )
-{
-  if      ( $IW['action'] == 'sendmail'            )  {  $media->send_email(  $IW, $IU, $IC );   }           /* Email wird verschickt                                         */
+{ if      ( $IW['action'] == 'sendmail'            )  {  $media->send_email(  $IW, $IU, $IC );   }           /* Email wird verschickt                                         */
   if      ( $IW['action'] == 'HIBSAPmail'          )  {  $util->sendBIB_APmails();               }           /* Cronjob: HIBS Ansprechpartner Infomail                                         */
 }
 

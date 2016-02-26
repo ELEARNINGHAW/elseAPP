@@ -1,12 +1,12 @@
-<h3 style="margin:10px; padding:10px; color: #FFF;" class="bgDef bg{$coll.location_id}" >
+<h3 style="margin:10px; padding:10px; color: #FFF;" class="bgDef bg{$coll.bib_id}" >
 {$colData[$coll.title_short].title} : Katalogsuche
    <a style="float:right;" href="index.php?item=collection&action=show&collection_id={$coll.title_short}">
   <img  class="icon" style="margin-top:-4px;" title="Zurück" src="img/svg/chevron-left_w.svg" />
 </a>
 </h3>
 
-{if $page == "1"}                      {* ------- Eingabefelder Titel/Autor/Signatur für die Buch-Suchmaske ----------- *}
-
+{if $page == "1"}                      
+{* ------- Eingabefelder Titel/Autor/Signatur für die Buch-Suchmaske ----------- *}
   {if $searchHits < 1}
   <h3 style="margin:10px; margin-bottom: 0px; margin-top: 0px; padding:10px; color: #FFF; background-color: #600000;">Suchergebniss: {$searchHits} Treffer  für {$book.title}{$book.author}{$book.signature}</h3>
   <div style="margin:10px;  padding:0px;"> 
@@ -17,7 +17,7 @@
   <div style="font-size:35px; float:left; padding:10px; margin:5px; display:block;   background-color:#EFEFEF">A</div>
   Einen Bestellwunsch über einen Erwerbungsvorschlag vornehmen.<br/><br> Die Bearbeitung kann 2-3 Wochen dauern.<br><br>
   <div style="display:block; padding:4px; margin-left:55px; width:450px; "  >
-  <a style ="text-decoration: none;"  href="index.php?item=book&action=purchase_suggestion&collection_id={$colData[$coll.title_short].id}"><div style="border:1px solid black; font:700 14px; color:#000; background-color: #EFEFEF; padding:3px; " >Zum Erwerbungsvorschlag</div></a>
+  <a style ="text-decoration: none;"  href="index.php?item=book&action=purchase_suggestion&collection_id={$colData[$coll.title_short].collID|escape}"><div style="border:1px solid black; font:700 14px; color:#000; background-color: #EFEFEF; padding:3px; " >Zum Erwerbungsvorschlag</div></a>
   </div>
   </div> 
     
@@ -36,7 +36,7 @@
   <form action="index.php" method="post">
   <input type="hidden" name="action" value="search" >
   <input type="hidden" name="item" value="book">
-  <input type="hidden" name="collection_id" value="{$colData[$coll.title_short].id|escape}">
+  <input type="hidden" name="collection_id" value="{$colData[$coll.title_short].collID|escape}">
 
   <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
    <tbody>
@@ -61,7 +61,7 @@
           {if ($b.physicaldesc == 'electronic' )} {assign var="item"  value="ebook"} {/if}
         {/if}
 
-   <a class="hitlink_{$b.doc_type}" href="index.php?ppn={$b.ppn}&item={$b.item}&action=annoteNewMedia&collection_id={$colData[$coll.title_short].id} ">
+   <a class="hitlink_{$b.doc_type}" href="index.php?ppn={$b.ppn}&item={$b.item}&action=annoteNewMedia&collection_id={$colData[$coll.title_short].collID} ">
   <table>
      {if (isset ( $b.title         ) AND $b.title        != "" )}<tr><td><div class="mediaListHeader">Titel:    </div></td><td><span class="mediaTxt">{$b.title|escape}                           </span></td></tr>{/if}
       {if (isset ( $b.author       ) AND $b.author       != "" )}<tr><td><div class="mediaListHeader">Autor:    </div></td><td><span class="mediaTxt">{$b.author|escape}                          </span></td></tr>{/if}
@@ -75,7 +75,7 @@
     </table>
   </a>
 
-      {foreachelse}                                               <b> Keine B&uuml;cher mit Signatur  gefunden.</b> <br> Bitte versuchen Sie es noch einmal.
+      {foreachelse} <b> Keine B&uuml;cher mit Signatur  gefunden.</b> <br> Bitte versuchen Sie es noch einmal.
 
       {/foreach}
 

@@ -1,15 +1,17 @@
 <?php
-require_once('../php/config.php');
 
 class SQL
 {
 var $DB;
 var $conf; 
-
-function SQL ()
+var $CFG; 
+function SQL ( $CFG )
 {
-  $this->conf = getConf();
+  $this->CFG  = $CFG;
+  $this->conf = $CFG->getConf();
  
+#  $CFG->C->deb( );
+  
   $this->DB = new mysqli( $this->conf['db_host'], $this->conf['db_user'],  $this->conf['db_pass'],  $this->conf['db_name']);         
   if (mysqli_connect_errno()) 
   {   printf("Verbindung fehlgeschlagen: %s\n", mysqli_connect_error());   exit();
@@ -50,7 +52,7 @@ function initMedia($book)
 }
 
 
-function getDokumentList( $colID,$doc_type_id = null , $state_id = null  )
+function getDokumentList( $colID, $doc_type_id = null , $state_id = null  )
 {
   $ret = NULL;
   
@@ -61,7 +63,7 @@ function getDokumentList( $colID,$doc_type_id = null , $state_id = null  )
   
   if ( isset($doc_type_id) ) { $SQL .= " AND `doc_type_id` = ". $doc_type_id;}
   if ( isset($state_id   ) ) { $SQL .= " AND `state_id`    = ". $state_id;   }
-  
+   
   $res =  mysqli_query ( $this->DB, $SQL);
 
   if ($res)
@@ -81,7 +83,7 @@ function getAdminEmailInfos (   )
     SELECT COUNT(*)
     FROM document 
     INNER JOIN collection ON document.collection_id = collection.id 
-    WHERE document.state_id = '1' AND collection.location_id = '".$HIBS_loc['BibID']."'";    /* Status 1 = Neu Angefordert */
+    WHERE document.state_id = '1' AND collection.bib_id = '".$HIBS_loc['BibID']."'";    /* Status 1 = Neu Angefordert */
   
     $res =  mysqli_query ( $this->DB, $SQL2);
     $tmp  = mysqli_fetch_assoc($res);
@@ -91,21 +93,31 @@ function getAdminEmailInfos (   )
     SELECT COUNT(*)
     FROM document 
     INNER JOIN collection ON document.collection_id = collection.id 
-    WHERE document.state_id = '9' AND collection.location_id = '".$HIBS_loc['BibID']."'";   /* Status 9 = Kaufvorschlag  */
+    WHERE document.state_id = '9' AND collection.bib_id = '".$HIBS_loc['BibID']."'";   /* Status 9 = Kaufvorschlag  */
   
     $res =  mysqli_query ( $this->DB, $SQL2);
     $tmp  = mysqli_fetch_assoc($res);
     $ret[$HIBS_loc['BibID']][9] = $tmp['COUNT(*)'];  
   }
-  return $ret;  
+  return $ret;   
 }
 
 
 function getUserHSK ( $hawAccount )
 {
+  
   $SQL = "
-  SELECT user.*,
-  role.name AS role_name
+  SELECT 
+  user.id         as id, 
+  user.role_id    as role,
+  user.forename   as vorname, 
+  user.surname    as nachname, 
+  user.sex        as sex, 
+  user.email      as mail, 
+  user.bib_id     as user_bib_id, 
+  user.department as department,
+  user.hawaccount as hawaccount
+  
   FROM user,state,role
   WHERE state.name='active' 
   AND user.state_id = state.id 
@@ -114,7 +126,12 @@ function getUserHSK ( $hawAccount )
 
   $res =  mysqli_query ( $this->DB, $SQL);
   $ret[] = mysqli_fetch_assoc($res);
+
+   #$this->CFG->C->deb($ret,1);
+  
   return $ret;  
+  
+  
 }
 
 
@@ -138,6 +155,9 @@ function doCollectionExist( $title_short )
   WHERE `title_short` = \"". $title_short ."\"" ;
   $res =  mysqli_query ( $this->DB, $SQL);
   $ret = mysqli_fetch_assoc($res);
+
+  # $this->CFG->C->deb($ret,1);
+  
   return $ret;  
 }
 
@@ -249,83 +269,94 @@ function initUser($IU)
 {
   $SQL = "
   INSERT INTO user SET
-    role_id           = \"" . $IU['role'       ] . "\" ,
-    surname           = \"" . $IU['nachname'   ] . "\" ,
-    forename          = \"" . $IU['vorname'    ] . "\" ,
-    sex               = \"" . $IU['sex'        ] . "\" ,
-    email             = \"" . $IU['mail'       ] . "\" ,
+    id                = \"" . $IU['id'           ] . "\" ,
+    role_id           = \"" . $IU['role'         ] . "\" ,
+    surname           = \"" . $IU['nachname'     ] . "\" ,
+    forename          = \"" . $IU['vorname'      ] . "\" ,
+    sex               = \"" . $IU['sex'          ] . "\" ,
+    email             = \"" . $IU['mail'         ] . "\" ,
     state_id          = 3                             ,
     created           = NOW()                         , 
     last_modified     = NOW()                         , 
     last_state_change = NOW()                         , 
-    categories_id     = \"" . $IU['department']  . "\" ,
-    department        = \"" . $IU['department']  . "\" ,
-    `hawaccount`      = \"" . $IU['akennung'  ]  . "\"";
+    bib_id            = \"" . $IU['bib']['BibID' ]  . "\" ,
+    department        = \"" . $IU['department'   ]  . "\" ,
+    `hawaccount`      = \"" . $IU['akennung'     ]  . "\"";
  
-  $res =  mysqli_query ( $this->DB, $SQL);
+  $res =  mysqli_query ( $this->DB, $SQL );
   return $res;
 }
 
 
-function updateUser($IU)
+function updateUser( $IU,  $IW = null )
 {
-  $SQL = "
-  UPDATE `user`
-  SET
-    role_id           = \"" . $IU['role'       ] . "\" ,
-    surname           = \"" . $IU['nachname'   ] . "\" ,
-    forename          = \"" . $IU['vorname'    ] . "\" ,
-    sex               = \"" . $IU['sex'        ] . "\" ,
-    email             = \"" . $IU['mail'       ] . "\" ,
-    categories_id     = \"" . $IU['department']  . "\" ,
-    department        = \"" . $IU['department']  . "\" 
-  WHERE 
-    `hawaccount`     = \"" . $IU['akennung'  ]  . "\"";
-	$res =  mysqli_query ( $this->DB, $SQL);
-  return $res;
+ #$this->CFG->C->deb($IU);
+  /* if ($IW['set_standard_BIB'])
+  {  
+     $IW[ 'bib_id' ] =  $_SESSION['DEP2BIB'][ $IW[ 'department' ] ] ['Dep2BIB'] ;  # Standard-Bib des entprechenden Deparmtents
+  }
+*/ 
+                                        $SQL = "UPDATE `user` SET";
+if( isset( $IU[ 'role'         ] ) )  { $SQL .= " role_id               = \"" .$IU[ 'role'         ]. "\" ,";  }	
+if( isset( $IU[ 'nachname'     ] ) )  { $SQL .= " surname               = \"" .$IU[ 'nachname'     ]. "\" ,";  }	
+if( isset( $IU[ 'vorname'      ] ) )  { $SQL .= " forename              = \"" .$IU[ 'vorname'      ]. "\" ,";  }	
+if( isset( $IU[ 'sex'          ] ) )  { $SQL .= " sex                   = \"" .$IU[ 'sex'          ]. "\" ,";  }	
+if( isset( $IU[ 'mail'         ] ) )  { $SQL .= " email                 = \"" .$IU[ 'mail'         ]. "\" ,";  }	
+if( isset( $IW[ 'bib_id'       ] ) )  { $SQL .= " bib_id                = \"" .$IW[ 'bib_id'       ]. "\" ,";  }	
+if( isset( $IW[ 'department'   ] ) )  { $SQL .= " department            = \"" .$IW[ 'department'   ]. "\" ,";  }	
+                                        $SQL .= " last_modified         =            NOW() "; 
+                                        $SQL .= "WHERE `hawaccount`     = \"" .$IU[ 'hawaccount'   ] . "\"";
+ 
+ #$this->CFG->C->deb($SQL,1);
+                                        
+  $res =  mysqli_query ( $this->DB, $SQL );
   
+  return $res;
 }
 
 
-function initCollection($IW )
+function initCollection( $Course, $IDMuser )
 {
   $SQL = "
   INSERT INTO collection SET
-  created          =      NOW()                     , 
-  last_modified    =      NOW()                     , 
-  last_state_change=      NOW()                     , 
-  state_id         =      3                         ,
-  id               = \"" .$IW['title_short'     ]. "\" ,
-  user_id          = \"" .$_SESSION[ 'user' ]['hawaccount']. "\" ,
-  title            = \"" .$IW['title'           ]. "\" ,
-  title_short      = \"" .$IW['title_short'     ]. "\" ,
-  location_id      = \"" .$IW['location_id'     ]. "\" ,
-  expiry_date      = \"" .$IW['expiry_date'     ]. "\" ,
-  notes_to_studies = \"" .$IW['notes_to_studies']. "\" ,
-  categories_id    = \"" .$IW['categories_id'   ]. "\"" ; 
-
-  $res =  mysqli_query ( $this->DB, $SQL);
+  state_id         =      3                                 ,
+  created          =      NOW()                             , 
+  last_modified    =      NOW()                             , 
+  last_state_change=      NOW()                             , 
+  expiry_date      = \"" . $Course[ 'expiry_date'     ]. "\" ,
+  id               = \"" . $Course[ 'shortname'       ]. "\" ,
+  title            = \"" . $Course[ 'fullname'        ]. "\" ,
+  title_short      = \"" . $Course[ 'shortname'       ]. "\" ,
+  bib_id           = \"" . $IDMuser[ 'bib' ][ 'BibID' ]. "\" ,  
+  course_id        = \"" . $Course[ 'id'              ]. "\" , 
+  notes_to_studies = '' ,
+  user_id          = \"" . $_SESSION[ 'user' ]['hawaccount']. "\"" ;
+ 
+  $res =  mysqli_query ( $this->DB, $SQL );
   return $res;
 }
 
 
-function updateColMetaData($w)
+function updateColMetaData( $Course, $IDMuser )
 {
-  
   $SQL = "
   UPDATE `collection` 
-  SET  location_id      = \"" .$w['location_id'     ]. "\" ,";
+  SET";  
+  if( isset( $Course[ 'bib_id'            ] ) )  { $SQL .= " bib_id               = \"" .$Course[ 'bib_id'            ]. "\" ,";  }
+  if( isset( $Course[ 'fullname'          ] ) )  { $SQL .= " title                = \"" .$Course[ 'fullname'          ]. "\" ,";  }
+  if( isset( $Course[ 'notes_to_studies'  ] ) )  { $SQL .= " notes_to_studies     = \"" .$Course[ 'notes_to_studies'  ]. "\" ,";  }
 
-  if( isset( $w[ 'title'            ] ) )  { $SQL .= " title                = \"" .$w['title'           ]. "\" ,";  }
-  if( isset( $w[ 'notes_to_studies' ] ) )  { $SQL .= " notes_to_studies     = \"" .$w['notes_to_studies']. "\" ,";  }
-  if( isset( $w[ 'categories_id'    ] ) )  { $SQL .= " categories_id        = \"" .$w['categories_id'   ]. "\"  ";  }
-  if( isset( $w[ 'title_short'      ] ) )  { $SQL .= " WHERE title_short    = \"" .$w['title_short'     ]. "\"";    }
-  else                                     { $SQL .= " WHERE id             = \"" .$w['id'              ]. "\"";    }
+  $SQL .= " last_modified    =      NOW() "; 
+  
+  if( isset( $Course[ 'shortname' ] ) )  { $SQL .= " WHERE title_short    = \"" .$Course[ 'shortname' ]. "\"";    }
+  else                                   { $SQL .= " WHERE id             = \"" .$Course[ 'collection_id'        ]. "\"";    }
 
+
+  #$this->CFG->C->deb( $SQL,1 );
+  
   $res =  mysqli_query ( $this->DB, $SQL);
   return $res;
 }
-
 
 
 function updateMediaMetaData($w)
@@ -343,7 +374,6 @@ function updateMediaMetaData($w)
   return $res;
 }
 
-
 function updateCollectionSortOrder( $collection_id, $sortorder )
 {  
   $SQL = " UPDATE collection SET ";
@@ -353,21 +383,23 @@ function updateCollectionSortOrder( $collection_id, $sortorder )
   return $res;
 }
 
-function getCollectionInfos ($colID = null, $doc_type_id = null , $doc_state_id = null, $short = null  )
+function getCollectionInfos ( $colID = null, $doc_type_id = null , $doc_state_id = null, $short = null  )
 {
-  $SQL = "SELECT * FROM `collection`";
-  $SQL .= " WHERE  1 = 1  ";
+  $SQL = "SELECT * , user.bib_id as user_bib_id , collection.bib_id as coll_bib_id,   collection.id  as collID , user.id as uID FROM `collection` , `user`";
+  $SQL .= " WHERE  user.hawaccount = collection.user_id  ";
 
-  if ($colID )
+  if ( $colID )
   {
     $SQL .= " AND collection.id = \"" . $colID ."\"  ";  
   } 
   $SQL .= " ORDER BY collection.id ";
-   
   /* ALLE Medieninfo zu dem entsprechenden SA werden ermittelt */
   $ret = false;
-  $res =  mysqli_query ( $this->DB, $SQL );
   
+  #$this->CFG->C->deb( $SQL,1 );  
+   
+  $res =  mysqli_query ( $this->DB, $SQL );
+    
   if ( $res )
   {  
    while ( $row = mysqli_fetch_assoc( $res ) ) 
@@ -375,18 +407,19 @@ function getCollectionInfos ($colID = null, $doc_type_id = null , $doc_state_id 
      $sortorder = explode ( ',' , $row['sortorder'] );
 
      $userInfo = $this-> getUserHSK(  $row['user_id'] );
-
-      $ret[ $row[ 'id' ] ] = $row;
-      $ret[ $row[ 'id' ]][ 'user_info' ] = $userInfo[0] ; 
-
-      $dl = $this->getDokumentList( $row[ 'id' ], $doc_type_id,  $doc_state_id );  /*  ( $doc_ID, $doc_type_id = null , $doc_state_id = null  ) */
+    
+      $ret[ $row[ 'collID' ] ] = $row;
+      $ret[ $row[ 'collID' ]][ 'user_info' ] = $userInfo[0] ; 
+      
+      $dl = $this->getDokumentList( $row[ 'collID' ], $doc_type_id,  $doc_state_id );  /*  ( $doc_ID, $doc_type_id = null , $doc_state_id = null  ) */
+      
       if( $dl )
       {  unset($withoutSortOrder);
          unset($withSortOrder);
       
         foreach($dl as $d)
         {  
-          $withoutSortOrder[$d['id']] = array_merge( $d, getDocType($d) ); ## --- Attribute hinzufügen 'doc_type', 'item', 'doc_type_id', 'state_id'   
+          $withoutSortOrder[ $d[ 'id' ] ] = array_merge( $d, $this->CFG->C->getDocType( $d ) ); ## --- Attribute hinzufügen 'doc_type', 'item', 'doc_type_id', 'state_id'   
         } 
 
         if(  $sortorder[ 0 ] != '' AND $doc_state_id == '' )
@@ -403,19 +436,21 @@ function getCollectionInfos ($colID = null, $doc_type_id = null , $doc_state_id 
            $withSortOrder =  $withoutSortOrder;
 	     	}
         
-        $ret[ $row[ 'id' ] ][ 'document_info' ] = $withSortOrder ;
+        $ret[ $row[ 'collID' ] ][ 'document_info' ] = $withSortOrder ;
       }
       elseif( $short )  /* Wenn SA keine Medien beinhaltet, wird er wieder entfernt */
       {
-        unset ($ret[$row['id']]);
+        unset ($ret[$row['collID']]);
       }
       elseif($doc_state_id != null )
       {
-        unset ($ret[$row['id']]);
+        unset ($ret[$row['collID']]);
       #  $ret[$row['id']][ 'document_info' ] = null ;
       }
     }
   }
+  
+
   return $ret ;
 }
 
@@ -516,26 +551,27 @@ function getUser( $mode )
    
   $SQL = "SELECT " .$param['columns']. " FROM " .$param['tables']. "  WHERE  ".$param['cond'];
 
+  
   $res =  mysqli_query ( $this->DB, $SQL);
 
   while ($row = mysqli_fetch_assoc($res)) 
   {
     $ret[] = $row;
   }
-  
+ 
   return $ret; 
 }
 
 function getSAlist( $user, $mode, $categories )
 {
- global $const_FAK;
+  
  
- if($categories == 20) { $categories = "21 OR u.categories_id = 22 OR u.categories_id = 23 OR u.categories_id = 24"; }  
- if($categories == 30) { $categories = "31 OR u.categories_id = 32 OR u.categories_id = 33 OR u.categories_id = 34 OR u.categories_id = 35 OR u.categories_id = 36 OR u.categories_id = 37 OR u.categories_id = 430"; }  
- if($categories == 50) { $categories = "51 OR u.categories_id = 52 OR u.categories_id = 53 OR u.categories_id = 54 OR u.categories_id = 55"; }  
- if($categories == 60) { $categories = "61 OR u.categories_id = 62 OR u.categories_id = 63 OR u.categories_id = 64 OR u.categories_id = 65"; }  
- if($categories == 1 ) { $categories != "21 AND u.categories_id != 22 AND u.categories_id != 23 AND u.categories_id != 24 AND u.categories != 31 AND u.categories_id != 32 AND u.categories_id != 33 AND u.categories_id != 34 AND u.categories_id != 35 AND u.categories_id != 36 AND u.categories_id != 37  AND u.categories != 51 AND u.categories_id != 52 AND u.categories_id != 53 AND u.categories_id != 54 AND u.categories_id != 55 AND u.categories != 61 AND u.categories_id != 62 AND u.categories_id != 63 AND u.categories_id != 64 AND u.categories_id != 65 "; } 
- $SQL  =  " SELECT c.*, u.surname, u.forename, s.name AS state_name, s.description AS state_description"; 
+ if($categories == 20) { $cat = "u.department = 21 OR u.department = 22 OR u.department = 23 OR u.department = 24"; }  
+ if($categories == 30) { $cat = "u.department = 31 OR u.department = 32 OR u.department = 33 OR u.department = 34 OR u.department = 35 OR u.department = 36 OR u.department = 37 OR u.department = 430"; }  
+ if($categories == 50) { $cat = "u.department = 51 OR u.department = 52 OR u.department = 53 OR u.department = 54 OR u.department = 55"; }  
+ if($categories == 60) { $cat = "u.department = 61 OR u.department = 62 OR u.department = 63 OR u.department = 64 OR u.department = 65"; }  
+ if($categories == 1 ) { $cat = "u.department !=21 AND u.department != 22 AND u.department != 23 AND u.department != 24 AND u.department != 31 AND u.department != 32 AND u.department != 33 AND u.department != 34 AND u.department != 35 AND u.department != 36 AND u.department != 37  AND u.department != 51 AND u.department != 52 AND u.department != 53 AND u.department != 54 AND u.department != 55 AND u.department != 61 AND u.department != 62 AND u.department != 63 AND u.department != 64 AND u.department != 65 "; } 
+ $SQL  =  " SELECT c.*, u.department,  u.surname, u.forename, s.name AS state_name, s.description AS state_description"; 
  $SQL .=  " FROM collection c "; 
  $SQL .=  " LEFT JOIN  user u"; 
  $SQL .=  " ON u.hawaccount = c.user_id "; 
@@ -543,9 +579,10 @@ function getSAlist( $user, $mode, $categories )
  $SQL .=  "  ON s.id = c.state_id"; 
  $SQL .=  " WHERE user_id = \"" .$user[ 'hawaccount' ]."\""; 
  if ( $mode       == "view" )  {  $SQL .= " AND c.state_id = 3";                    }                  /* Zustand 3 = aktiv */  
- if ( $categories == 1 OR $categories == 20 OR $categories == 30 OR$categories == 50 OR $categories == 60 )  {  $SQL .= " AND ( u.categories_id =". $categories .")" ;   }//Filter for category/department
+ if ( $categories == 1 OR $categories == 20 OR $categories == 30 OR $categories == 50 OR $categories == 60 )  {  $SQL .= " AND (  ". $cat .")" ;   }//Filter for category/department
  $SQL .=  " ORDER BY `id` "; 
  $SQL .=  " DESC "; 
+ 
  
  $res =  mysqli_query ( $this->DB, $SQL);
  $ret = NULL;

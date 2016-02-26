@@ -1,19 +1,18 @@
 <?php
 
-require_once('config.php') ;
-require_once('../php/sql.class.php'         );
-
 class Util   /// \brief check user input
 {
   var  $sql ;
+  var  $CFG ;
 
-  function Util ( )
+  function Util ( $CFG, $SQL )
   {
-    $this->sql        = new SQL();
+    $this->sql        = $SQL;
+    $this->CFG        = $CFG;
      
     if ( !isset ( $_SESSION[ 'DEP2BIB'] ) )                                     # Ermittelt die zuständige FachBib zum jeweiligen Department 
     {
-        $this->HAWdb      = new HAW_DB();                                       # Aus der SQLite DB
+       $this->HAWdb          = new HAW_DB();                                    # Aus der SQLite DB
        $_SESSION['DEP2BIB' ] =  $this->HAWdb->getDEP2BIB();
        $_SESSION['FAK'     ] =  $this->HAWdb->getAllFak();
        $_SESSION['FACHBIB' ] =  $this->HAWdb->getAllFachBib();
@@ -134,15 +133,13 @@ class Util   /// \brief check user input
     return ( $ok_ower || $ok_role || $ok_any ) ;
   }
  
-  
-
 ####################### --- TOOLS --- #######################
 
   function check_permission ( $INPUT )
   {
-    global $CONST_actions_info ;
+        
     #--------------------------------------------------------------------------------------------------------------------
-    if ( ! $util -> check_acl ( $CONST_actions_info[ $INPUT[ 'work' ][ 'action' ] ][ 'acl' ] , $INPUT[ 'work' ][ 'item' ] , $INPUT[ 'work' ][ 'id' ] ) )
+    if ( ! $util -> check_acl ( $this->CFG->C->CONST_actions_info[ $INPUT[ 'work' ][ 'action' ] ][ 'acl' ] , $INPUT[ 'work' ][ 'item' ] , $INPUT[ 'work' ][ 'id' ] ) )
     {
       user_error ( "Permission denied: action " . $INPUT[ 'work' ][ 'action' ] . " on item type " . $INPUT[ 'work' ][ 'item' ] . " for: " . $_SESSION[ 'user' ][ 'role_name' ] . " / " . $_SESSION[ 'user' ][ 'surname' ] . " " , E_USER_ERROR ) ;
     }
@@ -150,8 +147,6 @@ class Util   /// \brief check user input
 
   function getInput ( )
   {
-    global $CONST_actions_info ;
-
     $this -> getGET_EMIL_Values () ; /* Paramterübergabe von EMIL  */
     
     $INPUT[ 'work' ][ 'item'          ] = '' ;
@@ -161,54 +156,76 @@ class Util   /// \brief check user input
     $INPUT[ 'work' ][ 'collection_id' ] = '' ;
     $INPUT[ 'work' ][ 'mode'          ] = '' ;
     $INPUT[ 'work' ][ 'shelf_remain'  ] = '' ;
+    $INPUT[ 'work' ][ 'document_id'   ] = '' ; 
     
     $INPUT[ 'work' ] = array_merge ( $INPUT[ 'work' ] , $_GET , $_POST ) ;
     
     if ( isset( $_SESSION[ 'user' ]['tmpcat']) )  #  Hook, wenn Staff ELSE betritt, wird sofort die LR Übersicht angezeigt (anstelle des SA des LR)
-    {
-      $INPUT[ 'work' ]['categories'] = 1;
-      unset($_SESSION[ 'user' ]['tmpcat'] );
+    {  $INPUT[ 'work' ]['categories'] = 1;
+       unset($_SESSION[ 'user' ]['tmpcat'] );
     } 
 
-    if ( isset ( $INPUT[ 'work' ][ 'action' ] ) AND isset ( $CONST_actions_info[ $INPUT[ 'work' ][ 'action' ] ] [ 'input' ] ) )
-    {
-      $INPUT[ 'work' ] = array_merge ( $INPUT[ 'work' ] , $CONST_actions_info[ $INPUT[ 'work' ][ 'action' ] ] [ 'input' ] ) ;   /* get mode */
+    if ( isset ( $INPUT[ 'work' ][ 'action' ] ) AND isset ( $this->CFG->C->CONST_actions_info[ $INPUT[ 'work' ][ 'action' ] ] [ 'input' ] ) )
+    {   $INPUT[ 'work' ] = array_merge ( $INPUT[ 'work' ] , $this->CFG->C->CONST_actions_info[ $INPUT[ 'work' ][ 'action' ] ] [ 'input' ] ) ;   /* get mode */
     }
+
+    #$this->CFG->C->deb( $INPUT[ 'work' ],1 );
     
+    if (           $INPUT[ 'work' ][ 'item'          ] == '' ) 
+    { $INPUT[ 'work' ][ 'item'        ] = 'collection'  ;   }                     ## Standard work.item ist 'collection'
     
-    if (            $INPUT[ 'work' ][ 'item'          ] == '' ) { $INPUT[ 'work' ][ 'item'        ] = 'collection'  ;   }                     ## Standard work.item ist 'collection'
-    if (    !isset( $INPUT[ 'work' ][ 'action'        ]   )   ) { $INPUT[ 'work' ][ 'action'      ] = 'b_coll_edit' ;   }                     ## Standard work.action ist 'b_coll_edit'
-    if ( isset(  $_SESSION[ 'work' ][ 'last_page'     ]   )   ) { $INPUT[ 'work' ][ 'last_page'   ] = $_SESSION[ 'work' ][ 'last_page'   ]; } /* 'Lastpage' wird *immer* in SESSION übernommen*/
-    if (!isset(     $INPUT[ 'work' ][ 'document_id'   ]   )   ) { $INPUT[ 'work' ][ 'document_id' ] = $_SESSION[ 'work' ][ 'document_id' ]; } /* 'document_id' wird *immer* in SESSION übernommen*/
-    if (            $INPUT[ 'work' ][ 'collection_id' ] != '' ) { $_SESSION[ 'coll' ] = $this->sql->doCollectionExist(  $INPUT[ 'work' ][ 'collection_id' ] ); } /* Wenn coll_id übergegen wird, wird dieser der aktive SA  */
+    if (   !isset( $INPUT[ 'work' ][ 'action'        ]       ) ) 
+    { $INPUT[ 'work' ][ 'action'      ] = 'b_coll_edit' ;   }                     ## Standard work.action ist 'b_coll_edit'
+    
+    if (!isset(    $INPUT[ 'work' ][ 'collection_id' ]       ) ) 
+    { $_SESSION[ 'coll' ] = $this->sql->doCollectionExist(  $INPUT[ 'work' ][ 'collection_id' ] ); } /* Wenn coll_id übergegen wird, wird dieser der aktive SA  */
+    
+    if ( isset( $_SESSION[ 'work' ][ 'last_page'     ]       ) ) 
+    { $INPUT[ 'work' ][ 'last_page'   ] = $_SESSION[ 'work' ][ 'last_page'   ]; } /* 'Lastpage' wird *immer* in SESSION übernommen*/
+    
+    if ( isset( $_SESSION[ 'work' ][ 'document_id'   ]       )  AND   $INPUT[ 'work' ][ 'document_id'   ] == '' ) 
+    { $INPUT[ 'work' ][ 'document_id' ] = $_SESSION[ 'work' ][ 'document_id' ]; } /* 'document_id' wird *immer* in SESSION übernommen*/
     
     $_SESSION[ 'work' ] = $INPUT[ 'work' ] ;
+   
+    #this->CFG->C->deb(  $_SESSION[ 'work' ][ 'collection_id' ]    );
+    
     return $INPUT ;
   }
 
   function getGET_EMIL_Values ( )
   {
-    if ( isset ( $_GET[ 'sn' ] ) )    ##  Initiale Parameterübergabe über  Moodle ##
-    {
+    if ( isset ( $_GET[ 'id' ] ) )    ##  Initiale Parameterübergabe über  Moodle ## // Kurskurzname 
+    {   
+      if ( isset ( $_GET[ 'id' ] ) )  { $Course[ 'id'          ] = rawurldecode ( base64_decode ( $_GET[ 'id' ] ) ) ;  }  else   { echo "<br>ERROR: no 'course ID'        " ;  }
       if ( isset ( $_GET[ 'sn' ] ) )  { $Course[ 'shortname'   ] = rawurldecode ( base64_decode ( $_GET[ 'sn' ] ) ) ;  }  else   { echo "<br>ERROR: no 'course shortname' " ;  }
       if ( isset ( $_GET[ 'cn' ] ) )  { $Course[ 'fullname'    ] = rawurldecode ( base64_decode ( $_GET[ 'cn' ] ) ) ;  }  else   { echo "<br>ERROR: no 'course fullname'  " ;  }
-      if ( isset ( $_GET[ 'm'  ] ) )  { $IDMuser[ 'mail'       ] = rawurldecode ( base64_decode ( $_GET[ 'm'  ] ) ) ;  }  else   { echo "<br>ERROR: no 'mail'             " ;  }
-      if ( isset ( $_GET[ 'fn' ] ) )  { $IDMuser[ 'vorname'    ] = rawurldecode ( base64_decode ( $_GET[ 'fn' ] ) );   }  else   { echo "<br>ERROR: no 'vorname'          " ;  }
-      if ( isset ( $_GET[ 'ln' ] ) )  { $IDMuser[ 'nachname'   ] = rawurldecode ( base64_decode ( $_GET[ 'ln' ] ) ) ;  }  else   { echo "<br>ERROR: no 'nachname'         " ;  }
-      if ( isset ( $_GET[ 'u'  ] ) )  { $IDMuser[ 'akennung'   ] = rawurldecode ( base64_decode ( $_GET[ 'u'  ] ) ) ;  }  else   { echo "<br>ERROR: no 'akennung'         " ;  }
-      if ( isset ( $_GET[ 'id' ] ) )  { $IDMuser[ 'matrikelnr' ] = rawurldecode ( base64_decode ( $_GET[ 'id' ] ) ) ;  }  else   { echo "<br>ERROR: no 'matrikelnr'       " ;  }
-      if ( isset ( $_GET[ 'fa' ] ) )  { $IDMuser[ 'fakultaet'  ] = rawurldecode ( base64_decode ( $_GET[ 'fa' ] ) ) ;  }  else   { echo "<br>ERROR: no 'studiengang'      " ;  }
-      if ( isset ( $_GET[ 'dp' ] ) )  { $IDMuser[ 'department' ] = rawurldecode ( base64_decode ( $_GET[ 'dp' ] ) ) ;  }  else   { echo "<br>ERROR: no 'department'       " ;  }
-      if ( isset ( $_GET[ 'sx' ] ) )  { $IDMuser[ 'sex'        ] = rawurldecode ( base64_decode ( $_GET[ 'sx' ] ) ) ;  }  else   { echo "<br>ERROR: no 'sex'              " ;  }
-      if ( isset ( $_GET[ 'ro' ] ) )  { $IDMuser[ 'role'       ] = rawurldecode ( base64_decode ( $_GET[ 'ro' ] ) ) ; 
-                                        $IDMuser[ 'role_encode'] = $_GET[ 'ro' ] ;                                     }  else   { echo "<br>ERROR: no 'role'             " ;  }
+      if ( isset ( $_GET[ 'uid'] ) )  { $IDMuser[ 'id'         ] = rawurldecode ( base64_decode ( $_GET[ 'uid'] ) ) ;  }  else   { $IDMuser[ 'id'         ] = ""; echo "<br>ERROR: no 'user ID'          " ;  }
+      if ( isset ( $_GET[ 'm'  ] ) )  { $IDMuser[ 'mail'       ] = rawurldecode ( base64_decode ( $_GET[ 'm'  ] ) ) ;  }  else   { $IDMuser[ 'mail'       ] = ""; echo "<br>ERROR: no 'mail'             " ;  }
+      if ( isset ( $_GET[ 'fn' ] ) )  { $IDMuser[ 'vorname'    ] = rawurldecode ( base64_decode ( $_GET[ 'fn' ] ) );   }  else   { $IDMuser[ 'vorname'    ] = ""; echo "<br>ERROR: no 'vorname'          " ;  }
+      if ( isset ( $_GET[ 'ln' ] ) )  { $IDMuser[ 'nachname'   ] = rawurldecode ( base64_decode ( $_GET[ 'ln' ] ) ) ;  }  else   { $IDMuser[ 'nachname'   ] = ""; echo "<br>ERROR: no 'nachname'         " ;  }
+      if ( isset ( $_GET[ 'u'  ] ) )  { $IDMuser[ 'hawaccount' ] = rawurldecode ( base64_decode ( $_GET[ 'u'  ] ) ) ;  }  else   { $IDMuser[ 'akennung'   ] = ""; echo "<br>ERROR: no 'hawaccount'       " ;  }
+      if ( isset ( $_GET[ 'id' ] ) )  { $IDMuser[ 'matrikelnr' ] = rawurldecode ( base64_decode ( $_GET[ 'id' ] ) ) ;  }  else   { $IDMuser[ 'matrikelnr' ] = ""; echo "<br>ERROR: no 'matrikelnr'       " ;  }
+      if ( isset ( $_GET[ 'fa' ] ) )  { $IDMuser[ 'fakultaet'  ] = rawurldecode ( base64_decode ( $_GET[ 'fa' ] ) ) ;  }  else   { $IDMuser[ 'fakultaet'  ] = ""; echo "<br>ERROR: no 'studiengang'      " ;  }
+      if ( isset ( $_GET[ 'dp' ] ) )  { $IDMuser[ 'department' ] = rawurldecode ( base64_decode ( $_GET[ 'dp' ] ) ) ;  }  else   { $IDMuser[ 'department' ] = ""; echo "<br>ERROR: no 'department'       " ;  }
+      if ( isset ( $_GET[ 'sx' ] ) )  { $IDMuser[ 'sex'        ] = rawurldecode ( base64_decode ( $_GET[ 'sx' ] ) ) ;  }  else   { $IDMuser[ 'sex'        ] = ""; echo "<br>ERROR: no 'sex'              " ;  }
+      if ( isset ( $_GET[ 'ro' ] ) )  { $IDMuser[ 'role'       ] = rawurldecode ( base64_decode ( $_GET[ 'ro' ] ) ) ;              
+                                        $IDMuser[ 'role_encode'] = $_GET[ 'ro' ] ;                                     }  else   { $IDMuser[ 'role'       ] = ""; $IDMuser[ 'role_encode'] = "";  echo "<br>ERROR: no 'role'             " ;  }
 
  	    if ( $IDMuser[ 'sex' ] == 2 )   { $IDMuser[ 'sex' ] = 'w' ;  }
       else                            { $IDMuser[ 'sex' ] = 'm' ;  }
  
-      
-      #-------------------------------------------------------------------------# Alle Nuter aus Department 106 = HIBS sind Bib-Mitarbeiter mit Editrechten in ELSE 
-      if ( $IDMuser[ 'department' ] == 106 )                                    
+      if (! isset( $_SESSION['DEP2BIB' ][ $IDMuser[ 'department' ]  ] ))
+      {
+         $IDMuser[ 'bib'] = $_SESSION['DEP2BIB' ][ 101  ];                       // Preset auf FachBib = HAW, falls dem User kein Department zugeordnet ist.
+      } 
+      else
+      {
+         $IDMuser[ 'bib'] = $_SESSION['DEP2BIB' ][ $IDMuser[ 'department' ]  ];
+      }
+            
+      #-------------------------------------------------------------------------# Alle Nuter aus Department 102 = HIBS sind Bib-Mitarbeiter mit Editrechten in ELSE 
+      if ( $IDMuser[ 'department' ] == 102 )                                    
       { $IDMuser[ 'role'   ] = 2; 
         $IDMuser[ 'tmpcat' ] = 1; 
       }         
@@ -223,7 +240,7 @@ class Util   /// \brief check user input
       if ( $this->sql -> doCollectionExist ( $Course[ 'shortname' ] ) )
       {                                                                             
         $IC[ 'title'         ] = $Course[ 'fullname' ] ;
-        $IC[ 'location_id'   ] = $_SESSION[ 'DEP2BIB' ][ $IDMuser[ 'department' ] ] [ 'BibID' ];
+        $IC[ 'bib_id'        ] = $_SESSION[ 'DEP2BIB' ][ $IDMuser[ 'department' ] ] [ 'BibID' ];
         $IC[ 'categories_id' ] = $IDMuser[ 'department' ] ;
         $IC[ 'title_short'   ] = $Course[ 'shortname'   ] ;
       }
@@ -238,10 +255,10 @@ class Util   /// \brief check user input
 
   function initUpdateUser ( $IDMuser )    # EMIL Nutzer ist schon ELSE Nutzer 
   {
-    if    ( $this->sql -> checkUserExistence ( $IDMuser[ 'akennung' ] ) ) { $this->sql -> updateUser ( $IDMuser ) ; }  # echo "- Bestehender USER (UPDATE DB )-";
+    if    ( $this->sql -> checkUserExistence ( $IDMuser[ 'hawaccount' ] ) ) { $this->sql -> updateUser ( $IDMuser ) ; }  # echo "- Bestehender USER (UPDATE DB )-";
     else                                                                  { $this->sql -> initUser   ( $IDMuser ) ; }  # echo "- NEUER USER (INIT DB )-";
 
-    $ans = $this->sql -> getUserHSK ( $IDMuser[ 'akennung' ] ) ;
+    $ans = $this->sql -> getUserHSK ( $IDMuser[ 'hawaccount' ] ) ;
 
     $_SESSION[ 'user' ] = $ans[ 0 ] ;
 
@@ -259,25 +276,15 @@ class Util   /// \brief check user input
 
     if ( isset ( $collection[ 'id' ] ) )                                        #  echo "Semesterapparat existiert schon"; 
     {                                                                           
-      $IC[ 'title' ] = $Course[ 'fullname' ] ;
-      $IC[ 'location_id' ] = $_SESSION[ 'DEP2BIB' ][ $IDMuser[ 'department' ] ] [ 'BibID' ] ;
-      $IC[ 'title_short' ] = $Course[ 'shortname' ] ;
-
-      $this->sql -> updateColMetaData ( $IC) ;                                 #  echo "- Bestehender Semesterapparat (UPDATE DB )-";
+      $this->sql -> updateColMetaData ( $Course , $IDMuser) ;                                 #  echo "- Bestehender Semesterapparat (UPDATE DB )-";
     }
     else                                                                        #  echo "Semesterapparat existiert NOCH NICHT "; 
     {
-      $IC[ 'title' ] = $Course[ 'fullname' ] ;
-      $IC[ 'title_short' ] = $Course[ 'shortname' ] ;
-      $IC[ 'location_id' ] = $_SESSION[ 'DEP2BIB' ][ $IDMuser[ 'department' ] ] [ 'BibID' ]  ;
-      $IC[ 'expiry_date' ] = $this -> get_new_expiry_date () ;
-      $IC[ 'notes_to_studies' ] = '' ;
-      $IC[ 'categories_id' ] = $IDMuser[ 'department' ] ;
-
-      $this->sql -> initCollection ( $IC ) ;                                    #  echo "- NEUER Semesterapparat (INIT DB )-";
+      $Course['expiry_date'] = $this -> get_new_expiry_date () ; 
+      
+      $this->sql -> initCollection ( $Course , $IDMuser ) ;                                    #  echo "- NEUER Semesterapparat (INIT DB )-";
     }
   }
- 
   
   function sendBIB_APmails()
   {
@@ -287,7 +294,7 @@ class Util   /// \brief check user input
     
     $mailInfos =     $this->sql -> getAdminEmailInfos ( ) ;
    
-    #deb($mailInfos,1);
+      
     foreach ($mailInfos as $mi)
     { 
       $message ="";
