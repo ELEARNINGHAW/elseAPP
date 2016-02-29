@@ -1,16 +1,18 @@
 <?php
-
-require_once '../php/const.php' ;
+class Config
+{
+var $CONST;  
 
 function getConf()
 {
+$serverName = $_SERVER[ 'SERVER_NAME' ];
+
 
 $conf[ 'db_host'               ] = "localhost";		                     ## MySQL Database parametes
 $conf[ 'db_name'               ] = "";	
 $conf[ 'db_user'               ] = "";
 $conf[ 'db_pass'               ] = "";
 $conf[ 'templates_compile_dir' ] = "/home/ELSE/template/";             ## Directory for storing compiled HTML teplates
-
 
 $conf[ 'catURL'                ] = 'http://sru.gbv.de/';
 $conf[ 'cat'                   ] = 'opac-de-18-302';  # HIBS 
@@ -34,4 +36,12 @@ $conf[ 'canYAZ'                ] = true;
 return $conf;
 }
 
+function Config( $CONSTANT )
+{  
+  $this->C = $CONSTANT;
+
+}
+
+}
 ?>
+
