@@ -25,7 +25,6 @@ $media      = new Media( $CFG, $SQL, $renderer );
 
 $INPUT = $util->getInput() ;                                #--- GET ALL INPUT (POST/GET) ---
 
-
 if ( isset ( $_SESSION[ 'work'  ] ) ) { $IW = $_SESSION[ 'work' ]; }
 if ( isset ( $_SESSION[ 'user'  ] ) ) { $IU = $_SESSION[ 'user' ]; }
 if ( isset ( $_SESSION[ 'coll'  ] ) ) { $IC = $_SESSION[ 'coll' ]; }
@@ -43,9 +42,6 @@ if ( isset ( $IW['b_cancel'] ) )
 else if ( $issetCategories OR $issetLetter  ) 
 { $media ->  getFilterHeader ();
 }
-
-
-
 
 else if ( $IW['item'] == 'collection' )
 { if      ( $IW['action'] == 'b_coll_release'      )  { $collection->setCollectionState_5      ( $IW           );    } /* Zustand 5 = 'AUFGELÖST'                                    */
@@ -102,6 +98,5 @@ else if ( $IW['item'] == 'email' )
 { if      ( $IW['action'] == 'sendmail'            )  {  $media->send_email(  $IW, $IU, $IC );   }           /* Email wird verschickt                                         */
   if      ( $IW['action'] == 'HIBSAPmail'          )  {  $util->sendBIB_APmails();               }           /* Cronjob: HIBS Ansprechpartner Infomail                                         */
 }
-
 ?>
   

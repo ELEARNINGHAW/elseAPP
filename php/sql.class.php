@@ -170,7 +170,9 @@ function getAllMedStates()
   
   $res =  mysqli_query ( $this->DB, $SQL);
   while ($row = mysqli_fetch_assoc($res)) 
-  { $ret[$row['id']] = $row;
+  {
+    $row['description'] = str_replace('##' , '<br />',  $row['description']);                   ## Parst nach '##' und ersetzt durch '<br>'
+    $ret[$row['id']] = $row;
   }
   return $ret;  
 }
@@ -396,7 +398,7 @@ function getCollectionInfos ( $colID = null, $doc_type_id = null , $doc_state_id
   /* ALLE Medieninfo zu dem entsprechenden SA werden ermittelt */
   $ret = false;
   
-  #$this->CFG->C->deb( $SQL,1 );  
+ # $this->CFG->C->deb( $SQL,1 );  
    
   $res =  mysqli_query ( $this->DB, $SQL );
     

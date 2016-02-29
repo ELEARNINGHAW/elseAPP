@@ -25,7 +25,7 @@ $conf[ 'templates_compile_dir' ] = "/home/ELSE/template/";             ## Direct
 else if ($serverName == 'localhost' OR $serverName == '127.0.0.1' )
 { 
 $conf[ 'db_host'               ] = "localhost";		                     ## MySQL Database parametes
-$conf[ 'db_name'               ] = "semapp";	
+$conf[ 'db_name'               ] = "elsels";	
 $conf[ 'db_user'               ] = "semapp";
 $conf[ 'db_pass'               ] = "semapp";
 $conf[ 'templates_compile_dir' ] = "C:/X/home/ELSE/";                    ## Directory for storing compiled HTML teplates

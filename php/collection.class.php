@@ -151,7 +151,7 @@ function showCollection( $IW , $IU)
   $tpl_vars[ 'errors_info'     ][] = '';
   $tpl_vars[ 'actions_info'    ] =  $this->CFG->C->CONST_actions_info;
  
-   #$this->CFG->C->deb( $tpl_vars,1 );
+ # $this->CFG->C->deb( $tpl_vars,1 );
   
   $this->renderer->do_template( 'collection.tpl', $tpl_vars, ( $IW[ 'action' ] != 'print' ) );
  }
