@@ -26,7 +26,8 @@
    
 <div style="position: relative; left:0px; top:0px; height:40px;"   >  
   <ul id="nav" style="position:absolute; left:5px;   top:6px; margin-right:60px;"   >
-    <li><a title="Semesterapparate der HAW" style="background-color:#234A89;"  href="index.php?categories=1"> HAW </a>
+    <li><a title="Semesterapparate der HAW" style="background-color:#234A89;"  href="index.php?categories=1"> 0 </a>
+    <li><a title="Semesterapparate der HAW" style="background-color:#234A89;"  href="index.php?categories=0"> HAW </a>
     </li>
     <li><a title="Semesterapparate der Fakultät DMI" style="background-color:#008B95;" href="index.php?categories=20"> DMI </a>
       <ul style="display: block; visibility: hidden;">
@@ -63,7 +64,7 @@
              <li><a title="Semesterapparate des Department Soziale Arbeit"                                   style="background-color:#C60C30;" href="index.php?categories=64">Soziale Arbeit</a></li>
          </ul>
      </li> 
- {if isset($work.categories) AND $work.categories == "1" }
+ {if isset($work.categories) AND $work.categories == "0"}
     <li class="en">   <a class="en" title="Alle Dozenten, über Anfangsbuchstabe" href="#">A</a> 
        <ul style="width:20px;"> 
    {foreach from=$letter_output key=letter_k item=letter_i}

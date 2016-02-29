@@ -196,7 +196,7 @@ function  saveColMetaData(   $IW, $IU )
 
 function updateColMetaData(  $IW, $IU)
 {
-   $this->CFG->C->deb($IU);
+#   $this->CFG->C->deb($IU);
   # Semesterapparat: Update des dem SA zugeordneten Fachbib  
   #$this->CFG->C->deb( $IW,1 );
   $this->sql-> updateColMetaData($IW, $IU);

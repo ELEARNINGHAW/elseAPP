@@ -59,15 +59,15 @@ function purchase_suggestion( $IW,  $IU )
     $book['notes_to_staff']   = "" ;
     $book['doc_type_id']      = 1 ; 
    
-    $tpl_vars['user']                          = $_SESSION['user'];
-    $tpl_vars['coll']                          = $_SESSION['coll'];
-    $tpl_vars['book']                          = $book;    
-    $tpl_vars['work']                          = $IW;    
-    $tpl_vars['colData']                       = $this->sql->getCollectionInfos ( $IW['collection_id'] );
-    $tpl_vars['work']['mode']                  = "suggest";    
-    $tpl_vars['work']['document_id']           = 0 ; 
+    $tpl_vars['user']                  = $_SESSION['user'];
+    $tpl_vars['coll']                  = $_SESSION['coll'];
+    $tpl_vars['book']                  = $book;    
+    $tpl_vars['work']                  = $IW;    
+    $tpl_vars['colData']               = $this->sql->getCollectionInfos ( $IW['collection_id'] );
+    $tpl_vars['work']['mode']          = "suggest";    
+    $tpl_vars['work']['document_id']   = 0 ; 
    
-   # $this->CFG->C->deb($tpl_vars,1);
+  #  $this->CFG->C->deb($tpl_vars,1);
 
     
    
@@ -277,7 +277,7 @@ function showNewBookForm( $IW, $toSearch = NULL, $searchHits = 1 )
   $tpl_vars['book']['author']       = $toSearch['author'];                                                                 /*   */
   $tpl_vars['book']['signature']    = $toSearch['signature'];                                                                 /*   */
   $tpl_vars['coll']['title_short']  = $IW['collection_id'];  
-#$this->CFG->C->deb( $tpl_vars  );
+#$this->CFG->C->deb( $tpl_vars ,1 );
   $this->renderer->do_template ( 'new_book.tpl' , $tpl_vars ) ;
   exit(0);
 }
@@ -462,11 +462,12 @@ if (isset($userlist))
 foreach ( $userlist as $u )                                                                                                                  ## Liste wird mit entsprechenden SAs erweitert 
 {
   $SAlistTMP                                            =  $this->sql->getSAlist( $u, $INPUT['work']['mode'], $INPUT['work']['categories'] );
-  
+
 
   
   $SAlist = ""; 
   if ($SAlistTMP)
+  {  
   foreach ( $SAlistTMP as $SAL)   /* SA die nicht angzeigt werden sollen, werden aus der Liste entfernt */
   {
     if (      $SAL[ 'id' ] !=  'ELSE-ADMIN' 
@@ -476,14 +477,14 @@ foreach ( $userlist as $u )                                                     
 	     {
          $SAlist[] = $SAL; 
        }
- 
   }
-  # $this->CFG->C->deb( $SAlist ,1); 
+  }
+
+  #$this->CFG->C->deb( $SAlist ); 
   
   if ( isset ( $SAlist[ 0 ][ 'surname' ] ) && $letter_eq != substr ( $SAlist[ 0 ][ 'surname' ] , 0 , 1 ) )                    ## Wenn User mindestens ein Semesterapparat hat
   { $letter = substr ( $SAlist[ 0 ][ 'surname' ] , 0 , 1 );
     $letter_exist[$letter] = $letter;                                                                                         ## Wird sein Anfangsbuchstabe gespeichert
-  }
 
   $key  = $this->getKey( $u );
   $tpl_var[ 'collection' ][ $key ] = NULL ;  
@@ -502,6 +503,8 @@ foreach ( $userlist as $u )                                                     
   #------------------------------------------------------------------------------------------------------------------- 
 }
 
+}
+
 
 #------------------------------------------------------------------------------------------------------------------- 
 if ( !isset( $_SESSION[ 'user' ] ) ) { $_SESSION['user'] = NULL; }
@@ -511,8 +514,9 @@ $tpl_var[ 'actions_info' ]   = $CONST_actions_info ;                            
 $tpl_var[ 'letter_output' ]  = $this->getLetterOutput( $CONST_letter_header, $letter_exist ) ;                                                          /* Liste mit allen Anfangsbuchstaben aller Nutzer */
 $tpl_var[ 'source' ]         = 'index.php' ;
 ##------------------------------------------------------------------------------------------------------------------- 
-# deb($_SESSION);
- #$this->CFG->C->deb( $tpl_var ,1); 
+
+
+#$this->CFG->C->deb( $tpl_var[ 'collection' ] ,1); 
   
  $this->renderer -> do_template ( 'index.tpl' , $tpl_var , TRUE ) ;
 }

@@ -552,7 +552,7 @@ function getUser( $mode )
       $param[ 'cond' ] .= " AND state.name != 'new'" ;
     }
    
-  $SQL = "SELECT " .$param['columns']. " FROM " .$param['tables']. "  WHERE  ".$param['cond'];
+  $SQL = "SELECT " .$param['columns']. " FROM " .$param['tables']. "  WHERE  ".$param['cond'] ." ORDER BY user.surname";
 
   
   $res =  mysqli_query ( $this->DB, $SQL);
@@ -567,13 +567,14 @@ function getUser( $mode )
 
 function getSAlist( $user, $mode, $categories )
 {
-  
+ if(     $categories == 20) { $cat = "u.department = 21 OR u.department = 22 OR u.department = 23 OR u.department = 24"; }  
+ else if($categories == 30) { $cat = "u.department = 31 OR u.department = 32 OR u.department = 33 OR u.department = 34 OR u.department = 35 OR u.department = 36 OR u.department = 37 OR u.department = 430"; }  
+ else if($categories == 50) { $cat = "u.department = 51 OR u.department = 52 OR u.department = 53 OR u.department = 54 OR u.department = 55"; }  
+ else if($categories == 60) { $cat = "u.department = 61 OR u.department = 62 OR u.department = 63 OR u.department = 64 OR u.department = 65"; }  
+ else if($categories == 1 ) { $cat = "u.department !=21 AND u.department != 22 AND u.department != 23 AND u.department != 24 AND u.department != 31 AND u.department != 32 AND u.department != 33 AND u.department != 34 AND u.department != 35 AND u.department != 36 AND u.department != 37  AND u.department != 51 AND u.department != 52 AND u.department != 53 AND u.department != 54 AND u.department != 55 AND u.department != 61 AND u.department != 62 AND u.department != 63 AND u.department != 64 AND u.department != 65 "; } 
+ else if($categories == 0 ) { $cat = "u.department != 0"; } 
  
- if($categories == 20) { $cat = "u.department = 21 OR u.department = 22 OR u.department = 23 OR u.department = 24"; }  
- if($categories == 30) { $cat = "u.department = 31 OR u.department = 32 OR u.department = 33 OR u.department = 34 OR u.department = 35 OR u.department = 36 OR u.department = 37 OR u.department = 430"; }  
- if($categories == 50) { $cat = "u.department = 51 OR u.department = 52 OR u.department = 53 OR u.department = 54 OR u.department = 55"; }  
- if($categories == 60) { $cat = "u.department = 61 OR u.department = 62 OR u.department = 63 OR u.department = 64 OR u.department = 65"; }  
- if($categories == 1 ) { $cat = "u.department !=21 AND u.department != 22 AND u.department != 23 AND u.department != 24 AND u.department != 31 AND u.department != 32 AND u.department != 33 AND u.department != 34 AND u.department != 35 AND u.department != 36 AND u.department != 37  AND u.department != 51 AND u.department != 52 AND u.department != 53 AND u.department != 54 AND u.department != 55 AND u.department != 61 AND u.department != 62 AND u.department != 63 AND u.department != 64 AND u.department != 65 "; } 
+ else                       { $cat = "u.department = ". $categories;   }  
  $SQL  =  " SELECT c.*, u.department,  u.surname, u.forename, s.name AS state_name, s.description AS state_description"; 
  $SQL .=  " FROM collection c "; 
  $SQL .=  " LEFT JOIN  user u"; 
@@ -582,10 +583,11 @@ function getSAlist( $user, $mode, $categories )
  $SQL .=  "  ON s.id = c.state_id"; 
  $SQL .=  " WHERE user_id = \"" .$user[ 'hawaccount' ]."\""; 
  if ( $mode       == "view" )  {  $SQL .= " AND c.state_id = 3";                    }                  /* Zustand 3 = aktiv */  
- if ( $categories == 1 OR $categories == 20 OR $categories == 30 OR $categories == 50 OR $categories == 60 )  {  $SQL .= " AND (  ". $cat .")" ;   }//Filter for category/department
+ $SQL .= " AND (  ". $cat .")" ;   //Filter for category/department
  $SQL .=  " ORDER BY `id` "; 
  $SQL .=  " DESC "; 
  
+ #$this->CFG->C->deb( $SQL );
  
  $res =  mysqli_query ( $this->DB, $SQL);
  $ret = NULL;

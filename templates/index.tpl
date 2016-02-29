@@ -1,14 +1,16 @@
 {if $work.mode != "edit"} {* <!-- HEADLINE: DEPARTMENT -->*}
-{if $work.categories == 1}                                                                                      <div class="depName bg{$work.categories}" > Semesterapparate der gesamten HAW</div> 
-{elseif   $work.categories == 20 or $work.categories == 30 or $work.categories == 50 or $work.categories == 60 }<div class="depName bg{$work.categories}" > Semesterapparate der Fakultät:   {$html_options.fak[$work.categories].FakAbk|escape|utf8_encode}   </div>
+{if      $work.categories == 0}                                                                                 <div class="depName bgDef"                > Semesterapparate der gesamten HAW</div> 
+{elseif  $work.categories == 1}                                                                                 <div class="depName bg{$work.categories}" > Semesterapparate ohne Fakultät</div> 
+{elseif  $work.categories == 20 or $work.categories == 30 or $work.categories == 50 or $work.categories == 60 } <div class="depName bg{$work.categories}" > Semesterapparate der Fakultät:   {$html_options.fak[$work.categories].FakAbk|escape|utf8_encode}   </div>
 {else}                                                                                                          <div class="depName bg{$work.categories}" > Semesterapparate des Department: {$html_options.dep[$work.categories].DepName|escape|utf8_encode}   </div>
-{/if}{else}                                                                                                     <div class="depName bg{$work.categories}" > Semesterapparate von:  </div>
+{/if}
+{else}                                                                                                           <div class="depName bg{$work.categories}" > Semesterapparate von:  </div>
 {/if}
 
 {foreach key=key item=c name=collection from=$collection }
   {if ((isset($c[0].bib_id)))}  {*  <!-- HEADLINE:  DOZENT  -->   *}
 
-    <div class="dozentName bg{$work.categories}">
+    <div class="dozentName bgDef bg{$c[0].bib_id}">
     <a  class="dozentLink" href="#">{* <!-- Doz.ID --> *} {$c[0].forename} {$c[0].surname}   </a>   {if not isset($c[0].bib_id)}  {$c[0].bib_id = 'HAW'}  {/if}
     <span style="float:right">{$html_options['dep'][$c[0].department]['DepName']}</span>  {*  <!-- Department -->  <!-- Fak.ID, Dozent Titel,  Vorname, Nachname -->   *}
     </div>  

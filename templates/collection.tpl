@@ -75,8 +75,6 @@
        {/if}
       {/if}
     </div>
-
-          {$work.todo} 
     {if ($staff_mode or $edit_mode) and ($work.todo != "print") }  
  
    

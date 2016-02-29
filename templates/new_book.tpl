@@ -1,4 +1,4 @@
-<h3 style="margin:10px; padding:10px; color: #FFF;" class="bgDef bg{$coll.bib_id}" >
+<h3 style="margin:10px; padding:10px; color: #FFF;" class="bgDef bg{$colData[$coll.title_short].coll_bib_id}" >
 {$colData[$coll.title_short].title} : Katalogsuche
    <a style="float:right;" href="index.php?item=collection&action=show&collection_id={$coll.title_short}">
   <img  class="icon" style="margin-top:-4px;" title="Zurück" src="img/svg/chevron-left_w.svg" />
@@ -83,7 +83,7 @@
 
    <div class="text">
      Haben Sie nicht das Gewünschte gefunden?<br/> Machen Sie doch einen 
-     <a  class="erwebungsvorschlag"  href="index.php?item=book&action=purchase_suggestion&collection_id={$colData[$coll.title_short].id}">Erwerbungsvorschlag</a>
+     <a  class="erwebungsvorschlag"  href="index.php?item=book&action=purchase_suggestion&collection_id={$colData[$coll.title_short].collID}">Erwerbungsvorschlag</a>
    </div>
       
 {/if}
