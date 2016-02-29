@@ -269,6 +269,7 @@ function setMediaState( $mediaID, $state )
 
 function initUser($IU)
 {
+# $this->CFG->C->deb($IU,1);
   $SQL = "
   INSERT INTO user SET
     id                = \"" . $IU['id'           ] . "\" ,
@@ -283,7 +284,7 @@ function initUser($IU)
     last_state_change = NOW()                         , 
     bib_id            = \"" . $IU['bib']['BibID' ]  . "\" ,
     department        = \"" . $IU['department'   ]  . "\" ,
-    `hawaccount`      = \"" . $IU['akennung'     ]  . "\"";
+    hawaccount        = \"" . $IU['hawaccount'   ]  . "\"";
  
   $res =  mysqli_query ( $this->DB, $SQL );
   return $res;

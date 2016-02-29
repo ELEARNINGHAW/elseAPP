@@ -117,7 +117,9 @@ $doc_type_id: 1 = Buch, 3, = CD, 4 = E-Book,
   $this->renderer->do_template( 'collection.tpl', $tpl_vars );
  }
 
-function editCollection(   $IW , $IU)
+ /*
+ #* DEPRECATED ALLE EDIT Functions are included in SHWO Function ***
+ function editCollection(   $IW , $IU)
 { 
   $tpl_vars =  $this->sql->getAllDocTypes();
 
@@ -136,7 +138,7 @@ function editCollection(   $IW , $IU)
   
   $this->renderer->do_template( 'collection.tpl', $tpl_vars );
  }
- 
+*/
 function showCollection( $IW , $IU)
 { 
   $tpl_vars[ 'work'            ] = $IW; 

@@ -174,15 +174,14 @@ function saveNewMedia(  $IW , $IC, $IU)
   
   $_SESSION[ 'work' ][ 'document_id' ] =   $this->sql->initMedia($book);                                                                   /* Metadaten des neuen Mediums speichern */
 
-  $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&ro=".$IU['role_encode']."&item=collection&action=b_coll_edit";
-  
+  $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&action=show";
+
+
   $this->renderer->doRedirect( $url );
  }       
 
 function saveNewMediaSuggest (  $IW, $IU )
 {
-  #deb($IW,1);
-
   $book['edition'         ] = "";
   $book['year'            ] = "";  
   $book['journal'         ] = "";  
@@ -207,7 +206,7 @@ function saveNewMediaSuggest (  $IW, $IU )
   $_SESSION[ 'work' ][ 'document_id' ] =   $this->sql->initMedia($book);                                                                   /* Metadaten des neuen Mediums speichern */
   
   $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&ro=".$IU['role_encode']."&item=collection&action=b_coll_edit";
-  
+ 
   $this->renderer->doRedirect( $url );
 }       
 
