@@ -117,8 +117,7 @@ $doc_type_id: 1 = Buch, 3, = CD, 4 = E-Book,
   $this->renderer->do_template( 'collection.tpl', $tpl_vars );
  }
 
- /*
- #* DEPRECATED ALLE EDIT Functions are included in SHWO Function ***
+
  function editCollection(   $IW , $IU)
 { 
   $tpl_vars =  $this->sql->getAllDocTypes();
@@ -134,11 +133,10 @@ $doc_type_id: 1 = Buch, 3, = CD, 4 = E-Book,
   $tpl_vars[ 'department'      ]         = $_SESSION['DEP2BIB'];  
   $tpl_vars[ 'errors_info'     ][]       = '';
   $tpl_vars[ 'actions_info'    ]         = $this->CFG->C->CONST_actions_info;
-
   
   $this->renderer->do_template( 'collection.tpl', $tpl_vars );
  }
-*/
+
 function showCollection( $IW , $IU)
 { 
   $tpl_vars[ 'work'            ] = $IW; 
@@ -153,7 +151,7 @@ function showCollection( $IW , $IU)
   $tpl_vars[ 'errors_info'     ][] = '';
   $tpl_vars[ 'actions_info'    ] =  $this->CFG->C->CONST_actions_info;
  
- # $this->CFG->C->deb( $tpl_vars,1 );
+  #$this->CFG->C->deb( $tpl_vars,1 );
   
   $this->renderer->do_template( 'collection.tpl', $tpl_vars, ( $IW[ 'action' ] != 'print' ) );
  }

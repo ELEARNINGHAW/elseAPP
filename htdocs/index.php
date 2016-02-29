@@ -54,7 +54,7 @@ else if ( $IW['item'] == 'collection' )
          && $IW['todo'  ] == 'init'                )  { $collection->saveNewCollection         ( $IW, $IU      ) ;   } /* Metadaten des NEUEN SA speichern / SA anlegen              */
   else if ( $IW['action'] == 'b_new'               )  { $collection->newCollection             ( $IW           ) ;   } /* Metadaten des NEUEN SA ermitteln/eingeben                  */
   else if ( $IW['action'] == 'show'                )  { $collection->showCollection            ( $IW, $IU      ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
-  else if ( $IW['action'] == 'b_coll_edit'         )  { $collection->showCollection            ( $IW, $IU, $IC ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
+  else if ( $IW['action'] == 'b_coll_edit'         )  { $collection->editCollection            ( $IW, $IU, $IC ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
   else if ( $IW['action'] == 'print'               )  { $collection->showCollectionPrintversion( $IW, $IU      ) ;   } /* Printversion des SAs wird angezeigt (nur aktive Medien)    */
   else if ( $IW['action'] == 'showopen'            )  { $collection->showCollectionLists       ( $IW, $IU      ) ;   } /* Zeigt die Liste der SAs, gefiltert nach deren Zustand      */
   else if ( $IW['action'] == 'b_kill'              )  { $collection->ereaseCollection          ( $IW, $IU      ) ;   } /* Löscht SA endgültig                                        */

@@ -197,7 +197,7 @@ class Util   /// \brief check user input
   {
     if ( isset ( $_GET[ 'id' ] ) )    ##  Initiale Parameterübergabe über  Moodle ## // Kurskurzname 
     {   
-      if ( isset ( $_GET[ 'id' ] ) )  { $Course[ 'id'          ] = rawurldecode ( base64_decode ( $_GET[ 'id' ] ) ) ;  }  else   { echo "<br>ERROR: no 'course ID'        " ;  }
+      if ( isset ( $_GET[ 'cid' ] ) ) { $Course[ 'id'          ] = rawurldecode ( base64_decode ( $_GET[ 'cid' ] ) ) ; }  else   { echo "<br>ERROR: no 'course ID'        " ;  }
       if ( isset ( $_GET[ 'sn' ] ) )  { $Course[ 'shortname'   ] = rawurldecode ( base64_decode ( $_GET[ 'sn' ] ) ) ;  }  else   { echo "<br>ERROR: no 'course shortname' " ;  }
       if ( isset ( $_GET[ 'cn' ] ) )  { $Course[ 'fullname'    ] = rawurldecode ( base64_decode ( $_GET[ 'cn' ] ) ) ;  }  else   { echo "<br>ERROR: no 'course fullname'  " ;  }
       if ( isset ( $_GET[ 'uid'] ) )  { $IDMuser[ 'id'         ] = rawurldecode ( base64_decode ( $_GET[ 'uid'] ) ) ;  }  else   { $IDMuser[ 'id'         ] = ""; echo "<br>ERROR: no 'user ID'          " ;  }
