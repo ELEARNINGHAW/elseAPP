@@ -953,8 +953,35 @@ a.medi_4 /* E-Book */
   background-image:url(../img/svg/newspaper.svg);
 }
 
+a.medi_1:hover  /* Buch */
+{
+  background-repeat:no-repeat;
+  background-position:100% 15px;
+  background-image:url(../img/svg/booksH.svg);
+}
+
+a.medi_2:hover /* Buch Literaturhinweis */
+{
+  background-repeat:no-repeat;
+  background-position:100% 15px;
+  background-image:url(../img/svg/book4H.svg);
+}
 
 
+a.medi_3:hover /* CD-ROM */
+{
+  background-repeat:no-repeat;
+  background-position:100% 15px;
+  background-image:url(../img/svg/vynilH.svg);
+}
+
+a.medi_4:hover /* E-Book */
+
+{
+  background-repeat:no-repeat;
+  background-position:100% 15px;
+  background-image:url(../img/svg/newspaperH.svg);
+}
 
 
 a.hitlink_print, a.hitlink_electronic, a.hitlink_cd-rom {

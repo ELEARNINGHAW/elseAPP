@@ -96,7 +96,7 @@ Wir geben Ihnen eine Rückmeldung, ob wir Ihnen das Buch beschaffen k&ouml;nnen.
    <td><textarea  cols="60" rows="5" name="notes_to_studies">{$book.notes_to_studies|escape}</textarea></td>
 </tr>
 
-{if ($book.doc_type_id == 1 AND $work.mode == 'new')} {* doc_type 1 = Buch im SA *}
+{if (($book.doc_type_id == 1 OR $book.doc_type_id == 3 ) AND $work.mode == 'new')} {* doc_type 1 = Buch oder CD im SA *}
 <tr >
  <td style="vertical-align: top; font-weight: bold;">Als Literaturhinweis:</td>
  <td> 
@@ -112,7 +112,7 @@ Wir geben Ihnen eine Rückmeldung, ob wir Ihnen das Buch beschaffen k&ouml;nnen.
  </td></tr>
 {/if}
 
-{if ($book.doc_type_id == 1)} {* doc_type 1 = Buch im SA *}
+{if ($book.doc_type_id == 1 OR $book.doc_type_id == 3 )} {* doc_type 1 = Buch oder CD im SA *}
 
 <tr>
  <td style="vertical-align: top; font-weight: bold;">(Optional) Bemerkungen <br>f&uuml;r die HIBS Mitarbeiter:</td>
