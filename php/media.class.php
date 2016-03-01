@@ -212,8 +212,20 @@ function saveNewMediaSuggest (  $IW, $IU )
 
 function annoteNewMediaForm(  $IW, $IU)
 {   
-   $book =   $_SESSION['books'][$IW['ppn']];
-   $tpl_vars['user']                     = $_SESSION['user'];
+    
+  $book[ 'ppn'          ] = '';
+  $book[ 'title'        ] = '';
+  $book[ 'author'       ] = '';
+  $book[ 'publisher'    ] = '';
+  $book[ 'year'         ] = '';
+  $book[ 'volume'       ] = '';
+  $book[ 'edition'      ] = '';
+  $book[ 'signature'    ] = '';
+  $book[ 'physicaldesc' ] = '';
+   
+  $book = array_merge( $book, $_SESSION[ 'books' ][$IW[ 'ppn' ] ] ) ;
+
+  $tpl_vars['user']                     = $_SESSION['user'];
    $tpl_vars['coll']                     = $_SESSION['coll'];
    
    $tpl_vars['colData']                  = $this->sql->getCollectionInfos ( $IW['collection_id'] );

@@ -48,11 +48,9 @@
     <td> {html_options name="department" options=$tpl.departments selected=$colData[$work.collection_id].department }</td>
   </tr>
 
-
 </tbody>
 </table>
 
   <input style="float: right;" name="b_ok" value="&nbsp;&nbsp;&nbsp;SPEICHERN&nbsp;&nbsp;&nbsp;" type="submit">
 
 </div>
-

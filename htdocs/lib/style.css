@@ -33,16 +33,15 @@ fieldset
   color: #C60C30; 
 }
 
-  .edit_head 
+.edit_head 
 {
   color: #000; 
 }
 
-   .staff_head  
+.staff_head  
 {
   color: #00F; 
 }
-
 
 .fachbib
 { 
@@ -223,7 +222,6 @@ display:none;
 display:block;
 }
 
-
 #nav li:hover ul ul, #nav li:hover ul ul ul, #nav li:hover ul ul ul ul{
 display:none;
 }
@@ -240,8 +238,6 @@ display:block;
 {
   background-color:  #234A89;
 }
-
-
 
 .bgWuS, .bg60, .bg61, .bg62, .bg63, .bg64
 {
@@ -290,14 +286,10 @@ background-color:  #E98300; /* LS ORANGE */
   background-color:  #0E905A; /* TI GRÜN */
 }
 
- 
- 
-
 .bgTD1, .bgTD2, .bgTD3, .bgTD4, .bgTD5, .bgTD6, .bgTD9
 {
 background-color: #efe96d;
 }
-
 
 .lbWuS, .lb60, .lb61, .lb62, .lb63, .lb64, .lb3
 {
@@ -636,7 +628,6 @@ td{
 }
 
 
-
 .headlineDozent
 {
   left:5px;
@@ -698,12 +689,10 @@ td{
 .s_new
 {
   border-color: #00F ;  
-
 }
 
 .s_open /*wird bearbeitet */
 {
-  
   border-color:  #0099ff;  
 }
 
@@ -712,7 +701,7 @@ td{
   border-color:  #0F0;  
 }
 
-.s_obsolete /*WirdEntfernt*/
+.s_obsolete /* Wird entfernt */
 {
   border-color:  #E98300;  
 }
@@ -730,8 +719,6 @@ td{
   background-color: #0F0;
   border: solid #666 1px;
 }
-
-
 
 .mediaInSA
 {
@@ -760,7 +747,12 @@ td{
   background-color: #F0F0F0; 
 }
 
-
+.medium_3 /* CD-ROM */
+{
+  background-image:url(../img/svg/txtBuch.png);
+  background-repeat:repeat-y;
+  background-color: transparent; 
+}
 
 .medium_4 /* E-Book */
 {
@@ -779,20 +771,16 @@ td{
 }
 
 
-
-
 .medimSA
 {
 	background-image:url(../img/svg/chevron-right.svg);
 	background-repeat:no-repeat;
-        padding:10px;
+  padding:10px;
 	padding-left:50px; 
 	margin:10px; 
 	background-color: #EEE; 
 	border-bottom:3px solid #666;  
 }
-
-
 
 /*-- HELP WINDOW --*/
 .overlay {
@@ -845,8 +833,6 @@ td{
      height: 60px;
      width:400px;
 }
-
-
 
 .text{
 	font-size:12px;
@@ -935,7 +921,36 @@ td{
   color: #000;
 }
 
-a.hitlink_print, a.hitlink_electronic {
+a.medi_1, a.medi_3, a.medi_4 {
+}
+
+a.medi_1 
+{
+  background-repeat:no-repeat;
+  background-position:100% 15px;
+  background-image:url(../img/svg/book4.svg);
+}
+
+
+a.medi_3 
+{
+  background-repeat:no-repeat;
+  background-position:100% 15px;
+  background-image:url(../img/svg/circle-o.svg);
+}
+
+a.medi_4 
+{
+  background-repeat:no-repeat;
+  background-position:100% 15px;
+  background-image:url(../img/svg/newspaper.svg);
+}
+
+
+
+
+
+a.hitlink_print, a.hitlink_electronic, a.hitlink_cd-rom {
   background-color: #FFF;
   color:#666;
 	text-decoration:none;
@@ -944,7 +959,7 @@ a.hitlink_print, a.hitlink_electronic {
 	font-weight:700;
   padding: 6px;
   margin-left:15px;
-  margin-top:30px;
+  margin-top:20px;
   margin-right: 5px;
   width: 640px;
   border: 1px solid #CCC;
@@ -953,31 +968,38 @@ a.hitlink_print, a.hitlink_electronic {
 
 a.hitlink_print 
 {
-  background-image:url(../img/svg/book4.svg);
   background-repeat:no-repeat;
-  background-position:2px 1px;
+  background-position:615px 5px;
+  background-image:url(../img/svg/book4.svg);
 }
 
 a.hitlink_electronic 
 {
-  background-image:url(../img/svg/note.svg);
   background-repeat:no-repeat;
-  background-position:2px 1px;
-
+  background-position:615px 5px;  
+  background-image:url(../img/svg/newspaper.svg);
 }
 
-a.hitlink_print:hover, a.hitlink_electronic:hover 
+a.hitlink_cd-rom 
 {
-	background-color: #EEE;
+  background-image:url(../img/svg/circle-o.svg);
+  background-repeat:no-repeat;
+  background-position:615px 5px;
+}
+
+
+a.hitlink_print:hover, a.hitlink_electronic:hover , a.hitlink_cd-rom:hover 
+{
+  background-color:#234A89;
 	color:#FFF;
 }
 
 .mediaListHeader
 {
-	color:#FFF;
+  color:#FFF;
   margin-right: 5px;
   padding:2px;
-  width: 95px;
+  width: 90px;
   text-align:  right; 
   background-color: #AEAEAE;
   display:inline-block;
@@ -988,6 +1010,7 @@ a.hitlink_print:hover, a.hitlink_electronic:hover
   color:#000;
   margin-right: 5px;
   padding:2px;
+  padding-right:25px;
   text-align:  left; 
   background-color: #FAFAFA;
 }
@@ -1007,11 +1030,11 @@ a.hitlink_print:hover, a.hitlink_electronic:hover
 }
 
 
-li a, a {
+li a, a
+{
   text-decoration: none;
   font-size: 16px;
   color:#002664;
-  
 }
 
 ul 

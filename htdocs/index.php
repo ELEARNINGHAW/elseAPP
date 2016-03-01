@@ -61,7 +61,7 @@ else if ( $IW['item'] == 'collection' )
   else if ( $IW['action'] == 'resort'              )  { $collection->resortCollection          ( $IW, $IC      ) ;   } /* Setzt neue Reihenfolge der Dokumente im SA                 */
 }
 
-else if ( $IW['item'] == 'book' )
+else if ( $IW['item'] == 'book' OR $IW['item'] == 'cd-rom' )
 {      if ( $IW['action'] == 'b_new'               )  {  $media->showNewBookForm    ( $IW              ); } /* Eingabemaske für Mediensuche anzeigen                           */
   else if ( $IW['action'] == 'search'              )  {  $media->searchMedia        ( $IW              ); } /* Suchprozess des Mediums wird gestartet                          */
   else if ( $IW['action'] == 'annoteNewMedia'      )  {  $media->annoteNewMediaForm ( $IW, $IU         ); } /* Eingabemaske Metadaten für Buch Annotation anzeigen             */

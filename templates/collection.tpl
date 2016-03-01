@@ -52,7 +52,7 @@
 
 <div  id="{$di.id}" class="mediaInSA medium_{$di.doc_type_id} {$current} " >  
    <a name="{$di.id}" style="position:relative; top:-220px;"></a>
-    <a title="Buch Im Onlinekatalog anzeigen" class="medLink .s_standard state_{$di.state_id}" href="https://kataloge.uni-hamburg.de/CHARSET=ISO-8859-1/DB=2/LNG=DU/CMD?ACT=SRCHA&amp;IKT=12&amp;SRT=YOP&amp;TRM={$di.ppn}" target="_blank" onclick="return -1"> 
+    <a title="Buch Im Onlinekatalog anzeigen" class="medLink medi_{$di.doc_type_id} .s_standard state_{$di.state_id}" href="https://kataloge.uni-hamburg.de/CHARSET=ISO-8859-1/DB=2/LNG=DU/CMD?ACT=SRCHA&amp;IKT=12&amp;SRT=YOP&amp;TRM={$di.ppn}" target="_blank" onclick="return -1"> 
       <table>
     {if $di.title          != "" } <tr><td><div class="medHead">Titel:  </div></td><td> <div class="medTitle"  >{$di.title}                        </div>{if $di.year   != "" } <div class="medJahrgang" >{$di.year|escape|regex_replace:"/[,. ]*$/":""}</div> </td></tr> {/if}  {else}  ohne Titel</td></tr> </div> {/if}
     {if $di.physicaldesc   != "" } <tr><td><div class="medHead">Format: </div></td><td><div class="medTyp"    >{$di.doc_type|escape} / {$di.physicaldesc|escape}         </div></td></tr>{/if}

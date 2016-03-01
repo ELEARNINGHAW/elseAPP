@@ -288,7 +288,7 @@ class Util   /// \brief check user input
   
   function sendBIB_APmails()
   {
-    $conf = getConf();
+    $conf = $this->CFG->getConf();
     $BIB_Anrede  = $conf[ 'BIB_Anrede' ]; #= "Liebe ELSE/HIBS Mitarbeiterin  \r\n\r\n";
     $BIB_Gruss   = $conf[ 'BIB_Gruss'  ]; #= "\r\n\r\nIhr ELSE Server \r\n\r\n http://www.elearning.haw-hamburg.de/mod/else/view.php?id=443297  \r\n\r\n";
     
@@ -318,7 +318,7 @@ class Util   /// \brief check user input
     
   function sendAMail($to, $subject, $message)
   {
-    $conf = getConf();
+    $conf = $this->CFG->getConf();
     $BIB_BCC  = $conf['BIB_BCC'];
     $BIB_FROM = $conf['BIB_FROM'];
     $BIB_RPTO = $conf['BIB_RPTO'];

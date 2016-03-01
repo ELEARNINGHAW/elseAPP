@@ -6,7 +6,8 @@
 {/if}
 
 
-{if ($book.doc_type_id == 4)}  {assign var="itemtxt" value="E-Book"}
+{if     ($book.doc_type_id == 4)}  {assign var="itemtxt" value="E-Book"}
+{elseif ($book.doc_type_id == 3)}  {assign var="itemtxt" value="CD-ROM"}
 {else}                         {assign var="itemtxt" value="Buch"}
 {/if}
 
@@ -37,6 +38,7 @@ Wir geben Ihnen eine Rückmeldung, ob wir Ihnen das Buch beschaffen k&ouml;nnen.
 
 {if      ($book.doc_type_id == 4)} <input type="hidden" value="ebook"    name="item" > <input type="hidden" value="4"                 name="doc_type_id">
 {elseif  ($book.doc_type_id == 2)} <input type="hidden" value="lh_book"  name="item" > <input type="hidden" value="1"                 name="doc_type_id">
+{elseif  ($book.doc_type_id == 3)} <input type="hidden" value="cd-rom"   name="item" > <input type="hidden" value="1"                 name="doc_type_id">
 {elseif  ($book.doc_type_id == 1)} <input type="hidden" value="book"     name="item" > <input type="hidden" value="2"                 name="doc_type_id">
 {else}                                                                              <input type="hidden" value="{$work.doc_type_id}"  name="doc_type_id">
 {/if}
