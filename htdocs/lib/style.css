@@ -921,10 +921,16 @@ td{
   color: #000;
 }
 
-a.medi_1, a.medi_3, a.medi_4 {
+
+
+a.medi_1  /* Buch */
+{
+  background-repeat:no-repeat;
+  background-position:100% 15px;
+  background-image:url(../img/svg/books.svg);
 }
 
-a.medi_1 
+a.medi_2 /* Buch Literaturhinweis */
 {
   background-repeat:no-repeat;
   background-position:100% 15px;
@@ -932,14 +938,15 @@ a.medi_1
 }
 
 
-a.medi_3 
+a.medi_3 /* CD-ROM */
 {
   background-repeat:no-repeat;
   background-position:100% 15px;
-  background-image:url(../img/svg/circle-o.svg);
+  background-image:url(../img/svg/vinyl.svg);
 }
 
-a.medi_4 
+a.medi_4 /* E-Book */
+
 {
   background-repeat:no-repeat;
   background-position:100% 15px;
@@ -970,7 +977,7 @@ a.hitlink_print
 {
   background-repeat:no-repeat;
   background-position:615px 5px;
-  background-image:url(../img/svg/book4.svg);
+  background-image:url(../img/svg/books.svg);
 }
 
 a.hitlink_electronic 
@@ -982,10 +989,12 @@ a.hitlink_electronic
 
 a.hitlink_cd-rom 
 {
-  background-image:url(../img/svg/circle-o.svg);
+  background-image:url(../img/svg/vinyl.svg);
   background-repeat:no-repeat;
   background-position:615px 5px;
 }
+
+
 
 
 a.hitlink_print:hover, a.hitlink_electronic:hover , a.hitlink_cd-rom:hover 
