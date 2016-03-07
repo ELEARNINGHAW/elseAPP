@@ -1,9 +1,7 @@
 <?php
 session_start();
-#session_destroy();
 #$_SESSION = null;
-/* --- TODO --- */
-#  --- CHECK PERMISSIONS ---
+## --- TODO ---  --- CHECK PERMISSIONS ---
 # check_permission($INPUT)
 require_once( '../php/const.class.php'             );
 require_once( '../php/config.class.php'            );
@@ -21,40 +19,33 @@ $renderer   = new Renderer( $CFG );
 $collection = new Collection( $CFG, $SQL, $renderer );
 $media      = new Media( $CFG, $SQL, $renderer );
 
-# syntax    # index.php?action=xxx&item=yyy&id=zz
+$INPUT = $util->getInput();                                #--- GET ALL INPUT (GET) ---
 
-$INPUT = $util->getInput() ;                                #--- GET ALL INPUT (POST/GET) ---
+if ( isset ( $_SESSION[ 'work'  ] ) ) { $IW = $_SESSION[ 'work' ]; }  # Übergebene Werte der einzelnen Services
+if ( isset ( $_SESSION[ 'user'  ] ) ) { $IU = $_SESSION[ 'user' ]; }  # Alle Userdaten
+if ( isset ( $_SESSION[ 'coll'  ] ) ) { $IC = $_SESSION[ 'coll' ]; }  # Alle Semesterapparatdaten
 
-if ( isset ( $_SESSION[ 'work'  ] ) ) { $IW = $_SESSION[ 'work' ]; }
-if ( isset ( $_SESSION[ 'user'  ] ) ) { $IU = $_SESSION[ 'user' ]; }
-if ( isset ( $_SESSION[ 'coll'  ] ) ) { $IC = $_SESSION[ 'coll' ]; }
+#$CFG->C->deb( $IW ,1 );
+#$CFG->C->deb( $_SESSION,1 );
+#$CFG->C->deb( $_GET);
+#$CFG->C->deb( $IW ,1 );
 
-#$CFG->C->deb( $IW,1);
-#$CFG->C->deb( $_SESSION['user'],1);
-
-$issetCategories = isset( $IW[ 'categories'] );
-$issetLetter     = isset( $IW[ 'letter'    ] );
-
-if ( isset ( $IW['b_cancel'] ) )
-{ $IW['last_page'] = 'index.php?categories=1';
+if ( $IW[ 'categories'] != '' OR $IW[ 'letter'] != '' )  
+{ $media ->  renderDozSort ();
 }
-
-else if ( $issetCategories OR $issetLetter  ) 
-{ $media ->  getFilterHeader ();
-}
-
+ 
 else if ( $IW['item'] == 'collection' )
-{ if      ( $IW['action'] == 'b_coll_release'      )  { $collection->setCollectionState_5      ( $IW           );    } /* Zustand 5 = 'AUFGELÖST'                                    */
+{ 
+  if      ( $IW['action'] == 'b_coll_edit'         )  { $collection->editCollection            ( $IW, $IU,$IC  ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
+  else if ( $IW['action'] == 'b_coll_release'      )  { $collection->setCollectionState_5      ( $IW           );    } /* Zustand 5 = 'AUFGELÖST'                                    */
   else if ( $IW['action'] == 'b_coll_revive'       )  { $collection->setCollectionState_3      ( $IW           );    } /* Zustand 3 = 'AKTIV'                                        */
   else if ( $IW['action'] == 'b_delete'            )  { $collection->setCollectionState_6      ( $IW           );    } /* Zustand 6 = 'GELÖSCHT'/Mülleimer                           */
-  else if ( $IW['action'] == 'b_coll_meta_edit' 
-         && $IW['todo'  ] == 'save'                )  { $collection->updateColMetaData         ( $IW , $IU     );    } /* Metadaten des SA updaten                                   */
-  else if ( $IW['action'] == 'b_coll_meta_edit'    )  { $collection->editColMetaData           ( $IW , $IU     );    } /* Anzeigen des Formulars um Metadaten des SA zu bearbeiten   */
-  else if ( $IW['action'] == 'b_new'   
-         && $IW['todo'  ] == 'init'                )  { $collection->saveNewCollection         ( $IW, $IU      ) ;   } /* Metadaten des NEUEN SA speichern / SA anlegen              */
+  else if ( $IW['action'] == 'b_coll_meta_edit'    )  { $collection->editColMetaData           ( $IW, $IU      );    } /* Anzeigen des Formulars um Metadaten des SA zu bearbeiten   */
+  else if ( $IW['action'] == 'b_coll_meta_save'    )  { $collection->updateColMetaData         ( $IW, $IU      );    } /* Metadaten des SA updaten                                   */
+  else if ( $IW['action'] == 'b_new_init'          )  { $collection->saveNewCollection         ( $IW, $IU      ) ;   } /* Metadaten des NEUEN SA speichern / SA anlegen              */
   else if ( $IW['action'] == 'b_new'               )  { $collection->newCollection             ( $IW           ) ;   } /* Metadaten des NEUEN SA ermitteln/eingeben                  */
   else if ( $IW['action'] == 'show'                )  { $collection->showCollection            ( $IW, $IU      ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
-  else if ( $IW['action'] == 'b_coll_edit'         )  { $collection->editCollection            ( $IW, $IU, $IC ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
+  else if ( $IW['action'] == 'b_coll_delete'       )  { $collection->deleteCollection          ( $IW, $IU, $IC ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
   else if ( $IW['action'] == 'print'               )  { $collection->showCollectionPrintversion( $IW, $IU      ) ;   } /* Printversion des SAs wird angezeigt (nur aktive Medien)    */
   else if ( $IW['action'] == 'showopen'            )  { $collection->showCollectionLists       ( $IW, $IU      ) ;   } /* Zeigt die Liste der SAs, gefiltert nach deren Zustand      */
   else if ( $IW['action'] == 'b_kill'              )  { $collection->ereaseCollection          ( $IW, $IU      ) ;   } /* Löscht SA endgültig                                        */

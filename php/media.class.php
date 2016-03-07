@@ -17,7 +17,7 @@ function Media( $CFG , $SQL, $renderer  )
 function updateMediaMetaData( $IW,  $IU )
 {  
   $this->sql-> updateMediaMetaData($IW);                                                                   /* Metadaten des neuen Mediums speichern */
-  $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&ro=".$IU['role_encode']."&action=b_coll_edit";
+  $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&action=b_coll_edit&r=".$IU['role'];
   $this->renderer-> doRedirect( $url);
   exit(0);
 }
@@ -138,7 +138,7 @@ function deleteMedia(  $IW )
 function ereaseMedia( $IW, $IU)
 {
     $this->sql->deleteMedia($IW, $IU);
-    $url       = "index.php?collection=0&ro=".$IU['role_encode']."";
+    $url       = "index.php?collection=0&r=".$IU['role'];
     $this->renderer->doRedirect( $url );
 }        
 
@@ -174,7 +174,7 @@ function saveNewMedia(  $IW , $IC, $IU)
   
   $_SESSION[ 'work' ][ 'document_id' ] =   $this->sql->initMedia($book);                                                                   /* Metadaten des neuen Mediums speichern */
 
-  $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&action=show";
+  $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&action=show&r=".$IU['role'];
 
 
   $this->renderer->doRedirect( $url );
@@ -205,7 +205,7 @@ function saveNewMediaSuggest (  $IW, $IU )
 
   $_SESSION[ 'work' ][ 'document_id' ] =   $this->sql->initMedia($book);                                                                   /* Metadaten des neuen Mediums speichern */
   
-  $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&ro=".$IU['role_encode']."&item=collection&action=b_coll_edit";
+  $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&action=b_coll_edit&r=".$IU['role'];
  
   $this->renderer->doRedirect( $url );
 }       
@@ -305,6 +305,14 @@ function showNewBookForm( $IW, $toSearch = NULL, $searchHits = 1 )
 function getBooks( $searchQuery )
 {
 
+  set_error_handler(
+    create_function(
+        '$severity, $message, $file, $line',
+        'throw new ErrorException($message, $severity, $severity, $file, $line);'
+    )
+);
+$error = false;
+  
 #--------------------------------
 $conf           = $this->CFG->getConf();
 $cat            = $conf['cat'         ]; #'opac-de-18-302';  # HIBS 
@@ -316,10 +324,24 @@ $catURL         = $conf['catURL'      ]; #'http://sru.gbv.de/';
 $query       =  $this->build_sru_query( $searchQuery ) ; 
 
 $datasource  = $catURL.$cat.'?version=1.2&operation=searchRetrieve&query='.$query.'+sortby+year%2Fdescending&maximumRecords='.$maxRecords.'&recordSchema='.$recordSchema;
-$page        = file_get_contents($datasource);
+
+try{
+$page = file_get_contents($datasource);
+
+}
+catch (Exception $e) {
+    $error = true;
+}
+
+ 
+restore_error_handler();
+
+if (!$error)
+{  
 $sxm         = simplexml_load_string( str_replace( 'zs:', '' , $page ) );
 
 $hits        = $sxm->numberOfRecords;  # Anzahl Treffer
+
 
 if (isset ($sxm->records->record) )
 foreach ( $sxm->records->record as $rec )
@@ -382,6 +404,8 @@ foreach ( $sxm->records->record as $rec )
  $ret[ 'maxRecords' ]  = $maxRecords;      #  Anzahl der gespeicherten Datensätze
  
  return $ret;
+ 
+} 
 }
 
 function getSignature($ppn = NULL)
@@ -438,12 +462,8 @@ function build_sru_query($search)
  * index.tpl
  *  */
 
-function getFilterHeader()
+function renderDozSort() // Semesterapparate, sortiert nach Dozenten,  Fakuläten, Departtments, Anfangsbuchstabe 
 { 
-
-global $CONST_actions_info ;  
-global $CONST_letter_header;
-
 $letter_exist = array () ;
 $letter_eq    = array () ;
 
@@ -474,8 +494,6 @@ if (isset($userlist))
 foreach ( $userlist as $u )                                                                                                                  ## Liste wird mit entsprechenden SAs erweitert 
 {
   $SAlistTMP                                            =  $this->sql->getSAlist( $u, $INPUT['work']['mode'], $INPUT['work']['categories'] );
-
-
   
   $SAlist = ""; 
   if ($SAlistTMP)
@@ -491,9 +509,7 @@ foreach ( $userlist as $u )                                                     
        }
   }
   }
-
-  #$this->CFG->C->deb( $SAlist ); 
-  
+ 
   if ( isset ( $SAlist[ 0 ][ 'surname' ] ) && $letter_eq != substr ( $SAlist[ 0 ][ 'surname' ] , 0 , 1 ) )                    ## Wenn User mindestens ein Semesterapparat hat
   { $letter = substr ( $SAlist[ 0 ][ 'surname' ] , 0 , 1 );
     $letter_exist[$letter] = $letter;                                                                                         ## Wird sein Anfangsbuchstabe gespeichert
@@ -514,7 +530,6 @@ foreach ( $userlist as $u )                                                     
   }
   #------------------------------------------------------------------------------------------------------------------- 
 }
-
 }
 
 
@@ -522,13 +537,11 @@ foreach ( $userlist as $u )                                                     
 if ( !isset( $_SESSION[ 'user' ] ) ) { $_SESSION['user'] = NULL; }
 #------------------------------------------------------------------------------------------------------------------- 
 $tpl_var[ 'user' ]           = $_SESSION[ 'user' ] ;
-$tpl_var[ 'actions_info' ]   = $CONST_actions_info ;                                                                           # aus const.php ##===================== ACTION INFO BESSER HIER IM PHP AUSWERTEN, NICHT IM TEMPLATE  
-$tpl_var[ 'letter_output' ]  = $this->getLetterOutput( $CONST_letter_header, $letter_exist ) ;                                                          /* Liste mit allen Anfangsbuchstaben aller Nutzer */
+$tpl_var[ 'actions_info' ]   = $this->CFG->C->CONST_actions_info ;                                                                           # aus const.php ##===================== ACTION INFO BESSER HIER IM PHP AUSWERTEN, NICHT IM TEMPLATE  
+$tpl_var[ 'letter_output' ]  = $this->getLetterOutput( $this->CFG->C->CONST_letter_header, $letter_exist ) ;                                                          /* Liste mit allen Anfangsbuchstaben aller Nutzer */
 $tpl_var[ 'source' ]         = 'index.php' ;
 ##------------------------------------------------------------------------------------------------------------------- 
-
-
-#$this->CFG->C->deb( $tpl_var[ 'collection' ] ,1); 
+ #$this->CFG->C->deb( $tpl_var ,1); 
   
  $this->renderer -> do_template ( 'index.tpl' , $tpl_var , TRUE ) ;
 }
@@ -636,7 +649,7 @@ function getLetterOutput ( $letter_header , $letter_exist )
     $CI       = $this->sql -> getCollectionInfos ( $doc_info[ 'collection_id' ] ) ;
     $col_info  = $CI[ $doc_info[ 'collection_id' ] ] ;
     
-    $url      = "index.php?item=collection&collection_id=" . $IW[ 'collection_id' ] . "&ro=".$IU['role_encode']."&action=b_coll_edit" ;
+    $url      = "index.php?item=collection&collection_id=" . $IW[ 'collection_id' ] . "&action=b_coll_edit&r=".$IU['role'];
     $subject  = 'Ihr ELSE Semesterapparat' ;
     $message  = $IW[ 'txt' ] ;
 

@@ -28,10 +28,11 @@ function saveNewCollection(  $IW, $IU)
 }        
 
 function editColMetaData(  $IW )
-{
+{   
   foreach( $_SESSION['FACHBIB' ] as $FBI)
   { $bib_info[$FBI['BibID']] = $FBI['BibName'];
   } 
+ # $this->CFG->C->deb( $_SESSION['DEP2BIB' ] ,1); 
   
   foreach($_SESSION['DEP2BIB'] as $DEPA  )                                      # Nur Departments mit ID > 1000 kommen in die Liste
   { if($DEPA['DepID'] < 1000  AND $DEPA['DepName'] != 'XXX'  )
@@ -47,7 +48,7 @@ function editColMetaData(  $IW )
   $tpl_vars['tpl']['bib_info']    = $bib_info;
   $tpl_vars['tpl']['role_info']   = $this->sql->getRoleInfos('name');
     
- #$this->CFG->C->deb($tpl_vars ,1); 
+ #  $this->CFG->C->deb($tpl_vars ,1); 
  
   $this->renderer->do_template ( 'b_edit_collection.tpl' , $tpl_vars ) ;
   exit(0);
@@ -112,19 +113,17 @@ $doc_type_id: 1 = Buch, 3, = CD, 4 = E-Book,
   $tpl_vars[ 'fachbib'         ] = $_SESSION['FACHBIB' ]; # $ $this->sql->getBibInfos();
   $tpl_vars[ 'department'      ] = $_SESSION['DEP2BIB'];  
   $tpl_vars[ 'actions_info'    ] =  $this->CFG->C->CONST_actions_info;
- 
 
+  $conf = $this->CFG->getConf();
+  $tpl_vars[ 'work'    ]['catURLlnk']    = $conf['catURLlnk'];
+
+  
   $this->renderer->do_template( 'collection.tpl', $tpl_vars );
  }
 
-
- function editCollection(   $IW , $IU)
+ function editCollection( $IW, $IU, $IC )
 { 
   $tpl_vars =  $this->sql->getAllDocTypes();
-
-  $IC = $_SESSION['coll'];
-
-  $tpl_vars[ 'collection'      ]         = $IC;
   $tpl_vars[ 'user'            ]         = $IU; 
   $tpl_vars[ 'work'            ]         = $IW; 
   $tpl_vars[ 'collection_info' ]         = $this->sql->getCollectionInfos( $IC['title_short'] );
@@ -133,11 +132,37 @@ $doc_type_id: 1 = Buch, 3, = CD, 4 = E-Book,
   $tpl_vars[ 'department'      ]         = $_SESSION['DEP2BIB'];  
   $tpl_vars[ 'errors_info'     ][]       = '';
   $tpl_vars[ 'actions_info'    ]         = $this->CFG->C->CONST_actions_info;
+
+  $conf = $this->CFG->getConf();
+  $tpl_vars[ 'work'    ]['catURLlnk']    = $conf['catURLlnk'];
   
+#$this->CFG->C->deb( $tpl_vars[ 'work'            ],1 );
   $this->renderer->do_template( 'collection.tpl', $tpl_vars );
  }
 
-function showCollection( $IW , $IU)
+ function deleteCollection($IW, $IU, $IC )
+{ 
+  #$tpl_vars =  $this->sql->getAllDocTypes();
+
+  $IC = $_SESSION['coll'];
+
+  $tpl_vars[ 'collection'      ]         = $IC;
+  $tpl_vars[ 'user'            ]         = $IU; 
+  $tpl_vars[ 'work'            ]         = $IW; 
+  $tpl_vars[ 'collection_info' ]         = $this->sql->getCollectionInfos( $IC['title_short'] );
+  #$tpl_vars[ 'media_state'     ]         = $this->sql->getAllMedStates();
+  #$tpl_vars[ 'fachbib'         ]         = $_SESSION['FACHBIB' ]; # $ $this->sql->getBibInfos();
+  #$tpl_vars[ 'department'      ]         = $_SESSION['DEP2BIB'];  
+  #$tpl_vars[ 'errors_info'     ][]       = '';
+  #$tpl_vars[ 'actions_info'    ]         = $this->CFG->C->CONST_actions_info;
+   
+ # $this->CFG->C->deb( $tpl_vars,1 );
+ # $this->renderer->do_template( 'collection.tpl', $tpl_vars );
+ }
+
+ 
+ 
+ function showCollection( $IW , $IU)
 { 
   $tpl_vars[ 'work'            ] = $IW; 
   $tpl_vars[ 'user'            ] = $IU;                                          
@@ -151,6 +176,9 @@ function showCollection( $IW , $IU)
   $tpl_vars[ 'errors_info'     ][] = '';
   $tpl_vars[ 'actions_info'    ] =  $this->CFG->C->CONST_actions_info;
  
+  $conf = $this->CFG->getConf();
+  $tpl_vars[ 'work'    ]['catURLlnk']    = $conf['catURLlnk'];
+  
   #$this->CFG->C->deb( $tpl_vars,1 );
   
   $this->renderer->do_template( 'collection.tpl', $tpl_vars, ( $IW[ 'action' ] != 'print' ) );
@@ -206,7 +234,7 @@ function updateColMetaData(  $IW, $IU)
   $IUtmp = $this->sql->getUserHSK ( $IW['user_id'] );
   $IU = $IUtmp[0];
 
- # $this->CFG->C->deb($IU);
+  #$this->CFG->C->deb($IU,1);
  # $this->CFG->C->deb($IW);
 
    
@@ -214,7 +242,7 @@ function updateColMetaData(  $IW, $IU)
   
 
   
-  $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&ro=".$IU['role_encode']."&item=collection&action=b_coll_edit";
+  $url = "index.php?item=collection&collection_id=".$IW['collection_id']."&r=".$IU['role']."&item=collection&action=b_coll_edit";
   $this->renderer->doRedirect( $url );
 }
 
@@ -226,7 +254,10 @@ function redirToCollection( $IW )
 
 function resortCollection( $IW, $IC )
 {
-  $this->sql-> updateCollectionSortOrder( $IC['id'], $IW['sortoder']  );
+ #  $this->CFG->C->deb($IC);
+ #  $this->CFG->C->deb($IW['sortorder']);
+  
+  $this->sql-> updateCollectionSortOrder( $IC['collection_id'], $IW['sortorder']  );
   exit(0);
 }
 }

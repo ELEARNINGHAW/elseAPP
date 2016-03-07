@@ -9,10 +9,10 @@ var $CONST_actions_info ;
 
 function CONSTANT()
 {
-  if ( !isset ($default_role_id)) $default_role_id = 3;
+if   ( !isset ($default_role_id)) $default_role_id = 3;
 
 if   ( isset ( $_POST[ 'bib_id' ] ) )  { $bib_id = $_POST[ 'bib_id' ] ; }
-else                                        { $bib_id = 'HAW' ;                       }
+else                                   { $bib_id = 'HAW' ;              }
 
 ## actions info
 $this->CONST_actions_info = array

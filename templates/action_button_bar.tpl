@@ -7,5 +7,5 @@
 {/foreach}
 {/if}
 {if $visible == 1}
-<a class="icon"  href="index.php?collection_id={$collection_id}&amp;item={$item}&amp;action={$action.button}&amp;ro={$role_encode}&amp;document_id={$document_id}#{$document_id}"><img  class="icon" title="{$action.button_label}" src="img/svg/{$action.button}.svg" /></a>
+<a class="icon"  href="index.php?collection_id={$collection_id}&amp;item={$item}&amp;action={$action.button}&amp;r={$role}&amp;document_id={$document_id}#{$document_id}"><img  class="icon" title="{$action.button_label}" src="img/svg/{$action.button}.svg" /></a>
 {/if}{/foreach} 
