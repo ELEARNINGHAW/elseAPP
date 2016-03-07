@@ -589,22 +589,25 @@ function getLetterOutput ( $letter_header , $letter_exist )
   
   function showMailForm ( $IW , $IU, $IC )
   {
+    
     $doc_info = $this->sql -> getDocumentInfos ( $IW[ 'document_id' ] ) ;
+
     $CI       = $this->sql -> getCollectionInfos ( $doc_info[ 'collection_id' ] ) ;
 
     
     $col_info  = $CI[ $doc_info[ 'collection_id' ] ] ;
     
-   # deb($col_info,1);
+
     $user_info = $col_info [ 'user_info' ] ;
+    #this->CFG->C->deb(  $user_info ,1); 
 
     if ( $user_info[ 'sex' ] == 'w' )
     {
-      $salutaton = 'Sehr geehrte Frau ' . $user_info[ 'surname' ] ;
+      $salutaton = 'Sehr geehrte Frau ' . $user_info[ 'vorname' ] ;
     }
     else
     {
-      $salutaton = 'Sehr geehrter Herr ' . $user_info[ 'surname' ] ;
+      $salutaton = 'Sehr geehrter Herr ' . $user_info[ 'nachname' ] ;
     }
 
     $tpl_vars['coll']             = $IC;
@@ -614,9 +617,9 @@ function getLetterOutput ( $letter_header , $letter_exist )
     $tpl_vars[ 'fromEmail'      ] = $IU[ 'mail' ] ;
 
     $tpl_vars[ 'salutaton'      ] = $salutaton ;
-    $tpl_vars[ 'toFirstName'    ] = $user_info[ 'forename' ] ;
-    $tpl_vars[ 'toName'         ] = $user_info[ 'surname' ] ;
-    $tpl_vars[ 'toEmail'        ] = $user_info[ 'email' ] ;
+    $tpl_vars[ 'toFirstName'    ] = $user_info[ 'vorname' ] ;
+    $tpl_vars[ 'toName'         ] = $user_info[ 'nachname' ] ;
+    $tpl_vars[ 'toEmail'        ] = $user_info[ 'mail' ] ;
 
     $tpl_vars[ 'collectionName' ] = $col_info[ 'title' ] ;
     $tpl_vars[ 'collection_id'  ] = $col_info[ 'id' ] ;
