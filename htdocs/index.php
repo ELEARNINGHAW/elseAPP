@@ -35,21 +35,18 @@ if ( $IW[ 'categories'] != '' OR $IW[ 'letter'] != '' )
 { $media ->  renderDozSort ();  # Dozenten sortiert
 }
 
-      if ( $IW['item'] == 'collection' )
-{ 
-       if ( $IW['action'] == 'print'               )  { $collection->showCollectionPrintversion( $IW, $IU      ) ;   } /* Printversion des SAs wird angezeigt (nur aktive Medien)    */
-  else if ( $IW['action'] == 'show'                )  { $collection->showCollection            ( $IW, $IU      ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
-  else if ( $IW['action'] == 'showopen'            )  { $collection->showCollectionLists       ( $IW, $IU      ) ;   } /* Zeigt die Liste der SAs, gefiltert nach deren Zustand      */
-  else if ( $IW['action'] == 'b_coll_edit'         )  { $collection->editCollection            ( $IW, $IU,$IC  ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
-
-  }
 
 
-if(( $_SESSION['user']['role'] == 3 OR $_SESSION['user']['role'] == 2 ))
+
+if(( $_SESSION['user']['role'] == 3 OR $_SESSION['user']['role'] == 2 ))  ## Folgende Aktionen nur für Dozenten oder Staff
 {
   if ( $IW['item'] == 'collection'  )
 { 
   if      ( $IW['action'] == 'b_coll_edit'         )  { $collection->editCollection            ( $IW, $IU,$IC  ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
+  else if ( $IW['action'] == 'print'               )  { $collection->showCollectionPrintversion( $IW, $IU      ) ;   } /* Printversion des SAs wird angezeigt (nur aktive Medien)    */
+  else if ( $IW['action'] == 'show'                )  { $collection->showCollection            ( $IW, $IU      ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
+  else if ( $IW['action'] == 'showopen'            )  { $collection->showCollectionLists       ( $IW, $IU      ) ;   } /* Zeigt die Liste der SAs, gefiltert nach deren Zustand      */
+
   else if ( $IW['action'] == 'b_coll_release'      )  { $collection->setCollectionState_5      ( $IW           );    } /* Zustand 5 = 'AUFGELÖST'                                    */
   else if ( $IW['action'] == 'b_coll_revive'       )  { $collection->setCollectionState_3      ( $IW           );    } /* Zustand 3 = 'AKTIV'                                        */
   else if ( $IW['action'] == 'b_delete'            )  { $collection->setCollectionState_6      ( $IW           );    } /* Zustand 6 = 'GELÖSCHT'/Mülleimer                           */
@@ -100,6 +97,16 @@ else if ( $IW['item'] == 'email' )
   if      ( $IW['action'] == 'HIBSAPmail'          )  {  $util->sendBIB_APmails();               }           /* Cronjob: HIBS Ansprechpartner Infomail                                         */
 }
 
+}
+else     ## Folgende Aktionen für Studis erlaubt
+{      if ( $IW['item'] == 'collection' )
+{ 
+       if ( $IW['action'] == 'print'               )  { $collection->showCollectionPrintversion( $IW, $IU      ) ;   } /* Printversion des SAs wird angezeigt (nur aktive Medien)    */
+  else if ( $IW['action'] == 'show'                )  { $collection->showCollection            ( $IW, $IU      ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
+  else if ( $IW['action'] == 'showopen'            )  { $collection->showCollectionLists       ( $IW, $IU      ) ;   } /* Zeigt die Liste der SAs, gefiltert nach deren Zustand      */
+  else if ( $IW['action'] == 'b_coll_edit'         )  { $collection->editCollection            ( $IW, $IU,$IC  ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
+
+  }  
 }
 ?>
   
