@@ -78,7 +78,6 @@ Haben Sie nicht das Gewünschte gefunden?<br/> Machen Sie doch einen
 		
 
 <img src="img/loader.gif" style="width:80px; heigth:80px" /></div>
-<script type='text/javascript' src='lib/jquery.js'></script>
 <script type='text/javascript' src='lib/jquery.simplemodal.js'></script>
 <script type='text/javascript' src='lib/basic.js'></script>
 

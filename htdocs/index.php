@@ -1,6 +1,6 @@
 <?php
 session_start();
-#$_SESSION = null;
+#$_SESSION = "";
 ## --- TODO ---  --- CHECK PERMISSIONS ---
 # check_permission($INPUT)
 require_once( '../php/const.class.php'             );
@@ -19,6 +19,8 @@ $renderer   = new Renderer( $CFG );
 $collection = new Collection( $CFG, $SQL, $renderer );
 $media      = new Media( $CFG, $SQL, $renderer );
 
+#$util->  check_host();
+
 $INPUT = $util->getInput();                                #--- GET ALL INPUT (GET) ---
 
 if ( isset ( $_SESSION[ 'work'  ] ) ) { $IW = $_SESSION[ 'work' ]; }  # Übergebene Werte der einzelnen Services
@@ -26,15 +28,24 @@ if ( isset ( $_SESSION[ 'user'  ] ) ) { $IU = $_SESSION[ 'user' ]; }  # Alle Use
 if ( isset ( $_SESSION[ 'coll'  ] ) ) { $IC = $_SESSION[ 'coll' ]; }  # Alle Semesterapparatdaten
 
 #$CFG->C->deb( $IW ,1 );
-#$CFG->C->deb( $_SESSION,1 );
 #$CFG->C->deb( $_GET);
 #$CFG->C->deb( $IW ,1 );
 
 if ( $IW[ 'categories'] != '' OR $IW[ 'letter'] != '' )  
 { $media ->  renderDozSort ();
 }
- 
-else if ( $IW['item'] == 'collection' )
+
+      if ( $IW['item'] == 'collection' )
+{ 
+       if ( $IW['action'] == 'print'               )  { $collection->showCollectionPrintversion( $IW, $IU      ) ;   } /* Printversion des SAs wird angezeigt (nur aktive Medien)    */
+  else if ( $IW['action'] == 'show'                )  { $collection->showCollection            ( $IW, $IU      ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
+  else if ( $IW['action'] == 'showopen'            )  { $collection->showCollectionLists       ( $IW, $IU      ) ;   } /* Zeigt die Liste der SAs, gefiltert nach deren Zustand      */
+ }
+
+
+if(( $_SESSION['user']['role'] == 3 OR $_SESSION['user']['role'] == 2 ))
+{
+  if ( $IW['item'] == 'collection'  )
 { 
   if      ( $IW['action'] == 'b_coll_edit'         )  { $collection->editCollection            ( $IW, $IU,$IC  ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
   else if ( $IW['action'] == 'b_coll_release'      )  { $collection->setCollectionState_5      ( $IW           );    } /* Zustand 5 = 'AUFGELÖST'                                    */
@@ -44,10 +55,7 @@ else if ( $IW['item'] == 'collection' )
   else if ( $IW['action'] == 'b_coll_meta_save'    )  { $collection->updateColMetaData         ( $IW, $IU      );    } /* Metadaten des SA updaten                                   */
   else if ( $IW['action'] == 'b_new_init'          )  { $collection->saveNewCollection         ( $IW, $IU      ) ;   } /* Metadaten des NEUEN SA speichern / SA anlegen              */
   else if ( $IW['action'] == 'b_new'               )  { $collection->newCollection             ( $IW           ) ;   } /* Metadaten des NEUEN SA ermitteln/eingeben                  */
-  else if ( $IW['action'] == 'show'                )  { $collection->showCollection            ( $IW, $IU      ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
   else if ( $IW['action'] == 'b_coll_delete'       )  { $collection->deleteCollection          ( $IW, $IU, $IC ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
-  else if ( $IW['action'] == 'print'               )  { $collection->showCollectionPrintversion( $IW, $IU      ) ;   } /* Printversion des SAs wird angezeigt (nur aktive Medien)    */
-  else if ( $IW['action'] == 'showopen'            )  { $collection->showCollectionLists       ( $IW, $IU      ) ;   } /* Zeigt die Liste der SAs, gefiltert nach deren Zustand      */
   else if ( $IW['action'] == 'b_kill'              )  { $collection->ereaseCollection          ( $IW, $IU      ) ;   } /* Löscht SA endgültig                                        */
   else if ( $IW['action'] == 'resort'              )  { $collection->resortCollection          ( $IW, $IC      ) ;   } /* Setzt neue Reihenfolge der Dokumente im SA                 */
 }
@@ -88,6 +96,8 @@ else if ( $IW['item'] == 'ebook' OR $IW['item'] == 'lh_book' )
 else if ( $IW['item'] == 'email' )
 { if      ( $IW['action'] == 'sendmail'            )  {  $media->send_email(  $IW, $IU, $IC );   }           /* Email wird verschickt                                         */
   if      ( $IW['action'] == 'HIBSAPmail'          )  {  $util->sendBIB_APmails();               }           /* Cronjob: HIBS Ansprechpartner Infomail                                         */
+}
+
 }
 ?>
   

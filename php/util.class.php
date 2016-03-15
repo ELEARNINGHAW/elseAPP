@@ -13,10 +13,22 @@ class Util   /// \brief check user input
 
 function getInput ( )
 {
+
+if ( !isset ( $_SESSION[ 'DEP2BIB'] ) )                                     # Ermittelt die zuständige FachBib zum jeweiligen Department 
+{
+  $this->HAWdb          = new HAW_DB();                                    # Aus der SQLite DB
+  $_SESSION['DEP2BIB' ] =  $this->HAWdb->getDEP2BIB();
+  $_SESSION['FAK'     ] =  $this->HAWdb->getAllFak();
+  $_SESSION['FACHBIB' ] =  $this->HAWdb->getAllFachBib();
+}   
+  
+  
 if ( isset ( $_GET[ 'uid' ] ) )    ##  Initiale Parameterübergabe über  Moodle ## // Kurskurzname 
 {  
   $this -> getGET_EMIL_Values () ; /* Paramterübergabe von EMIL  */
 }
+
+if ( !$_SESSION['user']['role'] )  { die(); } 
 
 if (isset( $_SESSION[ 'work' ][ 'document_id' ] ) ) { $INPUT[ 'work' ][ 'document_id'      ] = $_SESSION[ 'work' ][ 'document_id' ]; } else {  $INPUT[ 'work' ][ 'document_id'    ] = 0; } /* Standard 'document_id' des zuletzt bearbeiteten Mediums, wird *immer* in SESSION übernommen*/
 if(isset( $_GET[ 'document_id'      ] ) )           { $INPUT[ 'work' ][ 'document_id'      ] = $_GET[  'document_id'   ]; }
@@ -67,13 +79,6 @@ $_SESSION[ 'work' ] = $INPUT[ 'work' ] ;
   
 $_SESSION[ 'coll' ] = $this->sql->getCollectionData( $INPUT[ 'work' ][ 'collection_id'   ] );  /* Wenn coll_id übergegen wird, wird dieser der aktive SA  */
   
-if ( !isset ( $_SESSION[ 'DEP2BIB'] ) )                                     # Ermittelt die zuständige FachBib zum jeweiligen Department 
-{
-  $this->HAWdb          = new HAW_DB();                                    # Aus der SQLite DB
-  $_SESSION['DEP2BIB' ] =  $this->HAWdb->getDEP2BIB();
-  $_SESSION['FAK'     ] =  $this->HAWdb->getAllFak();
-  $_SESSION['FACHBIB' ] =  $this->HAWdb->getAllFachBib();
-}   
 
 return $INPUT ;
 }
@@ -136,7 +141,6 @@ function getGET_EMIL_Values ( )
       $IC[ 'collection_id' ] = $Course[  'shortname'  ] ;
       $IC[ 'bib_id'        ] = $_SESSION[ 'DEP2BIB'   ][ $IDMuser[ 'department' ] ] [ 'BibID' ];
     }
-    
     #-----------------------------------------------------------------------------
 
     $_SESSION[ 'user' ] = $IDMuser ;
@@ -359,6 +363,51 @@ function check_permission ( $INPUT )
   {
     user_error ( "Permission denied: action " . $INPUT[ 'work' ][ 'action' ] . " on item type " . $INPUT[ 'work' ][ 'item' ] . " for: " . $_SESSION[ 'user' ][ 'role_name' ] . " / " . $_SESSION[ 'user' ][ 'surname' ] . " " , E_USER_ERROR ) ;
   }
+}
+
+
+  function check_host()
+  {
+    /* (Assuming session already started) */
+    if(isset($_SESSION['referrer'])){
+    // Get existing referrer
+    $referrer   = $_SESSION['referrer'];
+
+    } elseif(isset($_SERVER['HTTP_REFERER'])){
+    // Use given referrer
+    $referrer   = $_SERVER['HTTP_REFERER'];
+
+    } else {
+    // No referrer
+    }
+
+    // Save current page as next page's referrer
+    $_SESSION['referrer']   = $this->current_page_url();
+   
+    
+    $conf = $this->CFG->getConf();
+	  if  ( isset ($_SERVER['HTTP_REFERER' ] ) )                
+    {   $host1 = explode('/', $_SERVER['HTTP_REFERER']);  
+         print_r($_SERVER);die();    
+    if ( ! in_array( $host1[2], $conf['ok_host'] ) )  {  die("<div style='text-align:center;'><h1>ACCESS ERROR<h1><h3>Unzul&auml;ssiger Zugriff!</h3><a href=\"javascript:window.back()\">Zur&uuml;ck</a></div>"); }
+    }
+    else
+    {  if( $_SERVER['SERVER_NAME' ] != 'localhost' )
+      {      
+         header("Location:index.html");
+         die("<div style='text-align:center;'><h1>ACCESS ERROR<h1><h3>Unzul&auml;ssiger Zugriff!</h3><a href=\"javascript:window.back()\">Zur&uuml;ck</a></div>"); 
+      }
+    }
+  }
+  
+  // Get the full URL of the current page
+function current_page_url()
+{
+    $page_url   = 'http';
+    if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'){
+        $page_url .= 's';
+    }
+    return $page_url.'://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 }
 
 

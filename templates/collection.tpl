@@ -8,7 +8,7 @@
 <div class="SAMeta bgDef bg{$ci.coll_bib_id}">
 {if ( $staff_mode )}   
 <div style="width:630px; display: inline-block; font-weight: 700; font-size: 14px; color: #FFF; padding-top:2px; "> 
-<div style="float:left;">{$ci.title} </div> 
+<div style="float:left;">{$ci.title|truncate:70:"...":true} </div> 
 <div style="float:right;"> FB:{$ci.bib_id}</div><br/>
 <div style="float:left;">von: {$ci.user_info.vorname|escape} {$ci.user_info.nachname|escape}</div> 
 <div style="float:right;">Dep:{$department[$ci.user_info.department_id].DepName}</div> 

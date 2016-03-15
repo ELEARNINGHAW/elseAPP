@@ -179,7 +179,7 @@ $doc_type_id: 1 = Buch, 3, = CD, 4 = E-Book,
   $conf = $this->CFG->getConf();
   $tpl_vars[ 'work'    ]['catURLlnk']    = $conf['catURLlnk'];
   
-  #$this->CFG->C->deb( $tpl_vars,1 );
+ # $this->CFG->C->deb( $tpl_vars,1 );
   
   $this->renderer->do_template( 'collection.tpl', $tpl_vars, ( $IW[ 'action' ] != 'print' ) );
  }
