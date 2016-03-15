@@ -69,8 +69,11 @@ if ( isset ( $INPUT[ 'work' ][ 'action' ] ) AND isset ( $this->CFG->C->CONST_act
 }
 
 if ( isset( $_SESSION[ 'user' ]['tmpcat']) AND ( $INPUT[ 'work' ]['action'] != 'b_coll_delete' ) )   #  Hook, wenn Staff ELSE betritt, wird sofort die LR Übersicht angezeigt (anstelle des SA des LR)
-{  $INPUT[ 'work' ]['categories'] = 1;
-    unset($_SESSION[ 'user' ]['tmpcat'] );
+{  $INPUT[ 'work' ][ 'categories'    ] = 1;    # Globale Liste wird angezeigt 
+   $INPUT[ 'work' ][ 'action'        ] = null; # anstelle des Semesterapparates
+   $INPUT[ 'work' ][ 'collection_id' ] = null; # des aktuellen EMIL-Raums
+  
+   unset($_SESSION[ 'user' ]['tmpcat'] );
 } 
 
 # $INPUT[ 'work' ][ 'mode'          ] = '' ; ## z.B printversion

@@ -32,7 +32,7 @@ if ( isset ( $_SESSION[ 'coll'  ] ) ) { $IC = $_SESSION[ 'coll' ]; }  # Alle Sem
 #$CFG->C->deb( $IW ,1 );
 
 if ( $IW[ 'categories'] != '' OR $IW[ 'letter'] != '' )  
-{ $media ->  renderDozSort ();
+{ $media ->  renderDozSort ();  # Dozenten sortiert
 }
 
       if ( $IW['item'] == 'collection' )
@@ -40,7 +40,9 @@ if ( $IW[ 'categories'] != '' OR $IW[ 'letter'] != '' )
        if ( $IW['action'] == 'print'               )  { $collection->showCollectionPrintversion( $IW, $IU      ) ;   } /* Printversion des SAs wird angezeigt (nur aktive Medien)    */
   else if ( $IW['action'] == 'show'                )  { $collection->showCollection            ( $IW, $IU      ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
   else if ( $IW['action'] == 'showopen'            )  { $collection->showCollectionLists       ( $IW, $IU      ) ;   } /* Zeigt die Liste der SAs, gefiltert nach deren Zustand      */
- }
+  else if ( $IW['action'] == 'b_coll_edit'         )  { $collection->editCollection            ( $IW, $IU,$IC  ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
+
+  }
 
 
 if(( $_SESSION['user']['role'] == 3 OR $_SESSION['user']['role'] == 2 ))
