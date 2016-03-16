@@ -522,7 +522,8 @@ function getAllDocTypes()
 }
 
 function getRoleName( $roleNr )  
-{
+{ 
+  $ret = "";
   $SQL = "SELECT name FROM `role` WHERE id = ". $this->es( $roleNr) ;
   
   $res =  mysqli_query ( $this->DB, $SQL );

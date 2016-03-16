@@ -28,7 +28,7 @@ if ( isset ( $_GET[ 'uid' ] ) )    ##  Initiale Parameterübergabe über  Moodle
   $this -> getGET_EMIL_Values () ; /* Paramterübergabe von EMIL  */
 }
 
-if ( !$_SESSION['user']['role'] )  { die(); } 
+if ( ! isset($_SESSION['user']['role'] ) ) { die(); } 
 
 if (isset( $_SESSION[ 'work' ][ 'document_id' ] ) ) { $INPUT[ 'work' ][ 'document_id'      ] = $_SESSION[ 'work' ][ 'document_id' ]; } else {  $INPUT[ 'work' ][ 'document_id'    ] = 0; } /* Standard 'document_id' des zuletzt bearbeiteten Mediums, wird *immer* in SESSION übernommen*/
 if(isset( $_GET[ 'document_id'      ] ) )           { $INPUT[ 'work' ][ 'document_id'      ] = $_GET[  'document_id'   ]; }
@@ -92,19 +92,19 @@ function dc( $str )  # decode GET input
 }
 
 function getGET_EMIL_Values ( )
-{
-    if ( isset ( $_GET[ 'cid'] ) )  { $Course[ 'id'          ] = $this->dc ( $_GET[ 'cid']  ) ; }  else  {                                echo "<br>ERROR: no 'course ID'        " ;  }
-    if ( isset ( $_GET[ 'sn' ] ) )  { $Course[ 'shortname'   ] = $this->dc ( $_GET[ 'sn' ]  ) ; }  else  {                                echo "<br>ERROR: no 'course shortname' " ;  }
-    if ( isset ( $_GET[ 'cn' ] ) )  { $Course[ 'fullname'    ] = $this->dc ( $_GET[ 'cn' ]  ) ; }  else  {                                echo "<br>ERROR: no 'course fullname'  " ;  }
-    if ( isset ( $_GET[ 'uid'] ) )  { $IDMuser[ 'id'         ] = $this->dc ( $_GET[ 'uid']  ) ; }  else  { $IDMuser[ 'id'         ] = ""; echo "<br>ERROR: no 'user ID'          " ;  }
-    if ( isset ( $_GET[ 'm'  ] ) )  { $IDMuser[ 'mail'       ] = $this->dc ( $_GET[ 'm'  ]  ) ; }  else  { $IDMuser[ 'mail'       ] = ""; echo "<br>ERROR: no 'mail'             " ;  }
-    if ( isset ( $_GET[ 'fn' ] ) )  { $IDMuser[ 'vorname'    ] = $this->dc ( $_GET[ 'fn' ]  ) ; }  else  { $IDMuser[ 'vorname'    ] = ""; echo "<br>ERROR: no 'vorname'          " ;  }
-    if ( isset ( $_GET[ 'ln' ] ) )  { $IDMuser[ 'nachname'   ] = $this->dc ( $_GET[ 'ln' ]  ) ; }  else  { $IDMuser[ 'nachname'   ] = ""; echo "<br>ERROR: no 'nachname'         " ;  }
-    if ( isset ( $_GET[ 'u'  ] ) )  { $IDMuser[ 'hawaccount' ] = $this->dc ( $_GET[ 'u'  ]  ) ; }  else  { $IDMuser[ 'akennung'   ] = ""; echo "<br>ERROR: no 'hawaccount'       " ;  }
-    if ( isset ( $_GET[ 'id' ] ) )  { $IDMuser[ 'matrikelnr' ] = $this->dc ( $_GET[ 'id' ]  ) ; }  else  { $IDMuser[ 'matrikelnr' ] = ""; echo "<br>ERROR: no 'matrikelnr'       " ;  }
-    if ( isset ( $_GET[ 'fa' ] ) )  { $IDMuser[ 'fakultaet'  ] = $this->dc ( $_GET[ 'fa' ]  ) ; }  else  { $IDMuser[ 'fakultaet'  ] = ""; echo "<br>ERROR: no 'studiengang'      " ;  }
-    if ( isset ( $_GET[ 'dp' ] ) )  { $IDMuser[ 'department' ] = $this->dc ( $_GET[ 'dp' ]  ) ; }  else  { $IDMuser[ 'department' ] = ""; echo "<br>ERROR: no 'department'       " ;  }
-    if ( isset ( $_GET[ 'sx' ] ) )  { $IDMuser[ 'sex'        ] = $this->dc ( $_GET[ 'sx' ]  ) ; }  else  { $IDMuser[ 'sex'        ] = ""; echo "<br>ERROR: no 'sex'              " ;  }
+{ $dm = false;
+    if ( isset ( $_GET[ 'cid'] ) )  { $Course[ 'id'          ] = $this->dc ( $_GET[ 'cid']  ) ; }  else  {                                if($dm) echo "<br>ERROR: no 'course ID'        " ;  }
+    if ( isset ( $_GET[ 'sn' ] ) )  { $Course[ 'shortname'   ] = $this->dc ( $_GET[ 'sn' ]  ) ; }  else  {                                if($dm) echo "<br>ERROR: no 'course shortname' " ;  }
+    if ( isset ( $_GET[ 'cn' ] ) )  { $Course[ 'fullname'    ] = $this->dc ( $_GET[ 'cn' ]  ) ; }  else  {                                if($dm) echo "<br>ERROR: no 'course fullname'  " ;  }
+    if ( isset ( $_GET[ 'uid'] ) )  { $IDMuser[ 'id'         ] = $this->dc ( $_GET[ 'uid']  ) ; }  else  { $IDMuser[ 'id'         ] = ""; if($dm) echo "<br>ERROR: no 'user ID'          " ;  }
+    if ( isset ( $_GET[ 'm'  ] ) )  { $IDMuser[ 'mail'       ] = $this->dc ( $_GET[ 'm'  ]  ) ; }  else  { $IDMuser[ 'mail'       ] = ""; if($dm) echo "<br>ERROR: no 'mail'             " ;  }
+    if ( isset ( $_GET[ 'fn' ] ) )  { $IDMuser[ 'vorname'    ] = $this->dc ( $_GET[ 'fn' ]  ) ; }  else  { $IDMuser[ 'vorname'    ] = ""; if($dm) echo "<br>ERROR: no 'vorname'          " ;  }
+    if ( isset ( $_GET[ 'ln' ] ) )  { $IDMuser[ 'nachname'   ] = $this->dc ( $_GET[ 'ln' ]  ) ; }  else  { $IDMuser[ 'nachname'   ] = ""; if($dm) echo "<br>ERROR: no 'nachname'         " ;  }
+    if ( isset ( $_GET[ 'u'  ] ) )  { $IDMuser[ 'hawaccount' ] = $this->dc ( $_GET[ 'u'  ]  ) ; }  else  { $IDMuser[ 'akennung'   ] = ""; if($dm) echo "<br>ERROR: no 'hawaccount'       " ;  }
+    if ( isset ( $_GET[ 'id' ] ) )  { $IDMuser[ 'matrikelnr' ] = $this->dc ( $_GET[ 'id' ]  ) ; }  else  { $IDMuser[ 'matrikelnr' ] = ""; if($dm) echo "<br>ERROR: no 'matrikelnr'       " ;  }
+    if ( isset ( $_GET[ 'fa' ] ) )  { $IDMuser[ 'fakultaet'  ] = $this->dc ( $_GET[ 'fa' ]  ) ; }  else  { $IDMuser[ 'fakultaet'  ] = ""; if($dm) echo "<br>ERROR: no 'studiengang'      " ;  }
+    if ( isset ( $_GET[ 'dp' ] ) )  { $IDMuser[ 'department' ] = $this->dc ( $_GET[ 'dp' ]  ) ; }  else  { $IDMuser[ 'department' ] = ""; if($dm) echo "<br>ERROR: no 'department'       " ;  }
+    if ( isset ( $_GET[ 'sx' ] ) )  { $IDMuser[ 'sex'        ] = $this->dc ( $_GET[ 'sx' ]  ) ; }  else  { $IDMuser[ 'sex'        ] = ""; if($dm) echo "<br>ERROR: no 'sex'              " ;  }
     if ( isset ( $_GET[ 'ro' ] ) )  { $IDMuser[ 'role'       ] = $this->dc ( $_GET[ 'ro' ]  ) ;              
                                       $IDMuser[ 'role_encode'] = $_GET[ 'ro' ] ;                                    }  else  { $IDMuser[ 'role'       ] = ""; $IDMuser[ 'role_encode'] = "";  echo "<br>ERROR: no 'role'  " ;  }
 
