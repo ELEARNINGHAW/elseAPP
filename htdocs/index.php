@@ -1,6 +1,6 @@
 <?php
 session_start();
-$_SESSION = "";
+#$_SESSION = "";
 ## --- TODO ---  --- CHECK PERMISSIONS ---
 # check_permission($INPUT)
 require_once( '../php/const.class.php'             );
@@ -29,7 +29,7 @@ if ( isset ( $_SESSION[ 'coll'  ] ) ) { $IC = $_SESSION[ 'coll' ]; }  # Alle Sem
 
 #$CFG->C->deb( $IW ,1 );
 #$CFG->C->deb( $_GET);
- #$CFG->C->deb( $_SESSION['user']['role']  );
+#$CFG->C->deb( $_SESSION['user']['role'] );
 
 if ( $IW[ 'categories'] != '' OR $IW[ 'letter'] != '' )  
 { $media ->  renderDozSort ();  # Dozenten sortiert

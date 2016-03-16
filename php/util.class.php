@@ -28,7 +28,7 @@ if ( isset ( $_GET[ 'uid' ] ) )    ##  Initiale Parameterübergabe über  Moodle
   $this -> getGET_EMIL_Values () ; /* Paramterübergabe von EMIL  */
 }
 
-if ( ! isset($_SESSION['user']['role'] ) ) { die(); } 
+if ( ! isset($_SESSION['user']['role'] ) ) { die('NO ROLE'); } 
 
 if (isset( $_SESSION[ 'work' ][ 'document_id' ] ) ) { $INPUT[ 'work' ][ 'document_id'      ] = $_SESSION[ 'work' ][ 'document_id' ]; } else {  $INPUT[ 'work' ][ 'document_id'    ] = 0; } /* Standard 'document_id' des zuletzt bearbeiteten Mediums, wird *immer* in SESSION übernommen*/
 if(isset( $_GET[ 'document_id'      ] ) )           { $INPUT[ 'work' ][ 'document_id'      ] = $_GET[  'document_id'   ]; }
