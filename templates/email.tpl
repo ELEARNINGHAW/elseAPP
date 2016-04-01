@@ -1,7 +1,7 @@
    
  <h3 style="margin:10px; padding:10px; color: #FFF; background-color: #800000;">
 {$ci.title} : {$documentName } : Email
-   <a style="float:right;" href="index.php?item=collection&action=show&collection_id={$coll.title_short}">
+   <a style="float:right;" href="index.php?item=collection&action=show&collection_id={$ci.title_short}">
   <img  class="icon" style="margin-top:-4px;" title="Zurück" src="img/svg/chevron-left_w.svg" />
 </a>
 </h3> 

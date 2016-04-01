@@ -27,16 +27,12 @@ if ( isset ( $_SESSION[ 'work'  ] ) ) { $IW = $_SESSION[ 'work' ]; }  # Übergeb
 if ( isset ( $_SESSION[ 'user'  ] ) ) { $IU = $_SESSION[ 'user' ]; }  # Alle Userdaten
 if ( isset ( $_SESSION[ 'coll'  ] ) ) { $IC = $_SESSION[ 'coll' ]; }  # Alle Semesterapparatdaten
 
-#$CFG->C->deb( $IW ,1 );
 #$CFG->C->deb( $_GET);
 #$CFG->C->deb( $_SESSION['user']['role'] );
 
 if ( $IW[ 'categories'] != '' OR $IW[ 'letter'] != '' )  
 { $media ->  renderDozSort ();  # Dozenten sortiert
 }
-
-
-
 
 if(( $_SESSION['user']['role'] == 3 OR $_SESSION['user']['role'] == 2 ))  ## Folgende Aktionen nur für Dozenten oder Staff
 {
@@ -92,10 +88,13 @@ else if ( $IW['item'] == 'ebook' OR $IW['item'] == 'lh_book' )
   else if ( $IW['action'] == 'b_new_email'         )  {  $media->showMailForm       ( $IW, $IU, $IC  ); } /* Erwebungsvorschlag (nach 0 Suchtreffern)                        */
 }
 }
-else if(( $_SESSION['user']['role'] == 3 OR $_SESSION['user']['role'] == 2 OR  $_SESSION['user']['role'] == 5))  ## Folgende Aktionen nur für Dozenten oder Staff oder Mailuser
+
+if(( $_SESSION['user']['role'] == 3 OR $_SESSION['user']['role'] == 2 OR  $_SESSION['user']['role'] == 5))  ## Folgende Aktionen nur für Dozenten oder Staff oder Mailuser
 {
  if ( $IW['item'] == 'email' )
-{ if      ( $IW['action'] == 'sendmail'            )  {  $media->send_email(  $IW, $IU, $IC );   }           /* Email wird verschickt                                         */
+{ 
+   
+   if      ( $IW['action'] == 'sendmail'            )  {  $media->send_email(  $IW, $IU, $IC );   }           /* Email wird verschickt                                         */
   if      ( $IW['action'] == 'HIBSAPmail'          )  {  $util->sendBIB_APmails();               }           /* Cronjob: HIBS Ansprechpartner Infomail                                         */
 }
 

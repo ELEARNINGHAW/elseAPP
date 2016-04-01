@@ -644,15 +644,15 @@ function getLetterOutput ( $letter_header , $letter_exist )
     $doc_info = $this->sql -> getDocumentInfos ( $IW[ 'document_id' ] ) ;
     $CI       = $this->sql -> getCollectionInfos ( $doc_info[ 'collection_id' ] ) ;
 
-    
+
   	#$IW[ 'to' ]   = 'werner.welte@haw-hamburg.de' ;
     $IW[ 'bcc2' ] = 'Daniela.Mayer@haw-hamburg.de' ;
 	  $to       = $IW[ 'to' ] ;
 
     $CI       = $this->sql -> getCollectionInfos ( $doc_info[ 'collection_id' ] ) ;
     $col_info  = $CI[ $doc_info[ 'collection_id' ] ] ;
-    
-    $url      = "index.php?item=collection&collection_id=" . $IW[ 'collection_id' ] . "&action=b_coll_edit&r=".$IU['role'];
+   
+    $url      = "index.php?item=collection&collection_id=" . $col_info['title_short'] . "&action=b_coll_edit&r=".$IU['role'];
     $subject  = 'Ihr ELSE Semesterapparat' ;
     $message  = $IW[ 'txt' ] ;
 
@@ -685,7 +685,7 @@ function getLetterOutput ( $letter_header , $letter_exist )
     $tpl_vars[ 'work' ]    = $IW ;
     $tpl_vars[ 'user' ]    = $IU ;
     $tpl_vars[ 'ci' ]      = $col_info ;
-
+   
     $this->renderer -> do_template ( 'email.tpl' , $tpl_vars ) ;
   }
   

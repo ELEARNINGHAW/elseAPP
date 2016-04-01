@@ -61,6 +61,9 @@ if(isset( $_GET[ 'expiry_date'      ] ) )           { $INPUT[ 'work' ][ 'expiry_
 if(isset( $_GET[ 'ro'               ] ) )           { $INPUT[ 'work' ][ 'ro'               ] = $_GET[ 'ro'                ]; } else { $INPUT[ 'work' ][ 'ro'               ] = '' ;}
 if(isset( $_GET[ 'categories'       ] ) )           { $INPUT[ 'work' ][ 'categories'       ] = $_GET[ 'categories'        ]; } else { $INPUT[ 'work' ][ 'categories'       ] = '' ;} 
 if(isset( $_GET[ 'letter'           ] ) )           { $INPUT[ 'work' ][ 'letter'           ] = $_GET[ 'letter'            ]; } else { $INPUT[ 'work' ][ 'letter'           ] = '' ;} 
+if(isset( $_GET[ 'to'               ] ) )           { $INPUT[ 'work' ][ 'to'               ] = $_GET[ 'to'                ]; } else { $INPUT[ 'work' ][ 'to'               ] = '' ;} 
+if(isset( $_GET[ 'txt'              ] ) )           { $INPUT[ 'work' ][ 'txt'              ] = $_GET[ 'txt'               ]; } else { $INPUT[ 'work' ][ 'txt'              ] = '' ;} 
+if(isset( $_GET[ 'from'             ] ) )           { $INPUT[ 'work' ][ 'from'             ] = $_GET[ 'from'              ]; } else { $INPUT[ 'work' ][ 'from'             ] = '' ;} 
     
 if ( isset( $_SESSION[ 'work' ][ 'last_page'   ] ) ) { $INPUT[ 'work'    ][ 'last_page'   ] = $_SESSION[ 'work' ][ 'last_page'   ]; } /* 'Lastpage' wird *immer* in SESSION übernommen*/
 
