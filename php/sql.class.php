@@ -307,11 +307,11 @@ function renewCollection( $IC  )
   # Collection 
    $tmp  =  $this->getCollectionData( $IC[ 'newCollection_id' ] );
   
-  # $this->CFG->C->deb( $tmp['collection_id'] ) ;
+ ##  $this->CFG->C->deb( $tmp['collection_id'] ) ;
   
   if ( $tmp['collection_id'] )  # Anzulegender SA exisitiert schon 
   {
-   # echo "DOUBLE";
+    echo "DOUBLE";
    # $res = 0;
   }
   else
@@ -327,6 +327,7 @@ function renewCollection( $IC  )
     $SQL .= " UPDATE tmp SET  last_state_change = NOW();";
     $SQL .= " UPDATE tmp SET  course_id         = 1;";
     $SQL .= " UPDATE tmp SET  state_id          = 3;";
+    $SQL .= " UPDATE tmp SET  sortorder         = '';";
     $SQL .= " INSERT INTO collection SELECT * FROM tmp;";
     $res = mysqli_multi_query ( $this->DB, $SQL );
     while (mysqli_next_result($this->DB)){;}    ## bugfix - flush multi_queries    
@@ -380,22 +381,25 @@ function renewDocument( $IC  )
       $row['last_state_change']  ."' , '". 
       $row['shelf_remain'     ]  ."' )";
       
-     # echo "<br>#---".$SQL;
+    #echo "<br>#---".$SQL;
       
       
      $res2 =  mysqli_query ( $this->DB, $SQL );                                # Alle Dokumente des bisherigen SA werden in den neunen SA kopiert
-    #$this->CFG->C->deb( $row); $this->CFG->C->deb( $SQL );
+     #$this->CFG->C->deb( $row); $this->CFG->C->deb( $SQL );
 
       $row['new_state_id' ]  = null;  
-      if     ( $row[ 'state_id' ] == '1' OR  $row[ 'state_id' ] == '2' ) { $row[ 'new_state_id' ]  = 3; } # state 1, 2 wird 3 -- bestellt oder bearbeitet wird aktiv 
-      elseif ( $row[ 'state_id' ] == '4' OR  $row[ 'state_id' ] == '9' ) { $row[ 'new_state_id' ]  = 5; } # state 4, 9 wird 5 -- vorschlang oder entfernt wird inaktiv  
-      if(isset($row[ 'new_state_id' ])) 
+      if     ( $row[ 'state_id' ] == '1' OR  $row[ 'state_id' ] == '2' OR  $row[ 'state_id' ] == '3' ) { $row[ 'new_state_id' ]  = 3; } # state 1, 2 wird 3 -- bestellt oder bearbeitet wird aktiv 
+      elseif ( $row[ 'state_id' ] == '4' OR  $row[ 'state_id' ] == '9' OR  $row[ 'state_id' ] == '5' ) { $row[ 'new_state_id' ]  = 5; } # state 4, 9 wird 5 -- vorschlang oder entfernt wird inaktiv  
+      
+      if(isset($row[ 'new_state_id' ])  AND $row['doc_type_id'  ] == 1 ) # Nur Bücher im SA bekommen für das Archiv ein neuen, jeweiligen Status
       {  
         $SQL = " UPDATE document SET ";
         $SQL .= " state_id              = \"" . $row['new_state_id' ]     . "\"";
+        $SQL .= " , shelf_remain        =  1 ";
+        $SQL .= " , doc_type_id         =  2 ";
         $SQL .= " WHERE `collection_id` = \"" . $IC[ 'collection_id' ]    . "\"  AND  id = " .$row['id'      ]; 
         $res3 =  mysqli_query ( $this->DB, $SQL ); 
-      #  $this->CFG->C->deb( $res3); $this->CFG->C->deb( $SQL );
+        #$this->CFG->C->deb( $res3); $this->CFG->C->deb( $SQL );
      }
   
     }

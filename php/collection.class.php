@@ -83,16 +83,15 @@ function newCollection( $util,   $IW )
   exit(0);
 }
 
-
-
 function reNewCollection( $IW, $IC )
 {
   $conf = $this->CFG->getConf();
 
   #$this->CFG->C->deb( $conf );
+  #$this->CFG->C->deb( $IC[ 'collection_id' ] );
   
-#  $x = sha1( $IC[ 'collection_id' ].$conf[ 'salt' ]);
-#  $this->CFG->C->deb( $x );
+  #$x = sha1( $IC[ 'collection_id' ].$conf[ 'salt' ]);
+  #$this->CFG->C->deb( $x );
   
   if(  $IW['mode'] != sha1( $IC[ 'collection_id' ].$conf[ 'salt' ] ))
   { echo "ERROR: 12";  # Falscher HASH über URL
@@ -113,7 +112,7 @@ function reNewCollection( $IW, $IC )
     $IC[ 'newExpire_date'   ] =  $this->util-> get_new_expiry_date ();
 
     
- #  $this->CFG->C->deb(  $IC  );
+   #$this->CFG->C->deb(  $IC  );
    
    $this->sql-> renewCollection( $IC, $IW  );
   
