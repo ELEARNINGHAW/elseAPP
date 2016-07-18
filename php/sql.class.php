@@ -155,19 +155,21 @@ function checkUserExistence( $hawacc )
 function getCollectionData( $title_short )
 {
   if ( $title_short != '' )
-  {$SQL = "
-  SELECT * 
-  FROM collection 
-  WHERE `title_short` = \"".$this->es( $title_short )."\"" ;
-  $res =  mysqli_query ( $this->DB, $SQL);
-  $ret = mysqli_fetch_assoc($res);
-  $ret['collection_id'] = $ret['id'] ;
+  {
+    $SQL = "
+    SELECT * 
+    FROM collection 
+    WHERE `title_short` = \"".$this->es( $title_short )."\"" ;
+    $res =  mysqli_query ( $this->DB, $SQL);
+    $ret = mysqli_fetch_assoc($res);
+    $ret['collection_id'] = $ret['id'] ;
   }
   else
   {
     $ret = 0;
   }  
-  
+
+  #$this->CFG->C->deb($SQL,1);
   #$this->CFG->C->deb($ret,1);
   return $ret;  
 }
@@ -300,6 +302,114 @@ function initUser($IU)
   return $res;
 }
 
+function renewCollection( $IC  )
+{
+  # Collection 
+   $tmp  =  $this->getCollectionData( $IC[ 'newCollection_id' ] );
+  
+  # $this->CFG->C->deb( $tmp['collection_id'] ) ;
+  
+  if ( $tmp['collection_id'] )  # Anzulegender SA exisitiert schon 
+  {
+   # echo "DOUBLE";
+   # $res = 0;
+  }
+  else
+  { 
+    $SQL  = " UPDATE `collection` SET  state_id  = '7' WHERE `collection`.`id` = '". $IC[ 'collection_id' ] ."' "; # Status des alten SA wird auf 'verlängert' gesetzt
+    $res =  mysqli_query ( $this->DB, $SQL );
+
+    $SQL  = " CREATE TEMPORARY TABLE tmp SELECT * FROM collection WHERE title_short = '". $IC[ 'collection_id' ] ."';";
+    $SQL .= " UPDATE tmp SET id                 =  '". $IC[ 'newCollection_id' ] ."';";
+    $SQL .= " UPDATE tmp SET  title_short       =  '". $IC[ 'newCollection_id' ] ."';";
+    $SQL .= " UPDATE tmp SET  title             =  '". $IC[ 'newTitle'         ] ."';";
+    $SQL .= " UPDATE tmp SET  expiry_date       =   ". $IC[ 'newExpire_date'   ].";"; 
+    $SQL .= " UPDATE tmp SET  last_state_change = NOW();";
+    $SQL .= " UPDATE tmp SET  course_id         = 1;";
+    $SQL .= " UPDATE tmp SET  state_id          = 3;";
+    $SQL .= " INSERT INTO collection SELECT * FROM tmp;";
+    $res = mysqli_multi_query ( $this->DB, $SQL );
+    while (mysqli_next_result($this->DB)){;}    ## bugfix - flush multi_queries    
+
+    $this->renewDocument( $IC );  ## Alle Dokumente des SA in den neuen SA kopieren. Dokumente im Status 'löschen' werden von DB gelöscht. Alle Dokumente in Bearbeitung-Status werden zurückgesetzt
+  }
+  
+  return;
+}
+
+
+function renewDocument( $IC  )
+{
+  # Document 
+  $SQL  = " DELETE FROM `document` WHERE  `collection_id` = '". $IC[ 'collection_id' ] ."' AND `state_id` = 6 ";   # Alle Dokumente des aktuellen SA im Status 'gelöscht' werden von der DB gelöscht
+  $res0 =  mysqli_query( $this->DB, $SQL );
+  #$this->CFG->C->deb( $res0);; $this->CFG->C->deb( $SQL );
+
+  $SQL  = " SELECT * FROM `document` WHERE `collection_id` = '". $IC[ 'collection_id' ] ."' ";   # Alle Documente des SA
+  $res1 =  mysqli_query( $this->DB, $SQL );
+  #$this->CFG->C->deb( $res1);; $this->CFG->C->deb( $SQL);
+  if (  $res1  )
+  {        #echo "<br>#---1";
+    while ( $row = mysqli_fetch_assoc( $res1 ) ) 
+    {     
+      $SQL =  " INSERT INTO document (doc_type_id ,physicaldesc ,collection_id ,state_id,location_id ,title ,author  ,edition,year ,journal ,volume ,pages ,publisher ,signature ,ppn ,url ,url_type_id ,relevance ,notes_to_studies ,notes_to_staff  ,protected ,created ,last_modified,last_state_change,shelf_remain) ";
+      $SQL .= " VALUES ( '".
+      $row['doc_type_id'      ] ."' , '". 
+      $row['physicaldesc'     ] ."' , '". 
+      $IC[ 'newCollection_id' ]  ."' , '".
+      $row['state_id'         ]  ."' , '". 
+      $row['location_id'      ]  ."' , '". 
+      $row['title'            ]  ."' , '". 
+      $row['author'           ]  ."' , '". 
+      $row['edition'          ]  ."' , '". 
+      $row['year'             ]  ."' , '". 
+      $row['journal'          ]  ."' , '". 
+      $row['volume'           ]  ."' , '". 
+      $row['pages'            ]  ."' , '". 
+      $row['publisher'        ]  ."' , '". 
+      $row['signature'        ]  ."' , '". 
+      $row['ppn'              ]  ."' , '". 
+      $row['url'              ]  ."' , '". 
+      $row['url_type_id'      ]  ."' , '".
+      $row['relevance'        ]  ."' , '".
+      $row['notes_to_studies' ]  ."' , '".  
+      $row['notes_to_staff'   ]  ."' , '". 
+      $row['protected'        ]  ."' , '". 
+      $row['created'          ]  ."' , '".  
+      $row['last_modified'    ]  ."' , '". 
+      $row['last_state_change']  ."' , '". 
+      $row['shelf_remain'     ]  ."' )";
+      
+     # echo "<br>#---".$SQL;
+      
+      
+     $res2 =  mysqli_query ( $this->DB, $SQL );                                # Alle Dokumente des bisherigen SA werden in den neunen SA kopiert
+    #$this->CFG->C->deb( $row); $this->CFG->C->deb( $SQL );
+
+      $row['new_state_id' ]  = null;  
+      if     ( $row[ 'state_id' ] == '1' OR  $row[ 'state_id' ] == '2' ) { $row[ 'new_state_id' ]  = 3; } # state 1, 2 wird 3 -- bestellt oder bearbeitet wird aktiv 
+      elseif ( $row[ 'state_id' ] == '4' OR  $row[ 'state_id' ] == '9' ) { $row[ 'new_state_id' ]  = 5; } # state 4, 9 wird 5 -- vorschlang oder entfernt wird inaktiv  
+      if(isset($row[ 'new_state_id' ])) 
+      {  
+        $SQL = " UPDATE document SET ";
+        $SQL .= " state_id              = \"" . $row['new_state_id' ]     . "\"";
+        $SQL .= " WHERE `collection_id` = \"" . $IC[ 'collection_id' ]    . "\"  AND  id = " .$row['id'      ]; 
+        $res3 =  mysqli_query ( $this->DB, $SQL ); 
+      #  $this->CFG->C->deb( $res3); $this->CFG->C->deb( $SQL );
+     }
+  
+    }
+  }
+ 
+  
+  return;
+}
+
+   
+
+  
+  
+
 
 function updateUser( $IU,  $IW = null )
 {
@@ -385,8 +495,8 @@ function updateMediaMetaData($w)
 function updateCollectionSortOrder( $collection_id, $sortorder )
 {  
   $SQL = " UPDATE collection SET ";
-  $SQL .= " sortorder         = \"" . $this->es( $sortorder ) . "\"";
-  $SQL .= " WHERE id         = \"" . $this->es( $collection_id ). "\"  "; 
+  $SQL .= " sortorder        = \"" . $this->es( $sortorder )     . "\"";
+  $SQL .= " WHERE id         = \"" . $this->es( $collection_id ) . "\""; 
 
   #$this->CFG->C->deb( $SQL,1 );
   
@@ -619,8 +729,9 @@ class HAW_DB
   var $status;
 	function HAW_DB( )
 	{
-		{	$this->db = new SQLite3( '../DB/HAW-Fak-Dep-SG.s3db' );		
-			if( $this->db )
+		{	#$this->db = new SQLite3( '../DB/HAW-Fak-Dep-SG.s3db' );		
+			$this->db = new PDO( 'sqlite:../DB/HAW-Fak-Dep-SG.s3db' );	
+      if( $this->db )
 			{  $this->log = fopen("../log/HAW-FAK-DEP.log", "a");
 			}
 			else
@@ -636,8 +747,9 @@ class HAW_DB
 
 		$result =  $this->db->query( $SQL );
 		 
-		while ( $tmp = $result->fetchArray() )										// Daten zeilenweise in Array speichern  
-		{	 
+		#while ( $tmp = $result->fetchArray() )										// Daten zeilenweise in Array speichern  
+		foreach ( $result as $tmp )										// Daten zeilenweise in Array speichern  
+    {	 
 			$r[$tmp['DepID']][ 'DepID'     ] = $tmp[ 'DepID'     ];
    	  $r[$tmp['DepID']][ 'DepName'   ] = $tmp[ 'DepName'   ];
   		$r[$tmp['DepID']][ 'Dep2Fak'   ] = $tmp[ 'Dep2Fak'   ];
@@ -661,7 +773,7 @@ class HAW_DB
 
 		$result =  $this->db->query( $SQL );
 		 
-		while ( $tmp = $result->fetchArray() )										// Daten zeilenweise in Array speichern  
+				foreach ( $result as $tmp )											// Daten zeilenweise in Array speichern  
 		{	 
 			$r[$tmp['FakID']][ 'FakID'    ] = $tmp[ 'FakID'    ];
 			$r[$tmp['FakID']][ 'FakName'  ] = $tmp[ 'FakName'  ];
@@ -678,7 +790,7 @@ class HAW_DB
 
 		$result =  $this->db->query( $SQL );
 		 
-		while ( $tmp = $result->fetchArray() )										// Daten zeilenweise in Array speichern  
+				foreach ( $result as $tmp )											// Daten zeilenweise in Array speichern  
 		{	 
       $r[$tmp['BibID']][ 'BibID'     ] = $tmp[ 'BibID'     ];
 			$r[$tmp['BibID']][ 'BibName'   ] = $tmp[ 'BibName'   ];

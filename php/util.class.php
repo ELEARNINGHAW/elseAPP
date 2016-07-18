@@ -16,18 +16,17 @@ function getInput ( )
 
 if ( !isset ( $_SESSION[ 'DEP2BIB'] ) )                                     # Ermittelt die zuständige FachBib zum jeweiligen Department 
 {
-  $this->HAWdb          = new HAW_DB();                                    # Aus der SQLite DB
+  $this->HAWdb          = new HAW_DB();                                     # Aus der SQLite DB
   $_SESSION['DEP2BIB' ] =  $this->HAWdb->getDEP2BIB();
   $_SESSION['FAK'     ] =  $this->HAWdb->getAllFak();
   $_SESSION['FACHBIB' ] =  $this->HAWdb->getAllFachBib();
 }   
   
-  
 if ( isset ( $_GET[ 'uid' ] ) )    ##  Initiale Parameterübergabe über  Moodle ## // Kurskurzname 
 {  
   $this -> getGET_EMIL_Values () ; /* Paramterübergabe von EMIL  */
 }
-
+#print_r($_SESSION['user']);
 if ( ! isset($_SESSION['user']['role'] ) ) { die('NO ROLE'); } 
 
 if (isset( $_SESSION[ 'work' ][ 'document_id' ] ) ) { $INPUT[ 'work' ][ 'document_id'      ] = $_SESSION[ 'work' ][ 'document_id' ]; } else {  $INPUT[ 'work' ][ 'document_id'    ] = 0; } /* Standard 'document_id' des zuletzt bearbeiteten Mediums, wird *immer* in SESSION übernommen*/
@@ -82,9 +81,9 @@ if ( isset( $_SESSION[ 'user' ]['tmpcat']) AND ( $INPUT[ 'work' ]['action'] != '
 # $INPUT[ 'work' ][ 'mode'          ] = '' ; ## z.B printversion
   
 $_SESSION[ 'work' ] = $INPUT[ 'work' ] ;
-  
+
+if (isset($INPUT[ 'work' ][ 'collection_id'   ]))
 $_SESSION[ 'coll' ] = $this->sql->getCollectionData( $INPUT[ 'work' ][ 'collection_id'   ] );  /* Wenn coll_id übergegen wird, wird dieser der aktive SA  */
-  
 
 return $INPUT ;
 }
@@ -97,7 +96,7 @@ function dc( $str )  # decode GET input
 function getGET_EMIL_Values ( )
 { $dm = false;
     if ( isset ( $_GET[ 'cid'] ) )  { $Course[ 'id'          ] = $this->dc ( $_GET[ 'cid']  ) ; }  else  {                                if($dm) echo "<br>ERROR: no 'course ID'        " ;  }
-    if ( isset ( $_GET[ 'sn' ] ) )  { $Course[ 'shortname'   ] = $this->dc ( $_GET[ 'sn' ]  ) ; }  else  {                                if($dm) echo "<br>ERROR: no 'course shortname' " ;  }
+    if ( isset ( $_GET[ 'sn' ] ) )  { $Course[ 'shortname'   ] = $this->dc ( $_GET[ 'sn' ]  ) ; }  else  { $Course[ 'shortname'   ] = "";  if($dm) echo "<br>ERROR: no 'course shortname' " ;  }
     if ( isset ( $_GET[ 'cn' ] ) )  { $Course[ 'fullname'    ] = $this->dc ( $_GET[ 'cn' ]  ) ; }  else  {                                if($dm) echo "<br>ERROR: no 'course fullname'  " ;  }
     if ( isset ( $_GET[ 'uid'] ) )  { $IDMuser[ 'id'         ] = $this->dc ( $_GET[ 'uid']  ) ; }  else  { $IDMuser[ 'id'         ] = ""; if($dm) echo "<br>ERROR: no 'user ID'          " ;  }
     if ( isset ( $_GET[ 'm'  ] ) )  { $IDMuser[ 'mail'       ] = $this->dc ( $_GET[ 'm'  ]  ) ; }  else  { $IDMuser[ 'mail'       ] = ""; if($dm) echo "<br>ERROR: no 'mail'             " ;  }
@@ -146,11 +145,13 @@ function getGET_EMIL_Values ( )
       $IC[ 'title_short'   ] = $Course[  'shortname'  ] ;
       $IC[ 'collection_id' ] = $Course[  'shortname'  ] ;
       $IC[ 'bib_id'        ] = $_SESSION[ 'DEP2BIB'   ][ $IDMuser[ 'department' ] ] [ 'BibID' ];
+    
+      $_SESSION[ 'coll' ] = $IC ;
     }
     #-----------------------------------------------------------------------------
 
     $_SESSION[ 'user' ] = $IDMuser ;
-    $_SESSION[ 'coll' ] = $IC ;
+
 } 
 
 

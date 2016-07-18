@@ -3,8 +3,8 @@ session_start();
 #$_SESSION = "";
 ## --- TODO ---  --- CHECK PERMISSIONS ---
 # check_permission($INPUT)
-require_once( '../php/const.class.php'             );
-require_once( '../php/config.class.php'            );
+require_once( '../php/const.class.php'       );
+require_once( '../php/config.class.php'      );
 require_once( '../php/sql.class.php'         );
 require_once( '../php/util.class.php'        );
 require_once( '../php/collection.class.php'  );
@@ -16,7 +16,7 @@ $CFG        = new Config( $CST );
 $SQL        = new SQL( $CFG );
 $util       = new Util( $CFG, $SQL  );
 $renderer   = new Renderer( $CFG );
-$collection = new Collection( $CFG, $SQL, $renderer );
+$collection = new Collection( $CFG, $SQL, $renderer, $util );
 $media      = new Media( $CFG, $SQL, $renderer );
 
 #$util->  check_host();
@@ -27,8 +27,8 @@ if ( isset ( $_SESSION[ 'work'  ] ) ) { $IW = $_SESSION[ 'work' ]; }  # Übergeb
 if ( isset ( $_SESSION[ 'user'  ] ) ) { $IU = $_SESSION[ 'user' ]; }  # Alle Userdaten
 if ( isset ( $_SESSION[ 'coll'  ] ) ) { $IC = $_SESSION[ 'coll' ]; }  # Alle Semesterapparatdaten
 
-#$CFG->C->deb( $_GET);
-#$CFG->C->deb( $_SESSION['user']['role'] );
+#$CFG->C->deb( $_GET );
+#$CFG->C->deb( $_SESSION['coll'] );
 
 if ( $IW[ 'categories'] != '' OR $IW[ 'letter'] != '' )  
 { $media ->  renderDozSort ();  # Dozenten sortiert
@@ -91,22 +91,24 @@ else if ( $IW['item'] == 'ebook' OR $IW['item'] == 'lh_book' )
 
 if(( $_SESSION['user']['role'] == 3 OR $_SESSION['user']['role'] == 2 OR  $_SESSION['user']['role'] == 5))  ## Folgende Aktionen nur für Dozenten oder Staff oder Mailuser
 {
- if ( $IW['item'] == 'email' )
-{ 
-   
-   if      ( $IW['action'] == 'sendmail'            )  {  $media->send_email(  $IW, $IU, $IC );   }           /* Email wird verschickt                                         */
-  if      ( $IW['action'] == 'HIBSAPmail'          )  {  $util->sendBIB_APmails();               }           /* Cronjob: HIBS Ansprechpartner Infomail                                         */
-}
+  if ( $IW['item'] == 'email' )
+  { 
+    if      ( $IW['action'] == 'sendmail'            )  {  $media->send_email(  $IW, $IU, $IC );   }           /* Email wird verschickt                                         */
+    if      ( $IW['action'] == 'HIBSAPmail'          )  {  $util->sendBIB_APmails();               }           /* Cronjob: HIBS Ansprechpartner Infomail                                         */
+  }
 
+  if ( $IW['item'] == 'collection' )
+  { 
+    if      ( $IW['action'] == 'renew'                )  { $collection->reNewCollection( $IW, $IC ) ;   }       /* SA wird für das nächste Semester geneutzt. Bisheriger SA - Bücher im physSA werden zu reienen Literatur Hinweisen  */
+  }
 }
 else     ## Folgende Aktionen für Studis erlaubt
 {      if ( $IW['item'] == 'collection' )
-{ 
+  { 
        if ( $IW['action'] == 'print'               )  { $collection->showCollectionPrintversion( $IW, $IU      ) ;   } /* Printversion des SAs wird angezeigt (nur aktive Medien)    */
   else if ( $IW['action'] == 'show'                )  { $collection->showCollection            ( $IW, $IU      ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
   else if ( $IW['action'] == 'showopen'            )  { $collection->showCollectionLists       ( $IW, $IU      ) ;   } /* Zeigt die Liste der SAs, gefiltert nach deren Zustand      */
   else if ( $IW['action'] == 'b_coll_edit'         )  { $collection->editCollection            ( $IW, $IU,$IC  ) ;   } /*  SAs wird angezeigt (deren Editierbarkeit ist abhängig von der Rolle des Nuters)   */
-
   }  
 }
 ?>
