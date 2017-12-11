@@ -1,4 +1,4 @@
-##
+## 123
 <?php
 session_start();
 #$_SESSION = "";
@@ -113,4 +113,3 @@ else     ## Folgende Aktionen für Studis erlaubt
   }  
 }
 ?>
-  
